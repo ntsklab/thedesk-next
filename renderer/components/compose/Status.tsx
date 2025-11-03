@@ -639,7 +639,7 @@ const Status: React.FC<Props> = (props) => {
 					</Form.Group>
 				)}
 
-				<Form.Group controlId="attachments-preview" style={{ marginBottom: '4px' }}>
+				<Form.Group controlId="attachments-preview" style={{ marginBottom: '4px', maxWidth: '100%' }}>
 					<div>
 						{formValue.attachments?.map((media, index) => (
 							<div key={media.id} style={{ position: 'relative' }}>

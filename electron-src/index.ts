@@ -63,6 +63,7 @@ function writePos(mainWindow: Electron.BrowserWindow | null) {
 }
 app.on('ready', async () => {
 	logger('start')
+	const isMac = process.platform === 'darwin'
 	if (!config.allowDoH) app.configureHostResolver({ secureDnsMode: 'off' })
 	const windowState: WindowState = fs.existsSync(windowStatePath) ? JSON.parse(fs.readFileSync(windowStatePath).toString()) : {}
 	mainWindow = new BrowserWindow({
@@ -93,12 +94,28 @@ app.on('ready', async () => {
 	}
 	const isJa = app.getPreferredSystemLanguages().includes('ja')
 	const template: MenuItemConstructorOptions[] = [
-		{ role: 'fileMenu', submenu: [{ label: isJa ? '設定' : 'Prefrences', click: () => mainWindow?.loadURL('app://-/setting.html') }] },
+		{ role: 'fileMenu', submenu: [{ role: isMac ? 'close' : 'quit' }, { label: isJa ? '設定' : 'Prefrences', click: () => mainWindow?.loadURL('app://-/setting.html'), icon: '' }] },
 		{ role: 'editMenu' },
 		{ role: 'viewMenu' },
 		{ role: 'windowMenu' }
 	]
-	if (process.platform === 'darwin') template.unshift({ role: 'appMenu', submenu: [{ label: isJa ? '設定' : 'Prefrences', click: () => mainWindow?.loadURL('app://-/setting.html') }] })
+	if (isMac)
+		template.unshift({
+			role: 'appMenu',
+			submenu: [
+				{ role: 'about' },
+				{ type: 'separator' },
+				{ label: isJa ? '設定' : 'Prefrences', click: () => mainWindow?.loadURL('app://-/setting.html') },
+				{ type: 'separator' },
+				{ role: 'services' },
+				{ type: 'separator' },
+				{ role: 'hide' },
+				{ role: 'hideOthers' },
+				{ role: 'unhide' },
+				{ type: 'separator' },
+				{ role: 'quit' }
+			]
+		})
 	const menu = Menu.buildFromTemplate(template)
 	Menu.setApplicationMenu(menu)
 	mainWindow.on('maximize', () => writePos(mainWindow))
