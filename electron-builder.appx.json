@@ -1,7 +1,6 @@
 {
 	"productName": "TheDeskPC",
 	"appId": "next.top.thedesk",
-	"afterSign": "build-tool/notarize.js",
 	"artifactName": "${productName}-${version}-store-${os}-${arch}.${ext}",
 	"asarUnpack": [
 		"native/**"

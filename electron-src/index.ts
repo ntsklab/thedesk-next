@@ -163,9 +163,9 @@ app.on('ready', async () => {
 			fonts: await getFonts({ disableQuoting: true }),
 			isFirstRun: firstRun,
 			currentRendererAbsolutePath: join(__dirname, '../renderer/out'),
-			isStore: process.mas || app.getPath('exe').endsWith('appx'),
+			isStore: process.mas || !!app.getPath('exe').match(/53491Cutls/),
 			isMas: !!process.mas,
-			isAppx: app.getPath('exe').endsWith('appx'),
+			isAppx: !!app.getPath('exe').match(/53491Cutls/),
 			getPath: app.getPath('exe')
 		}
 		mainWindow?.webContents.send('initialInfo', info)
