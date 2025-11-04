@@ -5,6 +5,7 @@ import fs from 'fs'
 // Native
 import { join } from 'path'
 import { promisify } from 'util'
+import * as tar from 'tar'
 
 type SystemConfig = {
 	hardwareAcceleration: boolean
@@ -14,20 +15,23 @@ type SystemConfig = {
 const promisifyExecFile = promisify(execFile)
 
 // Packages
-import { app, BrowserWindow, clipboard, type IpcMainEvent, ipcMain, Menu, type MenuItemConstructorOptions, nativeImage, screen, shell } from 'electron'
+import { app, BrowserWindow, clipboard, type IpcMainEvent, ipcMain, Menu, type MenuItemConstructorOptions, nativeImage, shell } from 'electron'
 import isDev from 'electron-is-dev'
 import defaultConfig from './defaultConfig.json'
 import type { WindowState } from './types'
+import { writePos } from './utils/writePos'
+import { copyDir } from './utils/copyDir'
 
+const appDataPath = join(app.getPath('appData'), app.getName())
+const baseDir = join(appDataPath, 'thedesk-next')
 const appServe = app.isPackaged
 	? serve({
-			directory: join(__dirname, '../renderer/out')
+			directory: baseDir
 		})
 	: null
 // Prepare the renderer once the app is ready
 let mainWindow: BrowserWindow | null = null
 let config: SystemConfig = defaultConfig
-const appDataPath = join(app.getPath('appData'), app.getName())
 const configPath = join(appDataPath, 'config.json')
 const windowStatePath = join(appDataPath, 'window-state.json')
 const logger = (msg: string) => {
@@ -51,16 +55,6 @@ try {
 } catch {
 	console.error('Failed to read config.json')
 }
-function writePos(mainWindow: Electron.BrowserWindow | null) {
-	if (!mainWindow) return
-	const size: WindowState = {
-		...mainWindow.getBounds(),
-		isMaximized: mainWindow.isMaximized(),
-		isFullScreen: mainWindow.isFullScreen(),
-		displayBounds: screen.getPrimaryDisplay().bounds
-	}
-	fs.writeFileSync(windowStatePath, JSON.stringify(size))
-}
 app.on('ready', async () => {
 	logger('start')
 	const isMac = process.platform === 'darwin'
@@ -80,8 +74,19 @@ app.on('ready', async () => {
 	})
 	if (windowState.isMaximized) mainWindow.maximize()
 	if (windowState.isFullScreen) mainWindow.setFullScreen(true)
-
 	if (app.isPackaged && appServe !== null) {
+		const mv = () => {
+			copyDir(join(__dirname, '../renderer/out'), baseDir)
+			fs.writeFileSync(join(baseDir, 'ver.txt'), app.getVersion())
+		}
+		if (!fs.existsSync(baseDir)) {
+			if (!fs.existsSync(baseDir)) fs.mkdirSync(baseDir, { recursive: true })
+			mv()
+		} else {
+			const verPath = join(baseDir, 'ver.txt')
+			const ver = fs.readFileSync(verPath).toString()
+			if (ver !== app.getVersion()) mv()
+		}
 		appServe(mainWindow).then(() => {
 			if (mainWindow) mainWindow.loadURL('app://-')
 		})
@@ -123,6 +128,18 @@ app.on('ready', async () => {
 	mainWindow.on('resized', () => writePos(mainWindow))
 	mainWindow.on('moved', () => writePos(mainWindow))
 	mainWindow.on('minimize', () => writePos(mainWindow))
+	ipcMain.on('fetch', async () => {
+		const blobRaw = await fetch(`.tar.gz`)
+		const blob = await blobRaw.blob()
+		const arrayBuffer = await blob.arrayBuffer()
+		fs.writeFileSync(join(appDataPath, 'thedesk-next.tar.gz'), Buffer.from(arrayBuffer))
+		await tar.x({
+			file: join(appDataPath, 'thedesk-next.tar.gz'),
+			cwd: baseDir
+		})
+		fs.writeFileSync(join(appDataPath, 'ver.txt'), app.getVersion())
+		mainWindow?.reload()
+	})
 	ipcMain.on('requestInitialInfo', async (_event) => {
 		const info = {
 			os: process.platform,
