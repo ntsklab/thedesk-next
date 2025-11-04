@@ -77,14 +77,14 @@ app.on('ready', async () => {
 	if (app.isPackaged && appServe !== null) {
 		const mv = () => {
 			copyDir(join(__dirname, '../renderer/out'), baseDir)
-			fs.writeFileSync(join(baseDir, 'ver.txt'), app.getVersion())
+			fs.writeFileSync(join(baseDir, 'ver.json'), JSON.stringify({ ver: app.getVersion(), unix: Math.floor(Date.now() / 1000) }))
 		}
 		if (!fs.existsSync(baseDir)) {
 			if (!fs.existsSync(baseDir)) fs.mkdirSync(baseDir, { recursive: true })
 			mv()
 		} else {
-			const verPath = join(baseDir, 'ver.txt')
-			const ver = fs.readFileSync(verPath).toString()
+			const verPath = join(baseDir, 'ver.json')
+			const { ver } = JSON.parse(fs.readFileSync(verPath).toString())
 			if (ver !== app.getVersion()) mv()
 		}
 		appServe(mainWindow).then(() => {
@@ -129,15 +129,30 @@ app.on('ready', async () => {
 	mainWindow.on('moved', () => writePos(mainWindow))
 	mainWindow.on('minimize', () => writePos(mainWindow))
 	ipcMain.on('fetch', async () => {
-		const blobRaw = await fetch(`.tar.gz`)
+		const latestRaw = await fetch('https://thedesk.top/fe.next.json')
+		const latest = await latestRaw.json()
+		const compatibleList = latest[app.getVersion()]
+		if (!compatibleList) return
+		const compatible = compatibleList[0]
+		const current = JSON.parse(fs.readFileSync(join(appDataPath, 'ver.json')).toString())
+		if (compatible.createdAtUnix / 1000 <= current.unix) return
+		const url = compatible.url
+		logger(`Fetching frontend from ${url}`)
+		const blobRaw = await fetch(url)
 		const blob = await blobRaw.blob()
 		const arrayBuffer = await blob.arrayBuffer()
 		fs.writeFileSync(join(appDataPath, 'thedesk-next.tar.gz'), Buffer.from(arrayBuffer))
+		logger(`Unzipping frontend from ${join(appDataPath, 'thedesk-next.tar.gz')}`)
 		await tar.x({
 			file: join(appDataPath, 'thedesk-next.tar.gz'),
 			cwd: baseDir
 		})
-		fs.writeFileSync(join(appDataPath, 'ver.txt'), app.getVersion())
+		fs.writeFileSync(join(appDataPath, 'ver.json'), JSON.stringify({ ver: app.getVersion(), unix: Math.floor(Date.now() / 1000) }))
+		logger(`Completed fetching frontend`)
+		mainWindow?.webContents.send('fetchFinish', { size: compatible.size })
+	})
+	ipcMain.on('hardRefresh', async () => {
+		mainWindow?.webContents.session.clearCache()
 		mainWindow?.reload()
 	})
 	ipcMain.on('requestInitialInfo', async (_event) => {

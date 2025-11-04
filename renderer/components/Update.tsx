@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { FormattedMessage, useIntl } from 'react-intl'
-import { Button, DatePicker, Modal, SelectPicker } from 'rsuite'
+import { Button, ButtonToolbar, DatePicker, Message, Modal, SelectPicker } from 'rsuite'
 import { open as openBrowser } from '@/utils/openBrowser'
 
 export default ({ version }: { version: string }) => {
 	const { formatMessage } = useIntl()
+	const [fe, setFe] = useState(false)
 	const [newV, setNewV] = useState('')
 	const [open, setOpen] = useState(false)
 	const [untilMode, setUntilMode] = useState<'date' | 'nextVersion'>('date')
@@ -34,6 +35,8 @@ export default ({ version }: { version: string }) => {
 			}
 		}
 		fn()
+		if (window.electronAPI) window.electronAPI.fetch()
+		if (window.electronAPI) window.electronAPI.fetchFinish((_event) => setFe(true))
 	}, [version])
 	const update = () => {
 		handleClose()
@@ -89,6 +92,13 @@ export default ({ version }: { version: string }) => {
 					</div>
 				</Modal.Footer>
 			</Modal>
+			{fe && <Message showIcon type="info" className="fe-info" style={{ position: 'fixed', bottom: '20px', right: '20px', width: '350px', zIndex: 999 }}>
+				<FormattedMessage id="update.fe.hint" />
+				<ButtonToolbar style={{ marginTop: '10px'}}>
+					<Button size="sm" appearance="link" onClick={() => setFe(false)}><FormattedMessage id="update.cancel" /></Button>
+					<Button size="sm" onClick={() => window.electronAPI.hardRefresh()}><FormattedMessage id="update.fe.refresh" /></Button>
+				</ButtonToolbar>
+			</Message>}
 		</>
 	)
 }

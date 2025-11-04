@@ -11,6 +11,9 @@ export interface IElectronAPI {
 	appleMusic: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => void
 	openAppDataFolder: () => void
 	imageOperation: (image: string, operation: 'copy' | 'download') => void
+	fetch: () => void
+	fetchFinish: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => void
+	hardRefresh: () => void
 }
 
 type StreamingArray = [number, WebSocketInterface, string]

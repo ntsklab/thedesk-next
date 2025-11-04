@@ -66,12 +66,8 @@ const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 	const { timelineRefresh } = useContext(TimelineRefreshContext)
 	const { servers, openAuthorize, openAnnouncements, openThirdparty, openSettings } = props
 	const [awake, setAwake] = useState(0)
-	const [walkthrough, setWalkthrough] = useState(false)
 	const [config, setConfig] = useState<Settings['compose']>(defaultSetting.compose)
 	const toaster = useToaster()
-
-	// Walkthrough instruction
-
 	useEffect(() => {
 		props.servers.map(async (set) => {
 			if (!set.account) return set
@@ -137,10 +133,6 @@ const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 		}, 600000)
 	}, [])
 
-	const closeWalkthrough = async () => {
-		setWalkthrough(false)
-	}
-
 	const openNotification = async (set: ServerSet) => {
 		//if (!props.unreads.find((u) => u.server_id === set.server.id && u.count > 0)) return
 		const timelines = (await listTimelines()).flat()
@@ -180,32 +172,12 @@ const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 					<Button appearance="link" size="lg" onClick={props.toggleSearch} style={{ marginRight: '15px' }}>
 						<Icon as={BsSearch} style={{ fontSize: '1.4em' }} />
 					</Button>
-					{walkthrough && (
-						<div style={{ position: 'relative' }}>
-							<Popover arrow={false} visible={walkthrough} style={{ left: 12, top: 'auto', bottom: 0 }}>
-								<div style={{ width: '120px' }}>
-									<h4 style={{ fontSize: '1.2em' }}>
-										<FormattedMessage id="walkthrough.navigator.servers.title" />
-									</h4>
-									<p>
-										<FormattedMessage id="walkthrough.navigator.servers.description" />
-									</p>
-								</div>
-								<FlexboxGrid justify="end">
-									<Button appearance="default" size="xs" onClick={closeWalkthrough}>
-										<FormattedMessage id="walkthrough.navigator.servers.ok" />
-									</Button>
-								</FlexboxGrid>
-							</Popover>
-						</div>
-					)}
 					{servers.map((server, i) => (
 						<div key={server.server.id} style={{ marginTop: '5px' }}>
 							<Whisper
 								placement="top"
 								controlId="control-id-context-menu"
 								trigger="click"
-								onOpen={closeWalkthrough}
 								preventOverflow={true}
 								speaker={({ className, left, top, onClose }, ref) =>
 									serverMenu(
@@ -250,7 +222,6 @@ const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 						placement="top"
 						controlId="control-id-setting-menu"
 						trigger="click"
-						onOpen={closeWalkthrough}
 						preventOverflow={true}
 						speaker={({ className, left, top, onClose }, ref) =>
 							settingsMenu(

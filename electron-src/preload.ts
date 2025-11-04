@@ -19,6 +19,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
 	imageOperation: (image: string, operation: 'copy' | 'download') => {
 		ipcRenderer.send('imageOperation', { image, operation })
 	},
+	fetch: () => {
+		ipcRenderer.send('fetch')
+	},
+	hardRefresh: () => {
+		ipcRenderer.send('hardRefresh')
+	},
 	onInitialInfo: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => {
 		ipcRenderer.on('initialInfo', callback)
 	},
@@ -27,6 +33,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
 	},
 	customUrl: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => {
 		ipcRenderer.on('customUrl', callback)
-	}
+	},
+	fetchFinish: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => {
+		ipcRenderer.on('fetchFinish', callback)
+	},
 })
 export type {}

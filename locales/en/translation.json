@@ -82,7 +82,11 @@
 		"do_not_show": "Do not remind until",
 		"date": "the date:",
 		"next_update": "next update",
-		"hide": "Remind me"
+		"hide": "Remind me",
+		"fe": {
+			"hint": "Please refresh to get the latest data.",
+			"refresh": "Refresh"
+		}
 	},
 	"servers": {
 		"new": {
