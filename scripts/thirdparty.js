@@ -7,8 +7,8 @@ const outPath = path.join(__dirname, '../', 'renderer', 'thirdparty.js')
 
 const npmData = JSON.parse(fs.readFileSync(npmPath))
 const packages = JSON.parse(fs.readFileSync(packagePath))
-const npm = Object.keys(npmData).map((k) => {
-	const license = k.match(/^thedesk-next/) ? 'This Software' : npmData[k].licenses
+const npm = Object.keys(npmData).filter((k) => !k.match(/^thedesk-next/)).map((k) => {
+	const license = npmData[k].licenses
 	let r = {
 		package_name: k,
 		license: license
