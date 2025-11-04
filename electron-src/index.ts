@@ -77,13 +77,13 @@ app.on('ready', async () => {
 	if (app.isPackaged && appServe !== null) {
 		const mv = () => {
 			copyDir(join(__dirname, '../renderer/out'), baseDir)
-			fs.writeFileSync(join(baseDir, 'ver.json'), JSON.stringify({ ver: app.getVersion(), unix: Math.floor(Date.now() / 1000) }))
+			fs.writeFileSync(join(appDataPath, 'ver.json'), JSON.stringify({ ver: app.getVersion(), unix: Math.floor(Date.now() / 1000) }))
 		}
 		if (!fs.existsSync(baseDir)) {
 			if (!fs.existsSync(baseDir)) fs.mkdirSync(baseDir, { recursive: true })
 			mv()
 		} else {
-			const verPath = join(baseDir, 'ver.json')
+			const verPath = join(appDataPath, 'ver.json')
 			const { ver } = JSON.parse(fs.readFileSync(verPath).toString())
 			if (ver !== app.getVersion()) mv()
 		}
