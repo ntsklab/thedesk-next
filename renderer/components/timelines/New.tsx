@@ -131,7 +131,7 @@ const New: React.FC<Props> = (props) => {
 	const { timelineRefresh } = useContext(TimelineRefreshContext)
 
 	const [server, setServer] = useState<Server | null>(null)
-	const [walkthrough, setWalkthrough] = useState<boolean>(false)
+	const [walkthrough, setWalkthrough] = useState<boolean>(true)
 
 	useEffect(() => {
 		const fn = async () => {
@@ -178,7 +178,7 @@ const New: React.FC<Props> = (props) => {
 		>
 			{walkthrough && (
 				<div style={{ position: 'relative' }}>
-					<Popover arrow={false} visible={walkthrough} style={{ left: 0, top: 30 }}>
+					<Popover arrow={false} visible={walkthrough} style={{ left: 0, top: 30, zIndex: 900 }}>
 						<div style={{ width: '120px' }}>
 							<h4 style={{ fontSize: '1.2em' }}>
 								<FormattedMessage id="walkthrough.timeline.new.title" />
