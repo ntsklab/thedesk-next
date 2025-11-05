@@ -57,5 +57,5 @@ pnpm run pack:mac # macOS(able to run on macOS)
 
 ### Notarize(macOS)
 
-現在開発者の署名で公証するように設定されています。`build-tool/noratize.js`を編集してください。
-公証を削除するためには`build-tool/noratize.js`の3行目の`const useNotarize`を`false`に設定してください。
+現在開発者の署名で公証するように設定されています。`build/noratize.js`を編集してください。
+公証を削除するためには`build/noratize.js`の3行目の`const useNotarize`を`false`に設定してください。

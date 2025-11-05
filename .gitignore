@@ -16,7 +16,6 @@ output
 
 # production
 /main-build
-/build
 /main
 /dist
 

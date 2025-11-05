@@ -59,5 +59,5 @@ pnpm run pack:mac # macOS(able to run on macOS)
 
 ### Notarize(macOS)
 
-It is currently set to be notarized with the developer's signature. Edit `build-tool/noratize.js`.
-To remove notarization, set `const useNotarize` to `false` in the third line of `build-tool/noratize.js`.
+It is currently set to be notarized with the developer's signature. Edit `build/noratize.js`.
+To remove notarization, set `const useNotarize` to `false` in the third line of `build/noratize.js`.

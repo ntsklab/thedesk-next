@@ -11,15 +11,15 @@
   ],
   "mas": {
     "type": "distribution",
-    "entitlements": "build-tool/parent.plist",
-    "entitlementsInherit": "build-tool/child.plist",
-    "entitlementsLoginHelper": "build-tool/loginhelper.plist",
+    "entitlements": "build/parent.plist",
+    "entitlementsInherit": "build/child.plist",
+    "entitlementsLoginHelper": "build/loginhelper.plist",
     "hardenedRuntime": false,
     "gatekeeperAssess": false,
     "extendInfo": {
       "ITSAppUsesNonExemptEncryption": "false"
     },
-    "provisioningProfile": "build-tool/thedesk_MAS.provisionprofile",
+    "provisioningProfile": "build/thedesk_MAS.provisionprofile",
     "minimumSystemVersion": "14.0"
   },
   "mac": {
