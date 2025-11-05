@@ -455,7 +455,7 @@ function App() {
 											style={{ fontSize: 30, marginTop: 25, marginLeft: 25, cursor: 'pointer' }}
 											className="play-pause-button"
 										/>
-										<Progress.Line percent={progressPlaying} status="active" showInfo={false} />
+										<Progress.Line percent={progressPlaying} status={isPlaying ? 'active' : undefined} showInfo={false} />
 									</div>
 								)}
 								{demoTrackLoading ? (

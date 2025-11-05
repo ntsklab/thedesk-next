@@ -131,7 +131,7 @@ const New: React.FC<Props> = (props) => {
 	const { timelineRefresh } = useContext(TimelineRefreshContext)
 
 	const [server, setServer] = useState<Server | null>(null)
-	const [walkthrough, setWalkthrough] = useState<boolean>(true)
+	const [walkthrough, setWalkthrough] = useState<boolean>(false)
 
 	useEffect(() => {
 		const fn = async () => {
