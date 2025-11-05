@@ -235,6 +235,15 @@ app.on('ready', async () => {
 			selectionMenu.popup()
 		}
 	})
+	if (isDev) {
+		mainWindow.webContents.session.webRequest.onBeforeSendHeaders(
+			{
+				urls: ['<all_urls>'],
+				types: ['xhr']
+			},
+			(detail, cb) => cb({ requestHeaders:  Object.assign(detail.requestHeaders, { Referer: undefined })})
+		)
+	}
 	logger('finished')
 })
 const gotTheLock = app.requestSingleInstanceLock()

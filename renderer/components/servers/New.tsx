@@ -48,6 +48,7 @@ const New: React.FC<Props> = (props) => {
 		try {
 			const d = parseDomain(domain)
 			const res = await addServer({ domain: d })
+			if (res.sns === 'misskey') setUseAuto(false)
 			setServer(res)
 		} catch (err) {
 			console.error(err)
@@ -61,23 +62,24 @@ const New: React.FC<Props> = (props) => {
 		if (forceManual) setUseAuto(false)
 		setLoading(true)
 		try {
-			const redirectUrl = (!forceManual && useAuto && isStandaloneElectron) ? 'thedesk://login' : 'urn:ietf:wg:oauth:2.0:oob'
+			const redirectUrl = !forceManual && useAuto && isStandaloneElectron ? 'thedesk://login' : 'urn:ietf:wg:oauth:2.0:oob'
 			const res = await addApplication({ url: server.base_url, redirectUrl })
 			setApp(res)
-			if (window.electronAPI) window.electronAPI.customUrl(async (_, data) => {
-				if (data[0] === 'login') {
-					const useCode = data[1]
-					try {
-						await authorizeCode({ server: server, app: res, code: useCode })
-						finish()
-					} catch (err) {
-						console.error(err)
-						toast.push(alert('error', formatMessage({ id: 'alert.failed_authorize' })), { placement: 'topCenter' })
-					} finally {
-						setLoading(false)
+			if (window.electronAPI)
+				window.electronAPI.customUrl(async (_, data) => {
+					if (data[0] === 'login') {
+						const useCode = data[1]
+						try {
+							await authorizeCode({ server: server, app: res, code: useCode })
+							finish()
+						} catch (err) {
+							console.error(err)
+							toast.push(alert('error', formatMessage({ id: 'alert.failed_authorize' })), { placement: 'topCenter' })
+						} finally {
+							setLoading(false)
+						}
 					}
-				}
-			})
+				})
 		} catch (err) {
 			console.error(err)
 			toast.push(alert('error', formatMessage({ id: 'alert.failed_add_application' })), { placement: 'topCenter' })
@@ -156,9 +158,11 @@ const New: React.FC<Props> = (props) => {
 						<Form.Group>
 							<Input value={domain} {...focusAttr} readOnly />
 						</Form.Group>
-						{isStandaloneElectron && <Checkbox style={{ marginBottom: '5px' }} checked={useAuto} value="useAuto" onChange={() => setUseAuto(!useAuto)}>
-							<FormattedMessage id="servers.new.auto_login" />
-						</Checkbox>}
+						{isStandaloneElectron && (
+							<Checkbox style={{ marginBottom: '5px' }} checked={useAuto} disabled={server.sns === 'misskey'} value="useAuto" onChange={() => setUseAuto(!useAuto)}>
+								<FormattedMessage id="servers.new.auto_login" />
+							</Checkbox>
+						)}
 
 						<Form.Group>
 							<ButtonToolbar>
@@ -208,29 +212,32 @@ const New: React.FC<Props> = (props) => {
 								<FormattedMessage id="servers.new.without_code_authorize" />
 							</div>
 						) : (
-							!useAuto && 
-							<Form.Group>
-								<Form.ControlLabel>
-									<FormattedMessage id="servers.new.authorization_code" />
-								</Form.ControlLabel>
-								<Form.Control {...focusAttr} name="code" />
-								<Form.HelpText>
-									<FormattedMessage id="servers.new.authorization_help" />
-								</Form.HelpText>
-							</Form.Group>
+							!useAuto && (
+								<Form.Group>
+									<Form.ControlLabel>
+										<FormattedMessage id="servers.new.authorization_code" />
+									</Form.ControlLabel>
+									<Form.Control {...focusAttr} name="code" />
+									<Form.HelpText>
+										<FormattedMessage id="servers.new.authorization_help" />
+									</Form.HelpText>
+								</Form.Group>
+							)
 						)}
 						<Form.Group>
 							<ButtonToolbar>
-								{useAuto ? 
-								<Button appearance="default" onClick={() => addApplicationFn(true)}>
-									<FormattedMessage id="servers.new.retry" />
-								</Button> : <Button appearance="primary" onClick={() => authorizeCodeFn()}>
-									<FormattedMessage id="servers.new.authorize" />
-								</Button>}
+								{useAuto ? (
+									<Button appearance="default" onClick={() => addApplicationFn(true)}>
+										<FormattedMessage id="servers.new.retry" />
+									</Button>
+								) : (
+									<Button appearance="primary" onClick={() => authorizeCodeFn()}>
+										<FormattedMessage id="servers.new.authorize" />
+									</Button>
+								)}
 								<Button appearance="link" onClick={() => finish()}>
 									<FormattedMessage id="servers.new.cancel" />
 								</Button>
-								
 							</ButtonToolbar>
 						</Form.Group>
 					</Form>
