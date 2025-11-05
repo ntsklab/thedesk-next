@@ -57,10 +57,11 @@ const New: React.FC<Props> = (props) => {
 		}
 	}
 
-	async function addApplicationFn() {
+	async function addApplicationFn(forceManual?: boolean) {
+		if (forceManual) setUseAuto(false)
 		setLoading(true)
 		try {
-			const redirectUrl = (useAuto && isStandaloneElectron) ? 'thedesk://login' : 'urn:ietf:wg:oauth:2.0:oob'
+			const redirectUrl = (!forceManual && useAuto && isStandaloneElectron) ? 'thedesk://login' : 'urn:ietf:wg:oauth:2.0:oob'
 			const res = await addApplication({ url: server.base_url, redirectUrl })
 			setApp(res)
 			if (window.electronAPI) window.electronAPI.customUrl(async (_, data) => {
@@ -141,9 +142,6 @@ const New: React.FC<Props> = (props) => {
 								<Button appearance="primary" onClick={() => addServerFn()}>
 									<FormattedMessage id="servers.new.add" />
 								</Button>
-								<Button appearance="link" onClick={() => close()}>
-									<FormattedMessage id="servers.new.cancel" />
-								</Button>
 							</ButtonToolbar>
 						</Form.Group>
 					</Form>
@@ -210,6 +208,7 @@ const New: React.FC<Props> = (props) => {
 								<FormattedMessage id="servers.new.without_code_authorize" />
 							</div>
 						) : (
+							!useAuto && 
 							<Form.Group>
 								<Form.ControlLabel>
 									<FormattedMessage id="servers.new.authorization_code" />
@@ -222,12 +221,16 @@ const New: React.FC<Props> = (props) => {
 						)}
 						<Form.Group>
 							<ButtonToolbar>
-								<Button appearance="primary" onClick={() => authorizeCodeFn()}>
+								{useAuto ? 
+								<Button appearance="default" onClick={() => addApplicationFn(true)}>
+									<FormattedMessage id="servers.new.retry" />
+								</Button> : <Button appearance="primary" onClick={() => authorizeCodeFn()}>
 									<FormattedMessage id="servers.new.authorize" />
-								</Button>
+								</Button>}
 								<Button appearance="link" onClick={() => finish()}>
 									<FormattedMessage id="servers.new.cancel" />
 								</Button>
+								
 							</ButtonToolbar>
 						</Form.Group>
 					</Form>
