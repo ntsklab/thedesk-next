@@ -114,7 +114,8 @@ export async function addServer({ domain }: { domain: string }): Promise<Server>
 		favicon: null,
 		account_id: null,
 		no_streaming: noStreaming,
-		cannot_subscribe: noSubscribe
+		cannot_subscribe: noSubscribe,
+		emoji_reactions: sns === 'misskey' || domain === 'fedibird.com'
 	}
 	servers.push(server)
 	localStorage.setItem('servers', JSON.stringify(servers))

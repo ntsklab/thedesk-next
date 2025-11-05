@@ -191,8 +191,8 @@ const Status: React.FC<Props> = (props) => {
 							{status.poll && <Poll poll={status.poll} client={props.client} pollUpdated={refresh} emojis={status.emojis} />}
 							{status.media_attachments.length > 0 && <Attachments attachments={status.media_attachments} sensitive={status.sensitive} openMedia={props.openMedia} columnWidth={props.columnWidth} />}
 							{status.emoji_reactions &&
-								status.emoji_reactions.map((e) => (
-									<Button appearance="subtle" size="sm" key={e.name} onClick={() => emojiClicked(e)} active={e.me} disabled={e.name.includes('@') && props.server.sns === 'firefish'} title={e.name}>
+								status.emoji_reactions.map((e, i) => (
+									<Button appearance="subtle" size="sm" style={{ marginLeft: i === 0 ? 0 : 2 }} key={e.name} onClick={() => emojiClicked(e)} active={e.me} disabled={e.name.includes('@') && props.server.sns === 'firefish'} title={e.name}>
 										{e.url ? (
 											<>
 												<img src={e.url} style={{ height: '20px' }} alt={e.name} /> <span style={{ marginLeft: '0.2em' }}>{e.count}</span>

@@ -239,7 +239,7 @@ app.on('ready', async () => {
 		mainWindow.webContents.session.webRequest.onBeforeSendHeaders(
 			{
 				urls: ['<all_urls>'],
-				types: ['xhr']
+				types: ['xhr', 'image']
 			},
 			(detail, cb) => cb({ requestHeaders:  Object.assign(detail.requestHeaders, { Referer: undefined })})
 		)

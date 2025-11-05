@@ -123,11 +123,13 @@ const Actions: React.FC<Props> = (props) => {
 		emojiPickerRef?.current.close()
 	}
 
+	// biome-ignore lint/correctness/noNestedComponentDefinitions: <is OK!!>
 	const EmojiPicker = forwardRef<HTMLDivElement>((prop, ref) => (
 		<Popover ref={ref} {...prop}>
 			<Picker data={data} custom={props.customEmojis} onEmojiSelect={onEmojiSelect} previewPosition="none" set="native" perLine="6" theme={theme === 'high-contrast' ? 'dark' : theme} />
 		</Popover>
 	))
+	const isDisabledEmoji = props.server.domain !== 'fedibird.com' && props.server.sns === 'mastodon' && !(props.server.emoji_reactions ?? false)
 
 	return (
 		<div className="toolbox">
@@ -176,7 +178,7 @@ const Actions: React.FC<Props> = (props) => {
 						<IconButton
 							appearance="link"
 							icon={<Icon as={BsEmojiSmile} />}
-							disabled={(typeof props.disabled === 'boolean' ? props.disabled : props.disabled.emoji) || props.server.sns === 'mastodon'}
+							disabled={(typeof props.disabled === 'boolean' ? props.disabled : props.disabled.emoji) || isDisabledEmoji}
 							title={formatMessage({ id: 'timeline.actions.emoji_reaction' })}
 						/>
 					</Whisper>

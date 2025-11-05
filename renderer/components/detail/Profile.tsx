@@ -90,6 +90,7 @@ const Profile: React.FC<Props> = (props) => {
 
 	const loadRelationship = async (client: MegalodonInterface, account: Entity.Account) => {
 		const res = await client.getRelationship(account.id)
+		console.log(res.data)
 		setRelationship(res.data)
 	}
 
@@ -104,6 +105,7 @@ const Profile: React.FC<Props> = (props) => {
 	const follow = useCallback(async () => {
 		try {
 			const res = await client.followAccount(user.id)
+			console.log(res.data)
 			setRelationship(res.data)
 		} catch (err) {
 			console.error(err)
@@ -114,6 +116,7 @@ const Profile: React.FC<Props> = (props) => {
 	const unfollow = useCallback(async () => {
 		try {
 			const res = await client.unfollowAccount(user.id)
+			console.log(res.data)
 			setRelationship(res.data)
 		} catch (err) {
 			console.error(err)

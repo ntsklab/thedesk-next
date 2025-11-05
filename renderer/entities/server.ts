@@ -9,6 +9,7 @@ export type Server = {
 	account_id: number | null
 	no_streaming?: boolean
 	cannot_subscribe?: boolean
+	emoji_reactions?: boolean
 }
 
 export type ServerSet = {
