@@ -91,11 +91,11 @@ function App() {
 
 	const loadTimelines = async (streaming: boolean) => {
 		const timelines = await listTimelines()
-		console.log('start', streaming ? 'with streaming' : 'without streaming', timelines)
-		const fn = await start(timelines.flat(), streaming)
 		const widths = timelines.map((tl) => columnWidthCalc(tl[0][0].column_width))
 		setColumnWidths(widths)
 		setTimelines(timelines)
+		console.log('start', streaming ? 'with streaming' : 'without streaming', timelines)
+		const fn = await start(timelines.flat(), streaming)
 		listenUser<ReceiveNotificationPayload>(
 			'receive-notification',
 			async (ev) => {
@@ -141,17 +141,18 @@ function App() {
 		// Push Notification
 		const isInit = !localStorage.getItem('servers')
 		if (window.electronAPI) window.electronAPI.requestInitialInfo(isInit)
-		if (window.electronAPI) window.electronAPI.onInitialInfo((_event, data: InitialInfo) => {
-			console.log(data)
-			localStorage.setItem('os', data.os)
-			localStorage.setItem('lang', data.lang[0])
-			localStorage.setItem('version', data.version)
-			localStorage.setItem('fonts', JSON.stringify(data.fonts))
-			localStorage.setItem('isStore', data.isStore ? 'true' : 'false')
-			setVersion(data.version)
-			loadAppearance()
-			if (isInit && !data.isFirstRun) setMigrate(`file://${data.currentRendererAbsolutePath}/old.html?at=${location.href}`)
-		})
+		if (window.electronAPI)
+			window.electronAPI.onInitialInfo((_event, data: InitialInfo) => {
+				console.log(data)
+				localStorage.setItem('os', data.os)
+				localStorage.setItem('lang', data.lang[0])
+				localStorage.setItem('version', data.version)
+				localStorage.setItem('fonts', JSON.stringify(data.fonts))
+				localStorage.setItem('isStore', data.isStore ? 'true' : 'false')
+				setVersion(data.version)
+				loadAppearance()
+				if (isInit && !data.isFirstRun) setMigrate(`file://${data.currentRendererAbsolutePath}/old.html?at=${location.href}`)
+			})
 
 		return () => {
 			document.removeEventListener('keydown', handleKeyPress)

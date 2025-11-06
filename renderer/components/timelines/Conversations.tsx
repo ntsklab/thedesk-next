@@ -19,7 +19,7 @@ import FailoverImg from '@/utils/failoverImg'
 import timelineName from '@/utils/timelineName'
 import alert from '../utils/alert'
 import Conversation from './conversation/Conversation'
-import { listenTimeline } from '@/utils/socket'
+import { listenTimeline, listenTimelineWaiter } from '@/utils/socket'
 
 type Props = {
 	server: Server
@@ -67,26 +67,29 @@ const Conversations: React.FC<Props> = (props) => {
 		}
 		f()
 		setColumnWidth(columnWidthCalc(props.timeline.column_width))
+		const fn = async () => {
+			await listenTimelineWaiter(props.timeline.id)
+			listenTimeline<ReceiveTimelineConversationPayload>(
+				'receive-timeline-conversation',
+				(ev) => {
+					if (ev.payload.timeline_id !== props.timeline.id) {
+						return
+					}
 
-		listenTimeline<ReceiveTimelineConversationPayload>(
-			'receive-timeline-conversation',
-			(ev) => {
-				if (ev.payload.timeline_id !== props.timeline.id) {
-					return
-				}
-
-				if (scrollerRef.current && scrollerRef.current.scrollTop > 10) {
-					// When scrolling, prepend and update unreads, and update conversations
-					setUnreadConversations((current) => prependConversation(current, ev.payload.conversation))
-					setConversations((current) => updateConversation(current, ev.payload.conversation))
-				} else {
-					// When top, prepend and update conversations
-					setConversations((current) => prependConversation(current, ev.payload.conversation))
-				}
-			},
-			timelineConfig,
-			false
-		)
+					if (scrollerRef.current && scrollerRef.current.scrollTop > 10) {
+						// When scrolling, prepend and update unreads, and update conversations
+						setUnreadConversations((current) => prependConversation(current, ev.payload.conversation))
+						setConversations((current) => updateConversation(current, ev.payload.conversation))
+					} else {
+						// When top, prepend and update conversations
+						setConversations((current) => prependConversation(current, ev.payload.conversation))
+					}
+				},
+				timelineConfig,
+				false
+			)
+		}
+		fn()
 	}, [props.timeline])
 
 	const loadConversations = async (client: MegalodonInterface, maxId?: string): Promise<Array<Entity.Conversation>> => {

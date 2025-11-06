@@ -47,14 +47,15 @@ const misskeyPremission = [
 	'read:federation',
 	'write:report-abuse'
 ]
-export async function addApplication({ url, redirectUrl }: { url: string; redirectUrl: string }): Promise<OAuth.AppData> {
+export async function addApplication({ url, redirectUrl, inAppBrowser }: { url: string; redirectUrl: string; inAppBrowser: boolean }): Promise<OAuth.AppData> {
 	const sns = await detector(url)
 	if (sns === 'gotosocial') return
 	const client = generator(sns, url)
 	const isMisskey = sns === 'misskey'
 	const scopes = isMisskey ? misskeyPremission : ['read', 'write', 'follow']
 	const app = await client.registerApp('TheDesk(Desktop)', { scopes, redirect_uris: !isMisskey ? redirectUrl : 'urn:ietf:wg:oauth:2.0:oob', website: 'https://thedesk.top' })
-	open(app.url)
+	if (!inAppBrowser) open(app.url)
+	if (inAppBrowser && window.electronAPI) window.electronAPI.openInAppBrowser(app.url)
 	return app
 }
 export async function authorizeCode({ server, app, code }: { server: Server; app: OAuth.AppData; code: string }): Promise<void> {

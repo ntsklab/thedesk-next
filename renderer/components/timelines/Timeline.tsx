@@ -27,7 +27,7 @@ import { mapCustomEmojiCategory } from '@/utils/emojiData'
 import FailoverImg from '@/utils/failoverImg'
 import timelineName from '@/utils/timelineName'
 import Status from './status/Status'
-import { listenTimeline, listenUser } from '@/utils/socket'
+import { listenTimeline, listenUser, listenTimelineWaiter, listenUserWaiter } from '@/utils/socket'
 
 type Props = {
 	timeline: Timeline
@@ -96,92 +96,105 @@ export default function TimelineColumn(props: Props) {
 	useEffect(() => {
 		setColumnWidth(columnWidthCalc(props.timeline.column_width))
 		if (props.timeline.kind === 'home') {
-			listenUser<ReceiveHomeStatusPayload>(
-				'receive-home-status',
-				(ev) => {
-					console.log(ev.payload.server_id, props.server.id)
-					if (ev.payload.server_id !== props.server.id) {
-						return
-					}
+			const fn = async () => {
+				await listenUserWaiter(props.server.id)
+				listenUser<ReceiveHomeStatusPayload>(
+					'receive-home-status',
+					(ev) => {
+						console.log(ev.payload.server_id, props.server.id)
+						if (ev.payload.server_id !== props.server.id) {
+							return
+						}
 
-					if (replyOpened.current || (scrollerRef.current && scrollerRef.current.scrollTop > 10)) {
-						setUnreadStatuses((last) => prependStatus(last, ev.payload.status))
-						return
-					}
+						if (replyOpened.current || (scrollerRef.current && scrollerRef.current.scrollTop > 10)) {
+							setUnreadStatuses((last) => prependStatus(last, ev.payload.status))
+							return
+						}
 
-					setStatuses((last) => appendStatus(last, ev.payload.status))
-				},
-				timelineConfig,
-				props.timeline.tts
-			)
+						setStatuses((last) => appendStatus(last, ev.payload.status))
+					},
+					timelineConfig,
+					props.timeline.tts
+				)
 
-			listenUser<ReceiveHomeStatusUpdatePayload>(
-				'receive-home-status-update',
-				(ev) => {
-					console.log('receive-home-status-update', ev.payload.server_id, props.server.id)
-					if (ev.payload.server_id !== props.server.id) {
-						return
-					}
+				listenUser<ReceiveHomeStatusUpdatePayload>(
+					'receive-home-status-update',
+					(ev) => {
+						console.log('receive-home-status-update', ev.payload.server_id, props.server.id)
+						if (ev.payload.server_id !== props.server.id) {
+							return
+						}
 
-					setUnreadStatuses((last) => updateStatus(last, ev.payload.status))
-					setStatuses((last) => updateStatus(last, ev.payload.status))
-				},
-				timelineConfig,
-				false
-			)
+						setUnreadStatuses((last) => updateStatus(last, ev.payload.status))
+						setStatuses((last) => updateStatus(last, ev.payload.status))
+					},
+					timelineConfig,
+					false
+				)
 
-			listenUser<DeleteHomeStatusPayload>(
-				'delete-home-status',
-				(ev) => {
-					if (ev.payload.server_id !== props.server.id) {
-						return
-					}
-					setUnreadStatuses((last) => deleteStatus(last, ev.payload.status_id))
-					setStatuses((last) => deleteStatus(last, ev.payload.status_id))
-				},
-				timelineConfig,
-				false
-			)
+				listenUser<DeleteHomeStatusPayload>(
+					'delete-home-status',
+					(ev) => {
+						if (ev.payload.server_id !== props.server.id) {
+							return
+						}
+						setUnreadStatuses((last) => deleteStatus(last, ev.payload.status_id))
+						setStatuses((last) => deleteStatus(last, ev.payload.status_id))
+					},
+					timelineConfig,
+					false
+				)
+			}
+			fn()
 		} else {
-			listenTimeline<ReceiveTimelineStatusPayload>(
-				'receive-timeline-status',
-				(ev) => {
-					if (ev.payload.timeline_id !== props.timeline.id) {
-						return
-					}
+			const fn = async () => {
+				await listenTimelineWaiter(props.timeline.id)
+				listenTimeline<ReceiveTimelineStatusPayload>(
+					'receive-timeline-status',
+					(ev) => {
+						if (ev.payload.timeline_id !== props.timeline.id) {
+							return
+						}
 
-					if (replyOpened.current || (scrollerRef.current && scrollerRef.current.scrollTop > 10)) {
-						setUnreadStatuses((last) => prependStatus(last, ev.payload.status))
-						return
-					}
+						if (replyOpened.current || (scrollerRef.current && scrollerRef.current.scrollTop > 10)) {
+							setUnreadStatuses((last) => prependStatus(last, ev.payload.status))
+							return
+						}
 
-					setStatuses((last) => appendStatus(last, ev.payload.status))
-				},
-				timelineConfig,
-				props.timeline.tts
-			)
+						setStatuses((last) => appendStatus(last, ev.payload.status))
+					},
+					timelineConfig,
+					props.timeline.tts
+				)
 
-			listenTimeline<ReceiveTimelineStatusUpdatePayload>(
-				'receive-timeline-status-update',
-				(ev) => {
-					if (ev.payload.timeline_id !== props.timeline.id) {
-						return
-					}
+				listenTimeline<ReceiveTimelineStatusUpdatePayload>(
+					'receive-timeline-status-update',
+					(ev) => {
+						if (ev.payload.timeline_id !== props.timeline.id) {
+							return
+						}
 
-					setUnreadStatuses((last) => updateStatus(last, ev.payload.status))
-					setStatuses((last) => updateStatus(last, ev.payload.status))
-				},
-				timelineConfig,
-				false
-			)
+						setUnreadStatuses((last) => updateStatus(last, ev.payload.status))
+						setStatuses((last) => updateStatus(last, ev.payload.status))
+					},
+					timelineConfig,
+					false
+				)
 
-			listenTimeline<DeleteTimelineStatusPayload>('delete-timeline-status', (ev) => {
-				if (ev.payload.timeline_id !== props.timeline.id) {
-					return
-				}
-				setUnreadStatuses((last) => deleteStatus(last, ev.payload.status_id))
-				setStatuses((last) => deleteStatus(last, ev.payload.status_id))
-			}, timelineConfig, false)
+				listenTimeline<DeleteTimelineStatusPayload>(
+					'delete-timeline-status',
+					(ev) => {
+						if (ev.payload.timeline_id !== props.timeline.id) {
+							return
+						}
+						setUnreadStatuses((last) => deleteStatus(last, ev.payload.status_id))
+						setStatuses((last) => deleteStatus(last, ev.payload.status_id))
+					},
+					timelineConfig,
+					false
+				)
+			}
+			fn()
 		}
 	}, [props.timeline])
 
