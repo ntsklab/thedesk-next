@@ -62,10 +62,14 @@ const New: React.FC<Props> = (props) => {
 		if (forceManual) setUseAuto(false)
 		setLoading(true)
 		try {
-			const redirectUrl = !forceManual && useAuto && isStandaloneElectron ? 'thedesk://login' : 'urn:ietf:wg:oauth:2.0:oob'
-			const res = await addApplication({ url: server.base_url, redirectUrl })
+			const isAuto = !forceManual && useAuto && isStandaloneElectron
+			const normalRedirectUrl = isAuto ? 'thedesk://login' : 'urn:ietf:wg:oauth:2.0:oob'
+			const forMAS = server.base_url === 'https://6m.cutls.dev'
+			const isDev = location.protocol !== 'app:'
+			const redirectUrl = forMAS ? (isDev ? 'http://localhost:3000/redirect' : 'app://-/redirect.html') : normalRedirectUrl
+			const res = await addApplication({ url: server.base_url, redirectUrl, inAppBrowser: forMAS })
 			setApp(res)
-			if (window.electronAPI)
+			if (window.electronAPI) {
 				window.electronAPI.customUrl(async (_, data) => {
 					if (data[0] === 'login') {
 						const useCode = data[1]
@@ -80,6 +84,11 @@ const New: React.FC<Props> = (props) => {
 						}
 					}
 				})
+				window.electronAPI.receiveCode(async (_, data) => {
+					await authorizeCode({ server: server, app: res, code: data })
+					finish()
+				})
+			}
 		} catch (err) {
 			console.error(err)
 			toast.push(alert('error', formatMessage({ id: 'alert.failed_add_application' })), { placement: 'topCenter' })

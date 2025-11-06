@@ -38,6 +38,8 @@ const logger = (msg: string) => {
 	console.log(`[TheDesk Main Process] ${msg}`)
 	fs.appendFileSync(join(appDataPath, 'main.log'), `[${new Date().toISOString()}] ${msg}\n`)
 }
+const isJa = app.getPreferredSystemLanguages().includes('ja')
+const isMac = process.platform === 'darwin'
 let firstRun = false
 try {
 	if (!fs.existsSync(appDataPath) || !fs.existsSync(configPath)) {
@@ -55,9 +57,31 @@ try {
 } catch {
 	console.error('Failed to read config.json')
 }
+const template: MenuItemConstructorOptions[] = [
+	{ role: 'fileMenu', submenu: [{ role: isMac ? 'close' : 'quit' }, { label: isJa ? '設定' : 'Prefrences', click: () => mainWindow?.loadURL('app://-/setting.html'), icon: '' }] },
+	{ role: 'editMenu' },
+	{ role: 'viewMenu' },
+	{ role: 'windowMenu' }
+]
+const appMenu: MenuItemConstructorOptions = {
+	role: 'appMenu',
+	submenu: [
+		{ role: 'about' },
+		{ type: 'separator' },
+		{ label: isJa ? '設定' : 'Prefrences', click: () => mainWindow?.loadURL('app://-/setting.html') },
+		{ type: 'separator' },
+		{ role: 'services' },
+		{ type: 'separator' },
+		{ role: 'hide' },
+		{ role: 'hideOthers' },
+		{ role: 'unhide' },
+		{ type: 'separator' },
+		{ role: 'quit' }
+	]
+}
+if (isMac) template.unshift(appMenu)
 app.on('ready', async () => {
 	logger('start')
-	const isMac = process.platform === 'darwin'
 	if (!config.allowDoH) app.configureHostResolver({ secureDnsMode: 'off' })
 	const windowState: WindowState = fs.existsSync(windowStatePath) ? JSON.parse(fs.readFileSync(windowStatePath).toString()) : {}
 	mainWindow = new BrowserWindow({
@@ -97,30 +121,7 @@ app.on('ready', async () => {
 			if (mainWindow) mainWindow.webContents.reloadIgnoringCache()
 		})
 	}
-	const isJa = app.getPreferredSystemLanguages().includes('ja')
-	const template: MenuItemConstructorOptions[] = [
-		{ role: 'fileMenu', submenu: [{ role: isMac ? 'close' : 'quit' }, { label: isJa ? '設定' : 'Prefrences', click: () => mainWindow?.loadURL('app://-/setting.html'), icon: '' }] },
-		{ role: 'editMenu' },
-		{ role: 'viewMenu' },
-		{ role: 'windowMenu' }
-	]
-	if (isMac)
-		template.unshift({
-			role: 'appMenu',
-			submenu: [
-				{ role: 'about' },
-				{ type: 'separator' },
-				{ label: isJa ? '設定' : 'Prefrences', click: () => mainWindow?.loadURL('app://-/setting.html') },
-				{ type: 'separator' },
-				{ role: 'services' },
-				{ type: 'separator' },
-				{ role: 'hide' },
-				{ role: 'hideOthers' },
-				{ role: 'unhide' },
-				{ type: 'separator' },
-				{ role: 'quit' }
-			]
-		})
+
 	const menu = Menu.buildFromTemplate(template)
 	Menu.setApplicationMenu(menu)
 	mainWindow.on('maximize', () => writePos(mainWindow))
@@ -129,27 +130,8 @@ app.on('ready', async () => {
 	mainWindow.on('moved', () => writePos(mainWindow))
 	mainWindow.on('minimize', () => writePos(mainWindow))
 	ipcMain.on('fetch', async () => {
-		const latestRaw = await fetch('https://thedesk.top/fe.next.json')
-		const latest = await latestRaw.json()
-		const compatibleList = latest[app.getVersion()]
-		if (!compatibleList) return
-		const compatible = compatibleList[0]
-		const current = JSON.parse(fs.readFileSync(join(appDataPath, 'ver.json')).toString())
-		if (compatible.createdAtUnix / 1000 <= current.unix) return
-		const url = compatible.url
-		logger(`Fetching frontend from ${url}`)
-		const blobRaw = await fetch(url)
-		const blob = await blobRaw.blob()
-		const arrayBuffer = await blob.arrayBuffer()
-		fs.writeFileSync(join(appDataPath, 'thedesk-next.tar.gz'), Buffer.from(arrayBuffer))
-		logger(`Unzipping frontend from ${join(appDataPath, 'thedesk-next.tar.gz')}`)
-		await tar.x({
-			file: join(appDataPath, 'thedesk-next.tar.gz'),
-			cwd: baseDir
-		})
-		fs.writeFileSync(join(appDataPath, 'ver.json'), JSON.stringify({ ver: app.getVersion(), unix: Math.floor(Date.now() / 1000) }))
-		logger(`Completed fetching frontend`)
-		mainWindow?.webContents.send('fetchFinish', { size: compatible.size })
+		const size = await fetchNewVersion()
+		if (size > 0) mainWindow?.webContents.send('fetchFinish', { size })
 	})
 	ipcMain.on('hardRefresh', async () => {
 		mainWindow?.webContents.session.clearCache()
@@ -210,6 +192,20 @@ app.on('ready', async () => {
 		const blob = await fetch(image).then((r) => r.blob())
 		if (operation === 'copy') clipboard.writeImage(nativeImage.createFromBuffer(Buffer.from(await blob.arrayBuffer())))
 	})
+	ipcMain.on('openInAppBrowser', (_event: IpcMainEvent, message: any) => {
+		const loginWindow = new BrowserWindow({
+			width: 500,
+			height: 600,
+			webPreferences: {
+				preload: join(__dirname, 'preload.js')
+			}
+		})
+		loginWindow.loadURL(message)
+
+	})
+	ipcMain.on('sendCode', (_event: IpcMainEvent, message: any) => mainWindow?.webContents.send('receiveCode', message))
+
+
 	mainWindow.webContents.on('context-menu', (_e, props) => {
 		const { selectionText, isEditable } = props
 		if (isEditable) {
@@ -241,7 +237,7 @@ app.on('ready', async () => {
 				urls: ['<all_urls>'],
 				types: ['xhr', 'image']
 			},
-			(detail, cb) => cb({ requestHeaders:  Object.assign(detail.requestHeaders, { Referer: undefined })})
+			(detail, cb) => cb({ requestHeaders: Object.assign(detail.requestHeaders, { Referer: undefined }) })
 		)
 	}
 	logger('finished')
@@ -262,13 +258,34 @@ app.on('open-url', (event, url) => {
 	if (!mainWindow) return
 	event.preventDefault()
 	const m = url.match(/([a-zA-Z0-9]+)\/?\?[a-zA-Z-0-9]+=([^&]+)/)
-	if (m) {
-		mainWindow.webContents.send('customUrl', [m[1], m[2]])
-	}
+	if (m) mainWindow.webContents.send('customUrl', [m[1], m[2]])
 })
 // Quit the app once all windows are closed
 app.on('window-all-closed', app.quit)
 
+const fetchNewVersion = async (): Promise<number> => {
+	const latestRaw = await fetch('https://thedesk.top/fe.next.json')
+	const latest = await latestRaw.json()
+	const compatibleList = latest[app.getVersion()]
+	if (!compatibleList) return 0
+	const compatible = compatibleList[0]
+	const current = JSON.parse(fs.readFileSync(join(appDataPath, 'ver.json')).toString())
+	if (compatible.createdAtUnix / 1000 <= current.unix) return 0
+	const url = compatible.url
+	logger(`Fetching frontend from ${url}`)
+	const blobRaw = await fetch(url)
+	const blob = await blobRaw.blob()
+	const arrayBuffer = await blob.arrayBuffer()
+	fs.writeFileSync(join(appDataPath, 'thedesk-next.tar.gz'), Buffer.from(arrayBuffer))
+	logger(`Unzipping frontend from ${join(appDataPath, 'thedesk-next.tar.gz')}`)
+	await tar.x({
+		file: join(appDataPath, 'thedesk-next.tar.gz'),
+		cwd: baseDir
+	})
+	fs.writeFileSync(join(appDataPath, 'ver.json'), JSON.stringify({ ver: app.getVersion(), unix: Math.floor(Date.now() / 1000) }))
+	logger(`Completed fetching frontend`)
+	return blob.size
+}
 // listen the channel `message` and resend the received message to the renderer process
 ipcMain.on('writeText', (_event: IpcMainEvent, message: any) => {
 	clipboard.writeText(message)

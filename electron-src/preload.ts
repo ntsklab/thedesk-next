@@ -7,6 +7,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
 	openBrowser: (url: string) => {
 		ipcRenderer.send('openBrowser', url)
 	},
+	openInAppBrowser: (url: string) => {
+		ipcRenderer.send('openInAppBrowser', url)
+	},
 	openAppDataFolder: () => {
 		ipcRenderer.send('openAppDataFolder')
 	},
@@ -37,5 +40,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
 	fetchFinish: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => {
 		ipcRenderer.on('fetchFinish', callback)
 	},
+	sendCode: (code: string) => {
+		ipcRenderer.send('sendCode', code)
+	},
+	receiveCode: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => {
+		ipcRenderer.on('receiveCode', callback)
+	}
 })
 export type {}

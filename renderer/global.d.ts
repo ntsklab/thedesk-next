@@ -6,6 +6,7 @@ export interface IElectronAPI {
 	requestInitialInfo: (init: boolean) => void
 	requestAppleMusic: (fallback: boolean) => void
 	openBrowser: (url: string) => void
+	openInAppBrowser: (url: string) => void
 	onInitialInfo: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => void
 	customUrl: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => void
 	appleMusic: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => void
@@ -14,6 +15,8 @@ export interface IElectronAPI {
 	fetch: () => void
 	fetchFinish: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => void
 	hardRefresh: () => void
+	sendCode: (code: string) => void
+	receiveCode: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => void
 }
 
 type StreamingArray = [number, WebSocketInterface, string]
