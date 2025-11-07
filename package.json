@@ -7,7 +7,7 @@
 		"email": "p@cutls.dev",
 		"url": "https://cutls.dev"
 	},
-	"version": "25.1.10",
+	"version": "25.1.12",
 	"codename": "Aiko",
 	"packageManager": "pnpm@10.5.2",
 	"scripts": {
@@ -17,7 +17,7 @@
 		"build-electron": "tsc -p electron-src",
 		"build": "npm run thirdparty && npm run build-renderer && npm run build-electron && node scripts/toRelativePath.js",
 		"pack:mac": "electron-builder --mac --universal",
-		"pack:mas": "electron-builder --mac --universal --config electron-builder.mas.json",
+		"pack:mas": "sh build/mas.delete.sh && electron-builder --mac --universal --config electron-builder.mas.json",
 		"pack:linux": "electron-builder --linux --x64",
 		"pack:win": "electron-builder --windows --x64",
 		"pack:appx": "electron-builder --windows --x64 --config electron-builder.appx.json",
@@ -33,6 +33,7 @@
 		"cheerio": "1.1.2",
 		"dayjs": "^1.11.18",
 		"electron-is-dev": "^3.0.1",
+		"electron-native-auth": "^0.2.0",
 		"electron-next": "^3.1.5",
 		"electron-serve": "^3.0.0",
 		"electron-window-state": "^5.0.3",

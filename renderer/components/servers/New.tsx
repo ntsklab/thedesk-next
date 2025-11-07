@@ -62,12 +62,10 @@ const New: React.FC<Props> = (props) => {
 		if (forceManual) setUseAuto(false)
 		setLoading(true)
 		try {
-			const isAuto = !forceManual && useAuto && isStandaloneElectron
-			const normalRedirectUrl = isAuto ? 'thedesk://login' : 'urn:ietf:wg:oauth:2.0:oob'
-			const forMAS = server.base_url === 'https://6m.cutls.dev'
-			const isDev = location.protocol !== 'app:'
-			const redirectUrl = forMAS ? (isDev ? 'http://localhost:3000/redirect' : 'app://-/redirect.html') : normalRedirectUrl
-			const res = await addApplication({ url: server.base_url, redirectUrl, inAppBrowser: forMAS })
+			const isMac = localStorage.getItem('os') === 'darwin'
+			const isAuto = !forceManual && useAuto && (!isStandaloneElectron && isMac)
+			const redirectUrl = isAuto ? 'thedesk://login' : 'urn:ietf:wg:oauth:2.0:oob'
+			const res = await addApplication({ url: server.base_url, redirectUrl, inAppBrowser: isMac })
 			setApp(res)
 			if (window.electronAPI) {
 				window.electronAPI.customUrl(async (_, data) => {

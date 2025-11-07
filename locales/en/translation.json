@@ -70,7 +70,8 @@
 			"followed_hashtags": "Followed Hashtags",
 			"notifications": "Notifications",
 			"color": "Account color",
-			"requires_login": "Notification TL requires login"
+			"requires_login": "Notification TL requires login",
+			"account_delete_option": "Account deletion option"
 		}
 	},
 	"update": {

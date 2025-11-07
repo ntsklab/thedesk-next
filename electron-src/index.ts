@@ -21,6 +21,7 @@ import defaultConfig from './defaultConfig.json'
 import type { WindowState } from './types'
 import { writePos } from './utils/writePos'
 import { copyDir } from './utils/copyDir'
+import { auth } from './utils/auth'
 
 const appDataPath = join(app.getPath('appData'), app.getName())
 const baseDir = join(appDataPath, 'thedesk-next')
@@ -192,16 +193,11 @@ app.on('ready', async () => {
 		const blob = await fetch(image).then((r) => r.blob())
 		if (operation === 'copy') clipboard.writeImage(nativeImage.createFromBuffer(Buffer.from(await blob.arrayBuffer())))
 	})
-	ipcMain.on('openInAppBrowser', (_event: IpcMainEvent, message: any) => {
-		const loginWindow = new BrowserWindow({
-			width: 500,
-			height: 600,
-			webPreferences: {
-				preload: join(__dirname, 'preload.js')
-			}
-		})
-		loginWindow.loadURL(message)
-
+	ipcMain.on('openInAppBrowser', async (_event: IpcMainEvent, message: any) => {
+		if (!mainWindow) return
+		const link = await auth(message, 'thedesk', mainWindow)
+		const m = link?.match(/code=([^&]+)/)
+		if (m && m[1]) mainWindow?.webContents.send('receiveCode', m[1])
 	})
 	ipcMain.on('sendCode', (_event: IpcMainEvent, message: any) => mainWindow?.webContents.send('receiveCode', message))
 

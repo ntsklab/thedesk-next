@@ -36,6 +36,7 @@ import type { Unread } from '@/entities/unread'
 import type { ReceiveNotificationPayload } from '@/payload'
 import FailoverImg from '@/utils/failoverImg'
 import Notifications from './timelines/Notifications'
+import { openInApp } from '@/utils/openBrowser'
 
 type ImitateFormattedMessage = ({ id }: { id: string }) => string
 
@@ -66,6 +67,7 @@ const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 	const { timelineRefresh } = useContext(TimelineRefreshContext)
 	const { servers, openAuthorize, openAnnouncements, openThirdparty, openSettings } = props
 	const [awake, setAwake] = useState(0)
+	const [isMAS, setIsMAS] = useState(false)
 	const [config, setConfig] = useState<Settings['compose']>(defaultSetting.compose)
 	const toaster = useToaster()
 	useEffect(() => {
@@ -126,6 +128,7 @@ const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 	useEffect(() => {
 		const fn = async () => {
 			setConfig((await readSettings()).compose || defaultSetting.compose)
+			setIsMAS(localStorage.getItem('isStore') === 'true' && localStorage.getItem('os') === 'darwin')
 		}
 		fn()
 		setInterval(() => {
@@ -289,6 +292,9 @@ const serverMenu = (
 				removeServer({ id: server.server.id })
 				timelineRefresh(true)
 				break
+			case 'delete_account':
+				openInApp(`https://${server.server.domain}/settings/delete`)
+				break
 			case 'announcements':
 				openAnnouncements(server.server, server.account)
 				break
@@ -348,6 +354,7 @@ const serverMenu = (
 					<FormattedMessage id="navigator.servers.requires_login" />
 				)}
 			</div>
+			{server.server.account_id !== null && (<Button onClick={() => handleSelect('delete_account')} appearance="link" color="red"><FormattedMessage id="navigator.servers.account_delete_option" /></Button>)}
 		</Popover>
 	)
 }
