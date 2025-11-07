@@ -195,7 +195,8 @@ const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 											openNotification,
 											unreads: props.unreads,
 											setUnreads: props.setUnreads,
-											formatMessage: formatMessage as ImitateFormattedMessage
+											formatMessage: formatMessage as ImitateFormattedMessage,
+											isMAS
 										},
 										ref
 									)
@@ -270,10 +271,11 @@ type ServerMenuProps = {
 	unreads: Unread[]
 	setUnreads: Dispatch<SetStateAction<Unread[]>>
 	formatMessage: ImitateFormattedMessage
+	isMAS: boolean
 }
 
 const serverMenu = (
-	{ className, left, top, onClose, server, openAuthorize, openAnnouncements, openNotification, unreads, setUnreads, formatMessage }: ServerMenuProps,
+	{ className, left, top, onClose, server, openAuthorize, openAnnouncements, openNotification, unreads, setUnreads, formatMessage, isMAS }: ServerMenuProps,
 	ref: React.RefCallback<HTMLElement>
 ): ReactElement => {
 	const router = useRouter()
@@ -354,7 +356,7 @@ const serverMenu = (
 					<FormattedMessage id="navigator.servers.requires_login" />
 				)}
 			</div>
-			{server.server.account_id !== null && (<Button onClick={() => handleSelect('delete_account')} appearance="link" color="red"><FormattedMessage id="navigator.servers.account_delete_option" /></Button>)}
+			{server.server.account_id !== null && isMAS && (<Button onClick={() => handleSelect('delete_account')} appearance="link" color="red"><FormattedMessage id="navigator.servers.account_delete_option" /></Button>)}
 		</Popover>
 	)
 }

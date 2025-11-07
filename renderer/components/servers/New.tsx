@@ -63,7 +63,8 @@ const New: React.FC<Props> = (props) => {
 		setLoading(true)
 		try {
 			const isMac = localStorage.getItem('os') === 'darwin'
-			const isAuto = !forceManual && useAuto && (!isStandaloneElectron && isMac)
+			const storeIsAuto = isMac
+			const isAuto = isStandaloneElectron ? !forceManual && useAuto : storeIsAuto
 			const redirectUrl = isAuto ? 'thedesk://login' : 'urn:ietf:wg:oauth:2.0:oob'
 			const res = await addApplication({ url: server.base_url, redirectUrl, inAppBrowser: isMac })
 			setApp(res)
@@ -233,7 +234,7 @@ const New: React.FC<Props> = (props) => {
 						)}
 						<Form.Group>
 							<ButtonToolbar>
-								{useAuto ? (
+								{useAuto && isStandaloneElectron ? (
 									<Button appearance="default" onClick={() => addApplicationFn(true)}>
 										<FormattedMessage id="servers.new.retry" />
 									</Button>
