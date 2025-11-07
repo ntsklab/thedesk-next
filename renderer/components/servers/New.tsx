@@ -36,6 +36,8 @@ const New: React.FC<Props> = (props) => {
 	const toast = useToaster()
 
 	useEffect(() => {
+		const isMac = localStorage.getItem('os') === 'darwin'
+		setUseAuto(isMac)
 		setIsStandaloneElectron(!!window.electronAPI && localStorage.getItem('isStore') === 'false')
 		if (props.initialServer) {
 			setServer(props.initialServer)
@@ -64,7 +66,8 @@ const New: React.FC<Props> = (props) => {
 		try {
 			const isMac = localStorage.getItem('os') === 'darwin'
 			const storeIsAuto = isMac
-			const isAuto = isStandaloneElectron ? !forceManual && useAuto : storeIsAuto
+			const isAuto = isStandaloneElectron ? (!forceManual && useAuto) : storeIsAuto
+			console.log(isAuto, isStandaloneElectron, useAuto, storeIsAuto)
 			const redirectUrl = isAuto ? 'thedesk://login' : 'urn:ietf:wg:oauth:2.0:oob'
 			const res = await addApplication({ url: server.base_url, redirectUrl, inAppBrowser: isMac })
 			setApp(res)
