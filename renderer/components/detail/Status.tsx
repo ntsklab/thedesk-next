@@ -165,7 +165,6 @@ const StatusDetail: React.FC<Props> = (props) => {
 									columnWidth={340}
 									updateStatus={updateStatus}
 									openMedia={props.openMedia}
-									setReplyOpened={() => null}
 									setAccountDetail={setAccountDetail}
 									setTagDetail={setTagDetail}
 									openReport={props.openReport}

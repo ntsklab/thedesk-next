@@ -43,7 +43,7 @@ function App() {
 	const { formatMessage } = useIntl()
 	const router = useRouter()
 	const [width, height] = useWindowSize()
-	const { saveTimelineConfig, timelineConfig } = useContext(TheDeskContext)
+	const { saveTimelineConfig, timelineConfig, reply } = useContext(TheDeskContext)
 	const { loadTheme } = useContext(ContextLoadTheme)
 	const [servers, setServers] = useState<ServerSet[]>([])
 	const [timelines, setTimelines] = useState<[Timeline, Server, Account | null][][]>([])
@@ -118,7 +118,8 @@ function App() {
 		loadAppearance()
 		document.addEventListener('keydown', handleKeyPress)
 		if (location.protocol !== 'http:') setCurrentPath(location.href.replace('index.html', ''))
-		const positionStr = localStorage.getItem('composePosition') || '0,0'
+		const defaultPos = `${(window.screen.availWidth - 300) / 2},${(window.screen.availHeight - 300) / 2}`
+		const positionStr = localStorage.getItem('composePosition') || defaultPos
 		const [x, y] = positionStr.split(',').map((p) => Number.parseInt(p, 10))
 		setComposePosition([x, y])
 
@@ -192,6 +193,9 @@ function App() {
 	useEffect(() => {
 		localStorage.setItem('composePosition', composePosition.join(','))
 	}, [composePosition])
+	useEffect(() => {
+		if (reply) setComposeOpened(true)
+	}, [reply])
 
 	useEffect(() => {
 		if (!highlighted) return

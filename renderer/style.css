@@ -35,7 +35,7 @@
 	--rs-navs-selected: var(--rs-green-500);
 }
 
-body {
+body, .rs-text {
 	font-family:
 		Apple-System,
 		"Hiragino Kaku Gothic ProN",

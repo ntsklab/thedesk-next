@@ -384,9 +384,6 @@ const Notifications: React.FC<Props> = (props) => {
 												columnWidth={columnWidth}
 												updateStatus={updateStatus}
 												openMedia={props.openMedia}
-												setReplyOpened={(opened) => {
-													replyOpened.current = opened
-												}}
 												setStatusDetail={setStatusDetail}
 												setAccountDetail={setAccountDetail}
 												setTagDetail={setTagDetail}

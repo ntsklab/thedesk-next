@@ -1,16 +1,23 @@
 import generator, { type MegalodonInterface } from '@cutls/megalodon'
 import { Icon } from '@rsuite/icons'
-import { useEffect, useState } from 'react'
-import { BsX } from 'react-icons/bs'
+import { useContext, useEffect, useState } from 'react'
+import { BsPencil, BsQuote, BsReply, BsX } from 'react-icons/bs'
 import { FormattedMessage } from 'react-intl'
-import { Avatar, Button, Container, Content, Dropdown, FlexboxGrid, Header } from 'rsuite'
+import { Avatar, Button, Container, Content, Dropdown, FlexboxGrid, Header, Text } from 'rsuite'
 import { USER_AGENT } from '@/defaults'
 import type { Account } from '@/entities/account'
 import type { Server, ServerSet } from '@/entities/server'
 import failoverImg from '@/utils/failoverImg'
 import { getUsualAccount, listAccounts, setUsualAccount } from '@/utils/storage'
 import Status from './Status'
+import { TheDeskContext } from '@/context'
 
+const stripForPreview = (html: string) => {
+	const div = document.createElement('div')
+	div.innerHTML = html
+	const text = div.textContent || div.innerText || ''
+	return text
+}
 export const renderAccountIcon = (props: any, ref: any, account: [Account, Server] | undefined) => {
 	if (account && account.length > 0) {
 		return (
@@ -40,6 +47,7 @@ type Props = {
 }
 
 const Compose: React.FC<Props> = (props) => {
+	const { reply, setReply } = useContext(TheDeskContext)
 	const [accounts, setAccounts] = useState<Array<[Account, Server]>>([])
 	const [fromAccount, setFromAccount] = useState<[Account, Server]>()
 	const [defaultVisibility, setDefaultVisibility] = useState<'public' | 'unlisted' | 'private' | 'direct'>('public')
@@ -80,10 +88,17 @@ const Compose: React.FC<Props> = (props) => {
 		f()
 	}, [fromAccount])
 
+	useEffect(() => setFromAccount(accounts.find((a) => a[0].account_id === reply?.inReplyToAccountId) || fromAccount), [reply])
+
 	const selectAccount = async (eventKey: string) => {
-		const account = accounts[Number.parseInt(eventKey)]
+		const account = accounts[Number.parseInt(eventKey, 10)]
 		setFromAccount(account)
 		await setUsualAccount({ id: account[0].id })
+	}
+
+	const onClose = () => {
+		setReply(null)
+		props.setOpened(false)
 	}
 
 	return (
@@ -94,7 +109,7 @@ const Compose: React.FC<Props> = (props) => {
 						<FormattedMessage id="compose.title" />
 					</FlexboxGrid.Item>
 					<FlexboxGrid.Item>
-						<Button appearance="link" onClick={() => props.setOpened(false)}>
+						<Button appearance="link" onClick={() => onClose()}>
 							<Icon as={BsX} style={{ fontSize: '1.4em' }} />
 						</Button>
 					</FlexboxGrid.Item>
@@ -103,7 +118,7 @@ const Compose: React.FC<Props> = (props) => {
 			<Content style={{ height: '100%', margin: '12px', backgroundColor: 'var(--rs-border-secondary)' }}>
 				<FlexboxGrid style={{ marginBottom: '12px' }}>
 					<FlexboxGrid.Item>
-						<Dropdown renderToggle={(props, ref) => renderAccountIcon(props, ref, fromAccount)} onSelect={selectAccount}>
+						<Dropdown disabled={!!reply} renderToggle={(props, ref) => renderAccountIcon(props, ref, fromAccount)} onSelect={selectAccount}>
 							{accounts.map((account, index) => (
 								<Dropdown.Item eventKey={index} key={`@${account[0].username}@${account[1]?.domain || ''}`}>
 									@{account[0].username}@{account[1]?.domain || ''}
@@ -112,6 +127,19 @@ const Compose: React.FC<Props> = (props) => {
 						</Dropdown>
 					</FlexboxGrid.Item>
 				</FlexboxGrid>
+				{reply && (
+					<Content style={{ marginTop: 10, marginBottom: 10, backgroundColor: reply.type === 'quote' ? 'var(--rs-cyan-900)' : 'var(--rs-blue-900)', padding: 5, borderRadius: 5, display: 'flex' }}>
+						<div style={{ width: 20 }}>
+							{reply.type === 'quote' ? <BsQuote style={{ fontSize: '0.8em', marginLeft: 3 }} /> : <BsReply style={{ fontSize: '0.8em', marginLeft: 3 }} />}
+						</div>
+						<Text style={{ flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{stripForPreview(reply.replyStatus.content)}</Text>
+						<div style={{ width: 20 }}>
+							<Button appearance="link" onClick={() => setReply(null)} style={{ padding: 0 }}>
+								<Icon as={BsX} style={{ fontSize: '1.2em' }} />
+							</Button>
+						</div>
+					</Content>
+				)}
 				{fromAccount && (
 					<Status
 						client={client}
@@ -121,7 +149,9 @@ const Compose: React.FC<Props> = (props) => {
 						defaultNSFW={defaultNSFW}
 						defaultLanguage={defaultLanguage}
 						setOpened={props.setOpened}
-						onClose={() => props.setOpened(false)}
+						onClose={() => onClose()}
+						in_reply_to={reply?.type === 'reply' ? reply.replyStatus : undefined}
+						edit_target={reply?.type === 'edit' ? reply.replyStatus : undefined}
 					/>
 				)}
 			</Content>

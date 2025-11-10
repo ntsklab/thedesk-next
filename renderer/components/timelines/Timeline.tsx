@@ -539,9 +539,6 @@ export default function TimelineColumn(props: Props) {
 											columnWidth={columnWidth}
 											updateStatus={(status) => setStatuses((current) => updateStatus(current, status))}
 											openMedia={props.openMedia}
-											setReplyOpened={(opened) => {
-												replyOpened.current = opened
-											}}
 											setStatusDetail={setStatusDetail}
 											setAccountDetail={setAccountDetail}
 											setTagDetail={setTagDetail}

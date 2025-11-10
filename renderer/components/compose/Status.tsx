@@ -89,7 +89,7 @@ const model = Schema.Model({
 const Status: React.FC<Props> = (props) => {
 	const { formatMessage } = useIntl()
 	const { theme } = useContext(Context)
-	const { focused, setFocused } = useContext(TheDeskContext)
+	const { focused, setFocused, setReply } = useContext(TheDeskContext)
 	const focusAttr = {
 		onFocus: () => setFocused(true),
 		onBlur: () => setFocused(false)
@@ -317,6 +317,7 @@ const Status: React.FC<Props> = (props) => {
 			status: ''
 		})
 		setCW(false)
+		setReply(null)
 		setSearchAA('')
 		if (finished && props.onClose && config.afterPost === 'close') {
 			props.onClose()
@@ -677,7 +678,7 @@ const Status: React.FC<Props> = (props) => {
 				<Form.Group>
 					<ButtonToolbar style={{ justifyContent: 'flex-end' }}>
 						{(props.in_reply_to || props.edit_target) && (
-							<Button onClick={() => clear(true)}>
+							<Button onClick={() => clear(false)}>
 								<FormattedMessage id="compose.cancel" />
 							</Button>
 						)}

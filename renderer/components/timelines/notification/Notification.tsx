@@ -16,7 +16,6 @@ type Props = {
 	columnWidth: number
 	updateStatus: (status: Entity.Status) => void
 	openMedia: (media: Array<Entity.Attachment>, index: number) => void
-	setReplyOpened: (opened: boolean) => void
 	setStatusDetail: (statusId: string, serverId: number, accountId?: number) => void
 	setAccountDetail: (userId: string, serverId: number, accountId?: number) => void
 	setTagDetail: (tag: string, serverId: number, accountId?: number) => void
@@ -72,7 +71,6 @@ const notification = (props: Props) => {
 						columnWidth={props.columnWidth}
 						updateStatus={props.updateStatus}
 						openMedia={props.openMedia}
-						setReplyOpened={props.setReplyOpened}
 						setStatusDetail={props.setStatusDetail}
 						setAccountDetail={props.setAccountDetail}
 						setTagDetail={props.setTagDetail}

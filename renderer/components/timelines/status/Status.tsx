@@ -30,7 +30,6 @@ type Props = {
 	columnWidth: number
 	updateStatus: (status: Entity.Status) => void
 	openMedia: (media: Array<Entity.Attachment>, index: number) => void
-	setReplyOpened?: (opened: boolean) => void
 	setStatusDetail?: (statusId: string, serverId: number, accountId?: number) => void
 	setAccountDetail: (userId: string, serverId: number, accountId?: number) => void
 	setTagDetail: (tag: string, serverId: number, accountId?: number) => void
@@ -49,7 +48,7 @@ const stripForSpoil = (html: string) => {
 }
 const Status: React.FC<Props> = (props) => {
 	const status = originalStatus(props.status)
-	const { timelineConfig } = useContext(TheDeskContext)
+	const { timelineConfig, setReply } = useContext(TheDeskContext)
 	const b = stripForSpoil(status.content)
 	const maxLength = timelineConfig.max_length
 	const tooLong = maxLength && b && b.length > maxLength
@@ -60,26 +59,10 @@ const Status: React.FC<Props> = (props) => {
 
 	const { formatMessage } = useIntl()
 	const { client } = props
-	const [showReply, setShowReply] = useState<boolean>(false)
-	const [showEdit, setShowEdit] = useState<boolean>(false)
 	const [spoilered, setSpoilered] = useState<boolean>(status.spoiler_text.length > 0 || tooLong)
 	const [ignoreFilter, setIgnoreFilter] = useState<boolean>(false)
 
 	const toaster = useToaster()
-
-	useEffect(() => {
-		if (props.setReplyOpened) {
-			if (showReply) {
-				props.setReplyOpened(showReply)
-				setShowEdit(false)
-			} else if (showEdit) {
-				props.setReplyOpened(showEdit)
-				setShowReply(false)
-			} else {
-				props.setReplyOpened(false)
-			}
-		}
-	}, [showReply, showEdit])
 
 	const statusClicked: MouseEventHandler<HTMLDivElement> = async (e) => {
 		// Check username
@@ -212,8 +195,8 @@ const Status: React.FC<Props> = (props) => {
 						account={props.account}
 						status={status}
 						client={client}
-						setShowReply={setShowReply}
-						setShowEdit={setShowEdit}
+						setShowReply={() => setReply({ replyStatus: status, inReplyToAccountId: props.account.account_id, type: 'reply' })}
+						setShowEdit={() => setReply({ replyStatus: status, inReplyToAccountId: props.account.account_id, type: 'edit' })}
 						updateStatus={props.updateStatus}
 						openReport={() => props.openReport(status, props.client)}
 						openFromOtherAccount={() => props.openFromOtherAccount(status)}
@@ -221,16 +204,6 @@ const Status: React.FC<Props> = (props) => {
 					/>
 				</div>
 			</div>
-			{showReply && (
-				<div style={{ padding: '8px 12px' }}>
-					<Reply client={client} server={props.server} account={props.account} in_reply_to={status} onClose={() => setShowReply(false)} />
-				</div>
-			)}
-			{showEdit && (
-				<div style={{ padding: '8px 12px' }}>
-					<Reply client={client} server={props.server} account={props.account} edit_target={status} onClose={() => setShowEdit(false)} />
-				</div>
-			)}
 		</div>
 	)
 }
