@@ -27,13 +27,16 @@
 	},
 	"mac": {
 		"icon": "assets/icon.icns",
-		"target": ["dmg"],
+		"target": [
+			"dmg"
+		],
 		"hardenedRuntime": true,
 		"gatekeeperAssess": false,
 		"entitlements": "build/entitlements.mac.plist",
 		"entitlementsInherit": "build/entitlements.mac.plist",
 		"notarize": false,
-		"category": "public.app-category.social-networking"
+		"category": "public.app-category.social-networking",
+		"singleArchFiles": "*"
 	},
 	"dmg": {
 		"sign": false

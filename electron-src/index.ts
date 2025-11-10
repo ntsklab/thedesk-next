@@ -39,7 +39,7 @@ const logger = (msg: string) => {
 	console.log(`[TheDesk Main Process] ${msg}`)
 	fs.appendFileSync(join(appDataPath, 'main.log'), `[${new Date().toISOString()}] ${msg}\n`)
 }
-const isJa = app.getPreferredSystemLanguages().includes('ja')
+const isJa = app.getPreferredSystemLanguages().findIndex((e) => !!e.match('ja')) >= 0
 const isMac = process.platform === 'darwin'
 let firstRun = false
 try {
@@ -217,7 +217,7 @@ app.on('ready', async () => {
 			])
 			inputMenu.popup()
 		} else if (selectionText && selectionText.trim() !== '') {
-			const isJa = app.getPreferredSystemLanguages().includes('ja')
+			const isJa = app.getPreferredSystemLanguages().findIndex((e) => !!e.match('ja')) >= 0
 			const selectionMenu = Menu.buildFromTemplate([
 				{ role: 'copy' },
 				{ type: 'separator' },
