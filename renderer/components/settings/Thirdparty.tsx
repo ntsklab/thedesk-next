@@ -44,8 +44,13 @@ const Thirdparty: React.FC<Props> = (props) => {
 						Source code
 					</Button>
 				</p>
+				<p style={{ textAlign: 'center' }}>
+					<Button appearance="link" onClick={() => open('https://thedesk.top/privacy')}>
+						<FormattedMessage id="settings.thirdparty.privacy" />
+					</Button>
+				</p>
 
-				<div style={{ height: '45px' }} />
+				<div style={{ height: '25px' }} />
 				<Heading as="h4">LICENSE</Heading>
 				<List style={{ margin: '0 8px', backgroundColor: 'var(--rs-border-secondary)', padding: '15px' }}>
 					{thirdparty.map((l, index) => (
@@ -59,7 +64,7 @@ const Thirdparty: React.FC<Props> = (props) => {
 							}}
 							key={l.package_name}
 						>
-							<div style={{ paddingRight: '12px' }}>{l.package_name}</div>
+							<div style={{ paddingRight: '12px', userSelect: 'text' }}>{l.package_name}</div>
 							<div style={{ paddingRight: '0' }}>{l.license}</div>
 						</List.Item>
 					))}

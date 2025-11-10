@@ -59,7 +59,7 @@ try {
 	console.error('Failed to read config.json')
 }
 const template: MenuItemConstructorOptions[] = [
-	{ role: 'fileMenu', submenu: [{ role: isMac ? 'close' : 'quit' }, { label: isJa ? '設定' : 'Prefrences', click: () => mainWindow?.loadURL('app://-/setting.html'), icon: '' }] },
+	{ role: 'fileMenu', submenu: [{ role: isMac ? 'close' : 'quit' }, { label: isJa ? '設定' : 'Prefrences', click: () => mainWindow?.loadURL('app://-/setting.html'), icon: '', accelerator: isMac ? undefined : 'Control+,' }] },
 	{ role: 'editMenu' },
 	{ role: 'viewMenu' },
 	{ role: 'windowMenu' }
@@ -67,9 +67,8 @@ const template: MenuItemConstructorOptions[] = [
 const appMenu: MenuItemConstructorOptions = {
 	role: 'appMenu',
 	submenu: [
-		{ role: 'about' },
 		{ type: 'separator' },
-		{ label: isJa ? '設定' : 'Prefrences', click: () => mainWindow?.loadURL('app://-/setting.html') },
+		{ label: isJa ? '設定' : 'Prefrences', click: () => mainWindow?.loadURL('app://-/setting.html'), accelerator: isMac ? 'Command+,' : undefined },
 		{ type: 'separator' },
 		{ role: 'services' },
 		{ type: 'separator' },

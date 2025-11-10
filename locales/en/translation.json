@@ -206,7 +206,8 @@
 			"appData_hint": "config.json in this folder allows you to change system settings."
 		},
 		"thirdparty": {
-			"title": "About TheDesk and 3rd party licenses"
+			"title": "About TheDesk and 3rd party licenses",
+			"privacy": "Privacy Policy"
 		}
 	},
 	"compose": {

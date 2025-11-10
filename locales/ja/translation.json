@@ -206,7 +206,8 @@
 			"delete_allData": "すべてのデータを削除する"
 		},
 		"thirdparty": {
-			"title": "このアプリについて / ライセンス"
+			"title": "このアプリについて / ライセンス",
+			"privacy": "プライバシーポリシー"
 		}
 	},
 	"compose": {
