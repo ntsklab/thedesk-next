@@ -39,23 +39,29 @@
 ## 開発
 
 ```
-pnpm install --shamefully-hoist
+pnpm install
+npx electron-rebuild
 pnpm run dev
 ```
 
-`electron-builder` の制限により、本番ビルドを起動するには `shamefully-hoist` オプションを使用する必要があります。
+`electron-builder` の制限により、本番ビルドを起動するには `shamefully-hoist` オプションを使用する必要があります。(`.npmrc`に記載)
 
 ## ビルド
 
 ```
+pnpm install
+npx electron-rebuild
+
 pnpm run build
 pnpm run pack:win # Windows(able to run on Windows)
 pnpm run pack:linux # Linux(able to run on any OS)
 pnpm run pack:mac # macOS(able to run on macOS)
 
+pnpm run pack:appx # Windows Microsoft Store
+pnpm run pack:mas # macOS App Store
+
 ```
 
 ### Notarize(macOS)
 
-現在開発者の署名で公証するように設定されています。`build/noratize.js`を編集してください。
-公証を削除するためには`build/noratize.js`の3行目の`const useNotarize`を`false`に設定してください。
+デフォルトでは公証は行われませんが、あなたの証明書で公証したい場合は`.env.sample`を編集して`.env`にリネームしてください。

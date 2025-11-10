@@ -41,23 +41,29 @@ You can easily jump to this folder from the settings screen
 ## Development
 
 ```
-pnpm install --shamefully-hoist
+pnpm install
+npx electron-rebuild
 pnpm run dev
 ```
 
-Because of `electron-builder`, use `shamefully-hoist` option to launch production build.
+Because of `electron-builder`, use `shamefully-hoist` option to launch production build.(check .npmrc)
 
 ## Build
 
 ```
+pnpm install
+npx electron-rebuild
+
 pnpm run build
 pnpm run pack:win # Windows(able to run on Windows)
 pnpm run pack:linux # Linux(able to run on any OS)
 pnpm run pack:mac # macOS(able to run on macOS)
 
+pnpm run pack:appx # Windows Microsoft Store
+pnpm run pack:mas # macOS App Store
 ```
 
 ### Notarize(macOS)
 
-It is currently set to be notarized with the developer's signature. Edit `build/noratize.js`.
-To remove notarization, set `const useNotarize` to `false` in the third line of `build/noratize.js`.
+It is currently set to be notarized with the developer's signature. Edit `build/noratize.js` and `.env`
+If you want to notarize it by your certification, edit `.env.sample` and rename it to `.env`
