@@ -106,7 +106,9 @@ const Compose: React.FC<Props> = (props) => {
 			<Header style={{ borderBottom: '1px solid var(--rs-divider-border)', backgroundColor: 'var(--rs-state-hover-bg)', cursor: 'move' }} className="draggable">
 				<FlexboxGrid justify="space-between" align="middle">
 					<FlexboxGrid.Item style={{ paddingLeft: '12px' }}>
-						{!reply ? <FormattedMessage id="compose.title" /> : reply.type === 'quote' ? (
+						{!reply ? (
+							<FormattedMessage id="compose.title" />
+						) : reply.type === 'quote' ? (
 							<FormattedMessage id="timeline.notification.quote.title" />
 						) : reply.type === 'reply' ? (
 							<FormattedMessage id="timeline.actions.reply" />
@@ -133,17 +135,33 @@ const Compose: React.FC<Props> = (props) => {
 						</Dropdown>
 					</FlexboxGrid.Item>
 				</FlexboxGrid>
-				{reply && (
-					<Content style={{ marginTop: 10, marginBottom: 10, backgroundColor: reply.type === 'quote' ? 'var(--rs-cyan-900)' : 'var(--rs-blue-900)', padding: 5, borderRadius: 5, display: 'flex' }}>
-						<div style={{ width: 20 }}>{reply.type === 'quote' ? <BsQuote style={{ fontSize: '0.8em', marginLeft: 3 }} /> : <BsReply style={{ fontSize: '0.8em', marginLeft: 3 }} />}</div>
-						<Text style={{ flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{stripForPreview(reply.replyStatus.content)}</Text>
-						<div style={{ width: 20 }}>
-							<Button appearance="link" onClick={() => setReply(null)} style={{ padding: 0 }}>
-								<Icon as={BsX} style={{ fontSize: '1.2em' }} />
-							</Button>
-						</div>
-					</Content>
-				)}
+				{reply ? (
+					reply.type !== 'edit' ? (
+						<Content style={{ marginTop: 10, marginBottom: 10, backgroundColor: reply.type === 'quote' ? 'var(--rs-cyan-900)' : 'var(--rs-blue-900)', padding: 5, borderRadius: 5, display: 'flex' }}>
+							<div style={{ width: 20 }}>{reply.type === 'quote' ? <BsQuote style={{ fontSize: '0.8em', marginLeft: 3 }} /> : <BsReply style={{ fontSize: '0.8em', marginLeft: 3 }} />}</div>
+							<Text style={{ flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{stripForPreview(reply.replyStatus.content)}</Text>
+							<div style={{ width: 20 }}>
+								<Button appearance="link" onClick={() => setReply(null)} style={{ padding: 0 }}>
+									<Icon as={BsX} style={{ fontSize: '1.2em' }} />
+								</Button>
+							</div>
+						</Content>
+					) : (
+						<Content style={{ marginTop: 10, marginBottom: 10, backgroundColor: 'var(--rs-yellow-800)', padding: 5, borderRadius: 5, display: 'flex' }}>
+							<div style={{ width: 20 }}>
+								<BsPencil style={{ fontSize: '0.8em', marginLeft: 3 }} />
+							</div>
+							<Text style={{ flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+								<FormattedMessage id="compose.edit_my_post" />
+							</Text>
+							<div style={{ width: 20 }}>
+								<Button appearance="link" onClick={() => setReply(null)} style={{ padding: 0 }}>
+									<Icon as={BsX} style={{ fontSize: '1.2em' }} />
+								</Button>
+							</div>
+						</Content>
+					)
+				) : null}
 				{fromAccount && (
 					<Status
 						client={client}

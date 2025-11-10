@@ -254,7 +254,8 @@
 			"error": "Error has occurred. Please run NowPlaying again.",
 			"unkwnown_aa_btn": "Get not-found artwork from network",
 			"accessibilityError": "Cannot access music information. Please make sure TheDesk has permission to control the music app in System Preferences > Security & Privacy > Privacy > Accessibility."
-		}
+		},
+		"edit_my_post": "Editing my post"
 	},
 	"search": {
 		"title": "Search",

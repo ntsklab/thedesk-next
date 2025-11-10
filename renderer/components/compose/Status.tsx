@@ -267,6 +267,7 @@ const Status: React.FC<Props> = (props) => {
 						status: formValue.status
 					})
 				)
+				clear(true)
 			} else {
 				await props.client.postStatus(formValue.status, options)
 				clear(true)
