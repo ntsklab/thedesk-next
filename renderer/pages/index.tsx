@@ -194,7 +194,9 @@ function App() {
 		localStorage.setItem('composePosition', composePosition.join(','))
 	}, [composePosition])
 	useEffect(() => {
-		if (reply) setComposeOpened(true)
+		if (!reply) return
+		setComposeOpened(true)
+		setTimeout(() => document.getElementById('status').focus(), 100)
 	}, [reply])
 
 	useEffect(() => {
