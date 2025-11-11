@@ -69,7 +69,7 @@ export async function nowplaying(key: 'spotify' | 'appleMusic', showToaster: (me
 		const data: IFile = await new Promise((resolve) =>
 			window.electronAPI.appleMusic(async (_, itemRaw) => {
 				console.log(itemRaw)
-				if (itemRaw.data.error) {
+				if (itemRaw.data && itemRaw.data.error) {
 					if (itemRaw.data.error) showToaster(itemRaw.data.error)
 					showToaster('compose.nowplaying.accessibilityError', 10000)
 					return
