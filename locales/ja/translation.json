@@ -266,6 +266,8 @@
 	"search": {
 		"title": "検索",
 		"placeholder": "検索またはURLを入力",
+		"trend": "トレンド",
+		"no_data": "結果が見つかりませんでした",
 		"results": {
 			"accounts": "ユーザー",
 			"hashtags": "ハッシュタグ",

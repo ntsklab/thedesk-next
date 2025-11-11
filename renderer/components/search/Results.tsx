@@ -1,7 +1,7 @@
 import type { Entity, MegalodonInterface } from '@cutls/megalodon'
 import { Icon } from '@rsuite/icons'
 import { useRouter } from 'next/router'
-import { useCallback, useContext, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { BsChatQuote, BsHash, BsPeople, BsSearch } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Avatar, Form, Input, InputGroup, List } from 'rsuite'
@@ -12,6 +12,7 @@ import type { CustomEmojiCategory } from '@/entities/emoji'
 import type { Server } from '@/entities/server'
 import { mapCustomEmojiCategory } from '@/utils/emojiData'
 import emojify from '@/utils/emojify'
+import { graphDrawCore } from '../utils/graph'
 
 type Props = {
 	account: Account
@@ -20,6 +21,10 @@ type Props = {
 	openMedia: (media: Array<Entity.Attachment>, index: number) => void
 	openReport: (status: Entity.Status, client: MegalodonInterface) => void
 	openFromOtherAccount: (status: Entity.Status) => void
+	hideTrend: () => void
+	setStatusDetail: (statusId: string, serverId: number, accountId?: number) => void
+	setAccountDetail: (userId: string, serverId: number, accountId?: number) => void
+	setTagDetail: (tag: string, serverId: number, accountId?: number) => void
 }
 
 export default function Results(props: Props) {
@@ -32,12 +37,20 @@ export default function Results(props: Props) {
 	const [statuses, setStatuses] = useState<Array<Entity.Status>>([])
 	const [customEmojis, setCustomEmojis] = useState<Array<CustomEmojiCategory>>([])
 	const { setFocused } = useContext(TheDeskContext)
+	const { setStatusDetail, setAccountDetail, setTagDetail } = props
 	const focusAttr = {
 		onFocus: () => setFocused(true),
 		onBlur: () => setFocused(false)
 	}
+	useEffect(() => {
+		setWord('')
+		setAccounts([])
+		setHashtags([])
+		setStatuses([])
+	}, [props.client])
 
 	const search = async (word: string) => {
+		props.hideTrend()
 		const res = await props.client.search(word, { limit: 5, resolve: true })
 		setAccounts(res.data.accounts)
 		setHashtags(res.data.hashtags)
@@ -62,30 +75,6 @@ export default function Results(props: Props) {
 
 	const openTag = (tag: Entity.Tag) => {
 		router.push({ query: { tag: tag.name, server_id: props.server.id, account_id: props.server.account_id } })
-	}
-
-	const setStatusDetail = (statusId: string, serverId: number, accountId?: number) => {
-		if (accountId) {
-			router.push({ query: { status_id: statusId, server_id: serverId, account_id: accountId } })
-		} else {
-			router.push({ query: { status_id: statusId, server_id: serverId } })
-		}
-	}
-
-	const setAccountDetail = (userId: string, serverId: number, accountId?: number) => {
-		if (accountId) {
-			router.push({ query: { user_id: userId, server_id: serverId, account_id: accountId } })
-		} else {
-			router.push({ query: { user_id: userId, server_id: serverId } })
-		}
-	}
-
-	const setTagDetail = (tag: string, serverId: number, accountId?: number) => {
-		if (accountId) {
-			router.push({ query: { tag: tag, server_id: serverId, account_id: accountId } })
-		} else {
-			router.push({ query: { tag: tag, server_id: serverId } })
-		}
 	}
 
 	const updateStatus = (status: Entity.Status) => {
@@ -147,10 +136,14 @@ export default function Results(props: Props) {
 					</div>
 					<List>
 						{hashtags.map((tag, index) => (
-							<List.Item key={tag.name} style={{ backgroundColor: 'var(--rs-border-primary)', padding: '4px 0' }}>
+							<List.Item
+								key={tag.name}
+								style={{ backgroundColor: 'var(--rs-border-primary)', padding: '4px', paddingRight: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+							>
 								<div style={{ padding: '12px 8px', cursor: 'pointer' }} onClick={() => openTag(tag)}>
 									#{tag.name}
 								</div>
+								<div dangerouslySetInnerHTML={{ __html: graphDrawCore(tag.history) }} />
 							</List.Item>
 						))}
 						<List.Item key="more" style={{ backgroundColor: 'var(--rs-border-primary)', padding: '1em 0', textAlign: 'center', cursor: 'pointer' }} onClick={() => loadMoreHashtag()}>
@@ -200,7 +193,7 @@ type UserProps = {
 	open: (user: Entity.Account) => void
 }
 
-const User: React.FC<UserProps> = (props) => {
+export const User: React.FC<UserProps> = (props) => {
 	const { user, open } = props
 	const { timelineConfig } = useContext(TheDeskContext)
 	const isAnimeIcon = timelineConfig.animation === 'yes'

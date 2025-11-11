@@ -266,6 +266,8 @@
 	"search": {
 		"title": "Search",
 		"placeholder": "Search or paste URL",
+		"trend": "Trends",
+		"no_data": "No results found",
 		"results": {
 			"accounts": "People",
 			"hashtags": "Hashtags",

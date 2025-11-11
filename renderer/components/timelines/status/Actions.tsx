@@ -134,7 +134,7 @@ const Actions: React.FC<Props> = (props) => {
 		</Popover>
 	))
 	const isAvailableEmoji = props.server.emoji_reactions
-	const isAvailableQuote = props.server.quote_support && status.quote_approval.current_user !== 'denied'
+	const isAvailableQuote = props.server.quote_support && status.quote_approval?.current_user !== 'denied'
 
 	return (
 		<div className="toolbox">
