@@ -1,17 +1,13 @@
 import type { Entity } from '@cutls/megalodon'
 import { Icon } from '@rsuite/icons'
 import Image from 'next/image'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useState } from 'react'
 import { Blurhash } from 'react-blurhash'
 import { BsBoxArrowUpRight, BsCaretRightFill, BsEyeSlash, BsVolumeUp } from 'react-icons/bs'
-import { FormattedMessage } from 'react-intl'
-import { Button, IconButton } from 'rsuite'
+import { IconButton } from 'rsuite'
 import { TheDeskContext } from '@/context'
-import { defaultSetting, Settings } from '@/entities/settings'
-import type { ColumnWidth } from '@/entities/timeline'
 import failoverImg from '@/utils/failoverImg'
 import { open } from '@/utils/openBrowser'
-import { readSettings } from '@/utils/storage'
 
 type Props = {
 	attachments: Array<Entity.Attachment>
@@ -73,6 +69,7 @@ const Attachment: React.FC<AttachmentProps> = (props) => {
 	const externalWindow = async (url: string) => {
 		open(url)
 	}
+	const border = cropImage === 'contain' ? { backgroundColor: '#000' } : {}
 
 	return (
 		<div style={{ position: 'relative' }}>
@@ -89,7 +86,7 @@ const Attachment: React.FC<AttachmentProps> = (props) => {
 				media.blurhash ? (
 					<Blurhash hash={media.blurhash ? media.blurhash : ''} width={width || 128} height={128} resolutionX={32} resolutionY={32} punch={1} />
 				) : (
-					<div style={{ width: width || 128, height: 128, overflow: 'hidden' }}>
+					<div style={{ width: width || 128, height: 128, overflow: 'hidden', ...border }}>
 						<Image
 							width={width || 128}
 							height={128}
@@ -109,7 +106,7 @@ const Attachment: React.FC<AttachmentProps> = (props) => {
 					alt={media.description ? media.description : media.id}
 					title={media.description ? media.description : media.id}
 					onClick={() => props.openMedia(media)}
-					style={{ objectFit: cropImage, cursor: 'pointer' }}
+					style={{ objectFit: cropImage, cursor: 'pointer', ...border }}
 				/>
 			)}
 		</div>

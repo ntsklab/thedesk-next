@@ -59,7 +59,13 @@ try {
 	console.error('Failed to read config.json')
 }
 const template: MenuItemConstructorOptions[] = [
-	{ role: 'fileMenu', submenu: [{ role: isMac ? 'close' : 'quit' }, { label: isJa ? '設定' : 'Prefrences', click: () => mainWindow?.loadURL('app://-/setting.html'), icon: '', accelerator: isMac ? undefined : 'Control+,' }] },
+	{
+		role: 'fileMenu',
+		submenu: [
+			{ role: isMac ? 'close' : 'quit' },
+			{ label: isJa ? '設定' : 'Prefrences', click: () => mainWindow?.loadURL('app://-/setting.html'), icon: '', accelerator: isMac ? undefined : 'Control+,' }
+		]
+	},
 	{ role: 'editMenu' },
 	{ role: 'viewMenu' },
 	{ role: 'windowMenu' }
@@ -152,27 +158,15 @@ app.on('ready', async () => {
 		}
 		mainWindow?.webContents.send('initialInfo', info)
 	})
-	ipcMain.on('requestAppleMusic', async (_event: IpcMainEvent, { fallback }: { fallback: boolean }) => {
-		const fromDock = async () => {
-			try {
-				const { stdout } = await promisifyExecFile(join(__dirname, '..', 'native', 'nowplaying-ctrl.js').replace('app.asar', 'app.asar.unpacked'))
-				if (!stdout) return null
-				const songRaw = JSON.parse(stdout)
-				const song = { type: 'dock', data: songRaw }
-				return mainWindow?.webContents.send('appleMusic', song)
-			} catch (e) {
-				return mainWindow?.webContents.send('appleMusic', { type: 'dock', data: (e as any).stderr?.toString() })
-			}
-		}
+	ipcMain.on('requestAppleMusic', async (_event: IpcMainEvent) => {
 		let song: Record<string, any> = {}
 		try {
 			const { stdout } = await promisifyExecFile(join(__dirname, '..', 'native', 'nowplaying-info.js').replace('app.asar', 'app.asar.unpacked'))
-			if (!stdout && fallback) return await fromDock()
+			if (!stdout) throw new Error('no stdout')
 			song = JSON.parse(stdout)
-			if ((!song || !song.name) && fallback) return await fromDock()
+			if ((!song || !song.name)) throw new Error('no song data')
 			if (!song.databaseID) return mainWindow?.webContents.send('appleMusic', song)
 		} catch (e: any) {
-			if (fallback) return await fromDock()
 			return mainWindow?.webContents.send('appleMusic', { error: true, message: 'unknown error' })
 		}
 		try {
@@ -199,7 +193,6 @@ app.on('ready', async () => {
 		if (m && m[1]) mainWindow?.webContents.send('receiveCode', m[1])
 	})
 	ipcMain.on('sendCode', (_event: IpcMainEvent, message: any) => mainWindow?.webContents.send('receiveCode', message))
-
 
 	mainWindow.webContents.on('context-menu', (_e, props) => {
 		const { selectionText, isEditable } = props

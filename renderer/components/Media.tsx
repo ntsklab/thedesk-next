@@ -28,14 +28,14 @@ const customToolbar: ToolbarConfig[] = [
 	}
 ]
 const Media: React.FC<Props> = (props) => {
-	const { media } = props
+	const { media, index: defaultIndex } = props
 	const isAllPhoto = media.length && media.every((m) => m && m.type === 'image')
 	if (isAllPhoto) {
 		const srcs = media.map((m) => {
 			return { src: m.url }
 		})
 		const toolBar = window.electronAPI ? [...customToolbar] : []
-		return <Viewer onClose={() => props.close()} onMaskClick={() => props.close()} visible={true} images={srcs} customToolbar={(toolbar) => [...toolbar, ...toolBar]} />
+		return <Viewer activeIndex={defaultIndex} onClose={() => props.close()} onMaskClick={() => props.close()} visible={true} images={srcs} customToolbar={(toolbar) => [...toolbar, ...toolBar]} />
 	}
 	const [index, setIndex] = useState<number>(0)
 
