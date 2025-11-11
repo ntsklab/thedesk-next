@@ -1,3 +1,4 @@
+import { open } from '@/utils/openBrowser'
 import type { Entity } from '@cutls/megalodon'
 import { Icon } from '@rsuite/icons'
 import dynamic from 'next/dynamic'
@@ -112,16 +113,10 @@ const Media: React.FC<Props> = (props) => {
 }
 
 const mediaComponent = (media: Entity.Attachment): ReactElement => {
-	const externalWindow = async (url: string) => {
-		//[tauri]
-		//await invoke('open_media', { mediaUrl: url })
-	}
-
 	switch (media.type) {
 		case 'gifv':
 			return (
 				<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-					{/* biome-ignore lint/a11y/useMediaCaption: <explanation> */}
 					<video src={media.url} autoPlay loop style={{ maxWidth: '100%', objectFit: 'contain' }} />
 				</div>
 			)
@@ -129,7 +124,6 @@ const mediaComponent = (media: Entity.Attachment): ReactElement => {
 		case 'audio':
 			return (
 				<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-					{/* biome-ignore lint/a11y/useMediaCaption: <explanation> */}
 					<video src={media.url} autoPlay loop controls style={{ maxWidth: '100%', objectFit: 'contain' }} />
 				</div>
 			)
@@ -141,7 +135,7 @@ const mediaComponent = (media: Entity.Attachment): ReactElement => {
 					alt={media.description ? media.description : media.id}
 					title={media.description ? media.description : media.id}
 					style={{ objectFit: 'contain', cursor: 'pointer' }}
-					onClick={() => externalWindow(media.url)}
+					onClick={() => open(media.url)}
 				/>
 			)
 	}

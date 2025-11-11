@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron'
+import type { BrowserWindow } from 'electron'
 import { AuthRequest } from 'electron-native-auth'
 
 export const auth = async (url: string, callbackScheme: string, window: BrowserWindow) => {

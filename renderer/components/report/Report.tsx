@@ -46,13 +46,13 @@ export default function Report(props: Props) {
 			}
 			if (rules !== null) {
 				options = Object.assign({}, options, {
-					rule_ids: rules.map((r) => Number.parseInt(r))
+					rule_ids: rules.map((r) => Number.parseInt(r, 10))
 				})
 			}
 			await props.client.report(props.status.account.id, options)
 		} catch (err) {
 			console.error(err)
-			toaster.push(alert('error', formatMessage({ id: 'alert.failed_to_report' })), { placement: 'topCenter' })
+			toaster.push(alert('error', formatMessage({ id: 'alert.failedToReport' })), { placement: 'topCenter' })
 		} finally {
 			setSending(false)
 			reset()
@@ -108,5 +108,5 @@ export default function Report(props: Props) {
 			</Modal>
 		)
 	}
-	return <></>
+	return null
 }

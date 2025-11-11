@@ -33,7 +33,7 @@ import { Context as i18nContext } from '@/i18n'
 import type { ReceiveNotificationPayload } from '@/payload'
 import { ContextLoadTheme } from '@/theme'
 import { useWindowSize } from '@/utils/useWindowSize'
-import { allClose, allUnsubscribe, listenUser, start } from '@/utils/socket'
+import { allUnsubscribe, listenUser, start } from '@/utils/socket'
 import { updateAvatar } from '@/utils/oauth'
 import type { InitialInfo } from '@/entities/initialInfo'
 
@@ -72,9 +72,9 @@ function App() {
 			case 'reblog':
 				return formatMessage({ id: 'timeline.notification.reblog.body' }, { user: useName })
 			case 'poll_expired':
-				return formatMessage({ id: 'timeline.notification.poll_expired.body' }, { user: useName })
+				return formatMessage({ id: 'timeline.notification.pollExpired.body' }, { user: useName })
 			case 'poll_vote':
-				return formatMessage({ id: 'timeline.notification.poll_vote.body' }, { user: useName })
+				return formatMessage({ id: 'timeline.notification.pollVote.body' }, { user: useName })
 			case 'quote':
 				return formatMessage({ id: 'timeline.notification.quote.body' }, { user: useName })
 			case 'status':
@@ -84,10 +84,10 @@ function App() {
 			case 'follow':
 				return formatMessage({ id: 'timeline.notification.follow.body' }, { user: useName })
 			case 'follow_request':
-				return formatMessage({ id: 'timeline.notification.follow_request.body' }, { user: useName })
+				return formatMessage({ id: 'timeline.notification.followRequest.body' }, { user: useName })
 			case 'emoji_reaction':
 			case 'reaction':
-				return formatMessage({ id: 'timeline.notification.emoji_reaction.body' }, { user: useName })
+				return formatMessage({ id: 'timeline.notification.emojiReaction.body' }, { user: useName })
 			default:
 				return formatMessage({ id: 'timeline.notifications' })
 		}
@@ -131,7 +131,7 @@ function App() {
 			if (res.length === 0) {
 				console.debug('There is no server')
 				dispatch({ target: 'newServer', value: true })
-				toaster.push(alert('info', formatMessage({ id: 'alert.no_server' })), { placement: 'topCenter' })
+				toaster.push(alert('info', formatMessage({ id: 'alert.noServer' })), { placement: 'topCenter' })
 			} else {
 				updateServers(res.map((s) => s[0]))
 				setServers(
@@ -182,7 +182,7 @@ function App() {
 			if (res.length === 0) {
 				console.debug('There is no server')
 				dispatch({ target: 'newServer', value: true })
-				toaster.push(alert('info', formatMessage({ id: 'alert.no_server' })), { placement: 'topCenter' })
+				toaster.push(alert('info', formatMessage({ id: 'alert.noServer' })), { placement: 'topCenter' })
 			} else {
 				setServers(
 					res.map((r) => ({
@@ -225,7 +225,7 @@ function App() {
 		}
 	}, [highlighted])
 
-	const handleKeyPress = useCallback(async (event: KeyboardEvent) => {}, [])
+	const handleKeyPress = useCallback(async () => {}, [])
 	const columnWidthSet = async (i: number, widthRaw: number) => {
 		const width = Math.round(widthRaw / 50) * 50
 		const newWidths = await updateColumnWidth({ id: timelines[i][0][0].id, columnWidth: width })
@@ -252,7 +252,7 @@ function App() {
 			setSearchOpened(false)
 			setComposeOpened((previous) => !previous)
 		} else {
-			toaster.push(alert('info', formatMessage({ id: 'alert.need_auth' })), { placement: 'topStart' })
+			toaster.push(alert('info', formatMessage({ id: 'alert.needAuth' })), { placement: 'topStart' })
 		}
 	}
 
@@ -261,7 +261,7 @@ function App() {
 			setComposeOpened(false)
 			setSearchOpened((previous) => !previous)
 		} else {
-			toaster.push(alert('info', formatMessage({ id: 'alert.need_auth' })), { placement: 'topStart' })
+			toaster.push(alert('info', formatMessage({ id: 'alert.needAuth' })), { placement: 'topStart' })
 		}
 	}
 	const [px, py] = composePosition

@@ -74,7 +74,7 @@ function App() {
 	const [demoTrackLoading, setDemoTrackLoading] = useState(false)
 	const [spotifyCode, setSpotifyCode] = useState('')
 	const [spotifyTemp, setSpotifyTemp] = useState('')
-	const visLabel = [{ label: formatMessage({ id: 'timeline.settings.not_do' }), value: 'no' }, ...vis.map((value) => ({ label: formatMessage({ id: `compose.visibility.${value}` }), value }))]
+	const visLabel = [{ label: formatMessage({ id: 'timeline.settings.notDo' }), value: 'no' }, ...vis.map((value) => ({ label: formatMessage({ id: `compose.visibility.${value}` }), value }))]
 
 	const loadAppearance = () => {
 		const lang = localStorage.getItem('lang') || window.navigator.language
@@ -155,7 +155,7 @@ function App() {
 	}
 	const reloadIsConnected = () => setSpotifyConnected(!!localStorage.getItem('spotifyV2Token'))
 	const deleteAllData = () => {
-		if (confirm(formatMessage({ id: 'settings.settings.delete_allData_confirm' }))) {
+		if (confirm(formatMessage({ id: 'settings.settings.deleteAllDataConfirm' }))) {
 			localStorage.clear()
 			location.href = './'
 		}
@@ -219,7 +219,7 @@ function App() {
 						<FormattedMessage id="settings.settings.appearance.title" />
 					</p>
 					<NumberForm
-						label={formatMessage({ id: 'settings.settings.appearance.font_size' })}
+						label={formatMessage({ id: 'settings.settings.appearance.fontSize' })}
 						value={appearance.font_size}
 						onChange={(value) => updateAppearance('font_size', value)}
 						min={5}
@@ -237,7 +237,7 @@ function App() {
 						fontSize="1.1em"
 					/>
 					<SelectForm
-						label={formatMessage({ id: 'settings.settings.appearance.color_theme' })}
+						label={formatMessage({ id: 'settings.settings.appearance.colorTheme' })}
 						value={appearance.color_theme}
 						onChange={(value) => updateAppearance('color_theme', value)}
 						data={themes}
@@ -254,7 +254,7 @@ function App() {
 						searchable={true}
 						style={{ width: '100%' }}
 						onChange={(value) => updateAppearance('font', value)}
-						renderMenuItem={(label, item) => <p style={{ fontFamily: item.label.toString() }}>{item.label}</p>}
+						renderMenuItem={(_label, item) => <p style={{ fontFamily: item.label.toString() }}>{item.label}</p>}
 					/>
 					<Divider />
 					<p style={{ fontSize: '1.3em', marginTop: 12, fontWeight: 'bold' }}>
@@ -271,19 +271,19 @@ function App() {
 					/>
 					<RadioBoolean label={formatMessage({ id: 'settings.settings.timeline.animation' })} value={timelineConfig.animation} onChange={(value) => updateTimeline('animation', value)} />
 					<NumberForm
-						label={formatMessage({ id: 'settings.settings.timeline.max_length' })}
-						hint={formatMessage({ id: 'settings.settings.timeline.max_length_hint' })}
+						label={formatMessage({ id: 'settings.settings.timeline.maxLength' })}
+						hint={formatMessage({ id: 'settings.settings.timeline.maxLengthHint' })}
 						value={timelineConfig.max_length}
 						onChange={(value) => updateTimeline('max_length', value > 0 ? Math.max(value, 10) : 0)}
 						min={0}
 						max={1000}
 						step={1}
-						unit={formatMessage({ id: 'settings.settings.timeline.max_length_unit' })}
+						unit={formatMessage({ id: 'settings.settings.timeline.maxLengthUnit' })}
 						fontSize="1.1em"
 					/>
 					<RadioBoolean
 						label={formatMessage({ id: 'settings.settings.timeline.notification' })}
-						hint={formatMessage({ id: 'settings.settings.timeline.notification_hint' })}
+						hint={formatMessage({ id: 'settings.settings.timeline.notificationHint' })}
 						value={timelineConfig.notification}
 						onChange={(value) => updateTimeline('notification', value)}
 						fontSize="1.1em"
@@ -388,7 +388,7 @@ function App() {
 					/>
 					<SelectForm
 						label={formatMessage({ id: 'settings.settings.compose.secondaryToot' })}
-						hint={formatMessage({ id: 'settings.settings.compose.secondaryToot_hint' })}
+						hint={formatMessage({ id: 'settings.settings.compose.secondaryTootHint' })}
 						value={compose.secondaryToot}
 						onChange={(value) => updateCompose('secondaryToot', value)}
 						data={visLabel}
@@ -419,7 +419,7 @@ function App() {
 					</Button>
 					{spotifyInitiating && spotifyDev && (
 						<div style={{ marginTop: '5px' }}>
-							<Input value={spotifyCode} onChange={(e) => setSpotifyCode(e)} placeholder={formatMessage({ id: 'settings.settings.spotify.code_help' })} />
+							<Input value={spotifyCode} onChange={(e) => setSpotifyCode(e)} placeholder={formatMessage({ id: 'settings.settings.spotify.codeHelp' })} />
 							<Button appearance="ghost" loading={spotifyConnecting} disabled={!spotifyCode} color="green" onClick={() => nowplayingCodeFn()}>
 								<FormattedMessage id="settings.settings.spotify.code" />
 							</Button>
@@ -471,15 +471,15 @@ function App() {
 					<Divider />
 					{isElectron && (
 						<Button appearance="ghost" onClick={() => window.electronAPI.openAppDataFolder()}>
-							<FormattedMessage id="settings.settings.open_appData_folder" />
+							<FormattedMessage id="settings.settings.openAppDataFolder" />
 						</Button>
 					)}
 
 					<Button appearance="primary" color="red" onClick={() => deleteAllData()} style={{ marginLeft: '1em' }}>
-						<FormattedMessage id="settings.settings.delete_allData" />
+						<FormattedMessage id="settings.settings.deleteAllData" />
 					</Button>
 					<p style={{ fontSize: 10, margin: 10 }}>
-						<FormattedMessage id="settings.settings.appData_hint" />
+						<FormattedMessage id="settings.settings.appDataHint" />
 					</p>
 				</Content>
 			</Stack>

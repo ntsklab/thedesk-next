@@ -74,14 +74,13 @@ const Status: React.FC<Props> = (props) => {
 			if (account) {
 				props.setAccountDetail(account.id, props.server.id, props.account?.id)
 			} else {
-				// biome-ignore lint/style/useConst: <explanation>
 				let confirmToaster: any
 				confirmToaster = toaster.push(
 					notification(
 						'info',
-						formatMessage({ id: 'dialog.account_not_found.title' }),
-						formatMessage({ id: 'dialog.account_not_found.message' }),
-						formatMessage({ id: 'dialog.account_not_found.button' }),
+						formatMessage({ id: 'dialog.accountNotFound.title' }),
+						formatMessage({ id: 'dialog.accountNotFound.message' }),
+						formatMessage({ id: 'dialog.accountNotFound.button' }),
 						() => {
 							open(parsedAccount.url)
 							toaster.remove(confirmToaster)
@@ -130,7 +129,7 @@ const Status: React.FC<Props> = (props) => {
 			<div className="status" style={{ textAlign: 'center', paddingTop: '0.5em', paddingBottom: '0.5em' }}>
 				<FormattedMessage id="timeline.status.filtered" />
 				<Button appearance="subtle" size="sm" onClick={() => setIgnoreFilter(true)} style={{ marginLeft: '0.2em' }}>
-					<FormattedMessage id="timeline.status.show_anyway" />
+					<FormattedMessage id="timeline.status.showAnyway" />
 				</Button>
 			</div>
 		)
@@ -231,7 +230,7 @@ const pinnedHeader = (pinned?: boolean) => {
 							width: 'calc(100% - 32px)'
 						}}
 					>
-						<FormattedMessage id="timeline.status.pinned_post" />
+						<FormattedMessage id="timeline.status.pinnedPost" />
 					</div>
 				</div>
 			</div>
@@ -284,7 +283,7 @@ async function searchAccount(account: ParsedAccount, status: Entity.Status, clie
 	try {
 		const res = await client.lookupAccount(account.acct)
 		return res.data
-	} catch (e) {
+	} catch {
 		const res = await client.searchAccount(account.url, { resolve: true, limit: 5 })
 		if (res.data.length === 0) return null
 		const user = accountMatch(res.data, account, server.domain)

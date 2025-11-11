@@ -74,7 +74,7 @@ export default function AddListMember(props: Props) {
 							{/** name **/}
 							<FlexboxGrid.Item colspan={20}>
 								<div>
-									{/** biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
+									{/** biome-ignore lint/style/useNamingConvention: <is default rule> */}
 									<span dangerouslySetInnerHTML={{ __html: emojify(user.display_name, user.emojis) }} />
 								</div>
 								<div>
@@ -85,7 +85,7 @@ export default function AddListMember(props: Props) {
 					</Modal.Header>
 					<Modal.Body>
 						<List>
-							{lists.map((list, index) => (
+							{lists.map((list) => (
 								<List.Item key={list.id}>
 									<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 0.6em' }}>
 										<div style={{ display: 'flex', alignItems: 'center' }}>

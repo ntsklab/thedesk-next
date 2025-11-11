@@ -7,7 +7,7 @@ import { BsArrowClockwise, BsBookmark, BsChevronLeft, BsChevronRight, BsGlobe2, 
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Virtuoso } from 'react-virtuoso'
 import { Avatar, Button, Container, Content, Divider, FlexboxGrid, Header, List, Loader, Popover, Radio, RadioGroup, Stack, useToaster, Whisper } from 'rsuite'
-import { getAccount, removeTimeline, updateColumnColor, updateColumnMediaOnly, updateColumnOrder, updateColumnStack, updateColumnTts, updateColumnWidth } from 'utils/storage'
+import { removeTimeline, updateColumnColor, updateColumnMediaOnly, updateColumnOrder, updateColumnStack, updateColumnTts, updateColumnWidth } from 'utils/storage'
 import alert from '@/components/utils/alert'
 import { TheDeskContext, TimelineRefreshContext } from '@/context'
 import { TIMELINE_MAX_STATUSES, TIMELINE_STATUSES_COUNT } from '@/defaults'
@@ -84,7 +84,7 @@ export default function TimelineColumn(props: Props) {
 				setCustomEmojis(mapCustomEmojiCategory(props.server.domain, emojis.data))
 			} catch (err) {
 				console.error(err)
-				toast.push(alert('error', formatMessage({ id: 'alert.failed_load' }, { timeline: `${props.timeline.name} timeline` })), {
+				toast.push(alert('error', formatMessage({ id: 'alert.failedLoad' }, { timeline: `${props.timeline.name} timeline` })), {
 					placement: 'topStart'
 				})
 			} finally {
@@ -281,7 +281,7 @@ export default function TimelineColumn(props: Props) {
 			setStatuses(res)
 		} catch (err) {
 			console.error(err)
-			toast.push(alert('error', formatMessage({ id: 'alert.failed_load' }, { timeline: `${props.timeline.name} timeline` })), {
+			toast.push(alert('error', formatMessage({ id: 'alert.failedLoad' }, { timeline: `${props.timeline.name} timeline` })), {
 				placement: 'topStart'
 			})
 		} finally {
@@ -611,7 +611,7 @@ const OptionPopover = forwardRef<HTMLDivElement, { timeline: Timeline; close: ()
 		<Popover ref={ref} style={{ opacity: 1 }}>
 			<div style={{ display: 'flex', flexDirection: 'column', width: '220px' }}>
 				<label>
-					<FormattedMessage id="timeline.settings.column_width" />
+					<FormattedMessage id="timeline.settings.columnWidth" />
 				</label>
 				<RadioGroup inline value={props.timeline.column_width} onChange={(value) => updateColumnWidthFn(props.timeline, value.toString())}>
 					<Radio value="xs">xs</Radio>
@@ -638,11 +638,11 @@ const OptionPopover = forwardRef<HTMLDivElement, { timeline: Timeline; close: ()
 				</FlexboxGrid>
 				<Divider style={{ margin: '8px 0' }} />
 				<label>
-					<FormattedMessage id="timeline.settings.media_only" />
+					<FormattedMessage id="timeline.settings.mediaOnly" />
 				</label>
 				<RadioGroup inline value={props.timeline?.mediaOnly?.toString() || 'false'} onChange={(value) => updateColumnMediaOnlyFn(props.timeline, value === 'true')}>
 					<Radio value="false">
-						<FormattedMessage id="timeline.settings.not_do" />
+						<FormattedMessage id="timeline.settings.notDo" />
 					</Radio>
 					<Radio value="true">
 						<FormattedMessage id="timeline.settings.do" />
@@ -654,7 +654,7 @@ const OptionPopover = forwardRef<HTMLDivElement, { timeline: Timeline; close: ()
 				</label>
 				<RadioGroup inline value={props.timeline?.tts?.toString() || 'false'} onChange={(value) => updateColumnTtsFn(props.timeline, value === 'true')}>
 					<Radio value="false">
-						<FormattedMessage id="timeline.settings.not_do" />
+						<FormattedMessage id="timeline.settings.notDo" />
 					</Radio>
 					<Radio value="true">
 						<FormattedMessage id="timeline.settings.do" />
@@ -707,11 +707,11 @@ const appendStatus = (statuses: Array<Entity.Status>, status: Entity.Status): Ar
 	return [status].concat(statuses).slice(0, TIMELINE_STATUSES_COUNT)
 }
 
-const deleteStatus = (statuses: Array<Entity.Status>, deleted_id: string): Array<Entity.Status> => {
+const deleteStatus = (statuses: Array<Entity.Status>, deletedId: string): Array<Entity.Status> => {
 	return statuses.filter((status) => {
-		if (status.reblog !== null && status.reblog.id === deleted_id) {
+		if (status.reblog !== null && status.reblog.id === deletedId) {
 			return false
 		}
-		return status.id !== deleted_id
+		return status.id !== deletedId
 	})
 }

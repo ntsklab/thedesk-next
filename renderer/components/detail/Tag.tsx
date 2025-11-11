@@ -6,7 +6,7 @@ import { BsChevronLeft, BsPersonPlus, BsPersonX, BsPin, BsX } from 'react-icons/
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Virtuoso } from 'react-virtuoso'
 import { Button, Content, FlexboxGrid, Header, List, Loader } from 'rsuite'
-import { TheDeskContext, TimelineRefreshContext } from '@/context'
+import { TimelineRefreshContext } from '@/context'
 import type { Account } from '@/entities/account'
 import type { CustomEmojiCategory } from '@/entities/emoji'
 import type { Server } from '@/entities/server'
@@ -39,7 +39,7 @@ export default function TagDetail(props: Props) {
 			let server: Server
 			if (router.query.account_id && router.query.server_id) {
 				const [account, s] = await getAccount({
-					id: Number.parseInt(router.query.account_id.toLocaleString())
+					id: Number.parseInt(router.query.account_id.toLocaleString(), 10)
 				})
 				server = s
 				setServer(s)
@@ -47,7 +47,7 @@ export default function TagDetail(props: Props) {
 				cli = generator(server.sns, server.base_url, account.access_token, 'Fedistar')
 				setClient(cli)
 			} else if (router.query.server_id) {
-				const s = await getServer({ id: Number.parseInt(router.query.server_id.toString()) })
+				const s = await getServer({ id: Number.parseInt(router.query.server_id.toString(), 10) })
 				server = s
 				setServer(s)
 				setAccount(null)
@@ -161,12 +161,12 @@ export default function TagDetail(props: Props) {
 					</FlexboxGrid.Item>
 					<FlexboxGrid.Item>
 						{hashtag && hashtag.following && (
-							<Button appearance="link" onClick={unfollowHashtag} title={formatMessage({ id: 'detail.unfollow_tag' })}>
+							<Button appearance="link" onClick={unfollowHashtag} title={formatMessage({ id: 'detail.unfollowTag' })}>
 								<Icon as={BsPersonX} style={{ fontSize: '1.2em' }} />
 							</Button>
 						)}
 						{hashtag && !hashtag.following && (
-							<Button appearance="link" onClick={followHashtag} title={formatMessage({ id: 'detail.follow_tag' })}>
+							<Button appearance="link" onClick={followHashtag} title={formatMessage({ id: 'detail.followTag' })}>
 								<Icon as={BsPersonPlus} style={{ fontSize: '1.2em' }} />
 							</Button>
 						)}

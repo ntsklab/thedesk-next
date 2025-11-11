@@ -3,7 +3,6 @@ import type { AppProps } from 'next/app'
 import '../style.css'
 import '../App.scss'
 
-import { useEffect } from 'react'
 import { TheDeskProviderWrapper } from '@/context'
 import { IntlProviderWrapper } from '@/i18n'
 import { RsuiteProviderWrapper } from '@/theme'

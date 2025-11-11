@@ -9,7 +9,7 @@ import type { Timeline } from '@/entities/timeline'
 import type { Unread } from '@/entities/unread'
 import { updateColumnHeight } from '@/utils/storage'
 import { useWindowSize } from '@/utils/useWindowSize'
-import { Account } from '@/entities/account'
+import type { Account } from '@/entities/account'
 
 type Props = {
 	isLast: boolean

@@ -53,7 +53,7 @@ const Thirdparty: React.FC<Props> = (props) => {
 				<div style={{ height: '25px' }} />
 				<Heading as="h4">LICENSE</Heading>
 				<List style={{ margin: '0 8px', backgroundColor: 'var(--rs-border-secondary)', padding: '15px' }}>
-					{thirdparty.map((l, index) => (
+					{thirdparty.map((l) => (
 						<List.Item
 							style={{
 								display: 'flex',

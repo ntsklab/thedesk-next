@@ -31,7 +31,7 @@ const Body: React.FC<Props> = (props) => {
 						/>
 					)}
 					<Button size="xs" onClick={() => setSpoilered((current) => !current)}>
-						{spoilered ? isAuto ? <FormattedMessage id="timeline.status.show_more_auto" /> : <FormattedMessage id="timeline.status.show_more" /> : <FormattedMessage id="timeline.status.show_less" />}
+						{spoilered ? isAuto ? <FormattedMessage id="timeline.status.showMoreAuto" /> : <FormattedMessage id="timeline.status.showMore" /> : <FormattedMessage id="timeline.status.showLess" />}
 					</Button>
 				</div>
 			)

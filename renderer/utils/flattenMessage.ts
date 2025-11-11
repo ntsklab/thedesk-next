@@ -6,6 +6,7 @@ export function flattenMessages(nestedMessages: { [key: string]: any }, prefix =
 		if (typeof value === 'string') {
 			messages[prefixedKey] = value
 		} else {
+			// biome-ignore lint/performance/noAccumulatingSpread: <unknown>
 			Object.assign(messages, flattenMessages(value, prefixedKey))
 		}
 

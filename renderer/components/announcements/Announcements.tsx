@@ -42,8 +42,9 @@ export default function Announcements(props: Props) {
 			</Modal.Header>
 			<Modal.Body>
 				<Carousel placement="bottom" shape="bar" onSelect={onSelect}>
-					{announcements.map((announcement, index) => (
+					{announcements.map((announcement) => (
 						<div key={announcement.id}>
+							{/** biome-ignore lint/style/useNamingConvention: <dangerouslySetInnerHTML> */}
 							<div dangerouslySetInnerHTML={{ __html: announcement.content }} style={{ padding: '1em' }} />
 						</div>
 					))}

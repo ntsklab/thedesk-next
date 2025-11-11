@@ -1,9 +1,6 @@
 import type { Entity } from '@cutls/megalodon'
-import Image from 'next/image'
-import { Avatar, Button, FlexboxGrid, Panel } from 'rsuite'
+import { Avatar, Button, Panel } from 'rsuite'
 
-import FailoverImg from '@/utils/failoverImg'
-import { open } from '@/utils/openBrowser'
 import emojify from '@/utils/emojify'
 import Time from '@/components/utils/Time'
 import { FormattedMessage } from 'react-intl'
@@ -45,7 +42,7 @@ const Quote: React.FC<Props> = (props) => {
 			<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 				<FormattedMessage id={str} />
 				{status && <Button appearance="subtle" size="sm" onClick={onClick}>
-					<FormattedMessage id="timeline.quote_state.view" />
+					<FormattedMessage id="timeline.quoteState.view" />
 				</Button>}
 			</div>
 		</Panel>

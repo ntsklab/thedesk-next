@@ -154,7 +154,7 @@ const Compose: React.FC<Props> = (props) => {
 								<BsPencil style={{ fontSize: '0.8em', marginLeft: 3 }} />
 							</div>
 							<Text style={{ flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-								<FormattedMessage id="compose.edit_my_post" />
+								<FormattedMessage id="compose.editMyPost" />
 							</Text>
 							<div style={{ width: 20 }}>
 								<Button appearance="link" onClick={() => setReply(null)} style={{ padding: 0 }}>
@@ -175,9 +175,9 @@ const Compose: React.FC<Props> = (props) => {
 						defaultQuotePolicy={defaultQuotePolicy}
 						setOpened={props.setOpened}
 						onClose={() => onClose()}
-						in_reply_to={reply?.type === 'reply' ? reply.replyStatus : undefined}
-						edit_target={reply?.type === 'edit' ? reply.replyStatus : undefined}
-						quote_target={reply?.type === 'quote' ? reply.replyStatus : undefined}
+						inReplyTo={reply?.type === 'reply' ? reply.replyStatus : undefined}
+						editTarget={reply?.type === 'edit' ? reply.replyStatus : undefined}
+						quoteTarget={reply?.type === 'quote' ? reply.replyStatus : undefined}
 					/>
 				)}
 			</Content>

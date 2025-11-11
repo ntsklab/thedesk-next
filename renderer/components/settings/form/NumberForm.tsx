@@ -13,7 +13,7 @@ type Props = {
 	fontSize?: string | number
 }
 function NumberForm(props: Props) {
-	const unitFormat = props.unit ? (value) => `${value}${props.unit}` : undefined
+	const unitFormat = props.unit ? (value: any) => `${value}${props.unit}` : undefined
 	const [v, setV] = useState(props.value.toString())
 	return (
 		<>

@@ -1,7 +1,5 @@
 import { createContext, useEffect, useState } from 'react'
 import { CustomProvider, type CustomProviderProps } from 'rsuite'
-import { Settings } from './entities/settings'
-import { UpdatedSettingsPayload } from './payload'
 import { readSettings } from './utils/storage'
 
 type Props = {

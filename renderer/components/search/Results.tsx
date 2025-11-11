@@ -116,7 +116,7 @@ export default function Results(props: Props) {
 						<FormattedMessage id="search.results.accounts" />
 					</div>
 					<List>
-						{accounts.map((account, index) => (
+						{accounts.map((account) => (
 							<List.Item key={account.id} style={{ backgroundColor: 'var(--rs-border-primary)', padding: '4px 0' }}>
 								<User user={account} open={openUser} />
 							</List.Item>
@@ -135,7 +135,7 @@ export default function Results(props: Props) {
 						<FormattedMessage id="search.results.hashtags" />
 					</div>
 					<List>
-						{hashtags.map((tag, index) => (
+						{hashtags.map((tag) => (
 							<List.Item
 								key={tag.name}
 								style={{ backgroundColor: 'var(--rs-border-primary)', padding: '4px', paddingRight: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
@@ -161,7 +161,7 @@ export default function Results(props: Props) {
 						<FormattedMessage id="search.results.statuses" />
 					</div>
 					<List>
-						{statuses.map((status, index) => (
+						{statuses.map((status) => (
 							<List.Item key={status.id} style={{ backgroundColor: 'var(--rs-border-primary)', padding: '4px 0' }}>
 								<div style={{ padding: '12px 8px', cursor: 'pointer' }}>
 									<Status

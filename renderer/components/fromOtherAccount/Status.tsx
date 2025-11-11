@@ -64,28 +64,28 @@ export default function Status(props: Props) {
 		<>
 			<Modal.Body>
 				<Modal.Title>
-					<FormattedMessage id="from_other_account.status.title" values={{ account: `@${props.account.username}@${props.server.domain}` }} />
+					<FormattedMessage id="fromOtherAccount.status.title" values={{ account: `@${props.account.username}@${props.server.domain}` }} />
 				</Modal.Title>
 				<div style={{ paddingTop: '2em' }}>
 					{searching ? (
 						<>
 							<Placeholder.Paragraph rows={3} />
-							<Loader center content={<FormattedMessage id="from_other_account.status.searching" />} />
+							<Loader center content={<FormattedMessage id="fromOtherAccount.status.searching" />} />
 						</>
 					) : statuses.length > 0 ? (
-						statuses.map((status, index) => (
+						statuses.map((status) => (
 							<Post client={props.client} status={status} key={status.id} updateStatus={replaceStatus} server={props.server} account={props.account} customEmojis={customEmojis} />
 						))
 					) : (
 						<p style={{ color: 'var(--rs-state-error)' }}>
-							<FormattedMessage id="from_other_account.status.not_found" values={{ server: props.server.domain }} />
+							<FormattedMessage id="fromOtherAccount.status.notFound" values={{ server: props.server.domain }} />
 						</p>
 					)}
 				</div>
 			</Modal.Body>
 			<Modal.Footer>
 				<Button appearance="primary" block onClick={() => props.next()}>
-					<FormattedMessage id="from_other_account.status.next" />
+					<FormattedMessage id="fromOtherAccount.status.next" />
 				</Button>
 			</Modal.Footer>
 		</>
@@ -134,7 +134,7 @@ function Post(props: PostProps) {
 					</div>
 					<Body status={status} spoilered={spoilered} spoilerText={status.spoiler_text} setSpoilered={setSpoilered} />
 					{!spoilered &&
-						status.media_attachments.map((media, index) => (
+						status.media_attachments.map((media) => (
 							<div key={media.id}>
 								<Button appearance="subtle" size="sm">
 									<Icon as={BsPaperclip} />
@@ -166,7 +166,7 @@ function Post(props: PostProps) {
 			</FlexboxGrid>
 			{showReply && (
 				<div style={{ padding: '8px 12px' }}>
-					<Reply client={client} server={props.server} account={props.account} in_reply_to={status} onClose={() => setShowReply(false)} />
+					<Reply client={client} server={props.server} account={props.account} inReplyTo={status} onClose={() => setShowReply(false)} />
 				</div>
 			)}
 		</>

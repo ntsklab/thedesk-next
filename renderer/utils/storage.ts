@@ -206,7 +206,7 @@ export async function setUsualAccount({ id }: { id: number }): Promise<void> {
 }
 export async function getUsualAccount(): Promise<number> {
 	localStorage.getItem('usualAccount')
-	return Number.parseInt(localStorage.getItem('usualAccount') || '0')
+	return Number.parseInt(localStorage.getItem('usualAccount') || '0', 10)
 }
 async function updateColumnSettingCore(timelines: Timeline[][], id: number, key: keyof Timeline, value: any) {
 	const newTimelines: Timeline[][] = []

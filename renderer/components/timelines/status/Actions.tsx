@@ -63,7 +63,7 @@ const Actions: React.FC<Props> = (props) => {
 			try {
 				res = await client.unreblogStatus(status.id)
 			} catch {
-				toast.push(alert('error', formatMessage({ id: 'alert.failed_unreblog' })), { placement: 'topStart' })
+				toast.push(alert('error', formatMessage({ id: 'alert.failedUnreblog' })), { placement: 'topStart' })
 			}
 		} else {
 			setReblogDeactivating(false)
@@ -71,7 +71,7 @@ const Actions: React.FC<Props> = (props) => {
 			try {
 				res = await client.reblogStatus(status.id)
 			} catch {
-				toast.push(alert('error', formatMessage({ id: 'alert.failed_reblog' })), { placement: 'topStart' })
+				toast.push(alert('error', formatMessage({ id: 'alert.failedReblog' })), { placement: 'topStart' })
 			}
 		}
 		props.updateStatus(res.data)
@@ -85,7 +85,7 @@ const Actions: React.FC<Props> = (props) => {
 			try {
 				res = await client.unfavouriteStatus(status.id)
 			} catch {
-				toast.push(alert('error', formatMessage({ id: 'alert.failed_unfavourite' })), { placement: 'topStart' })
+				toast.push(alert('error', formatMessage({ id: 'alert.failedUnfavourite' })), { placement: 'topStart' })
 			}
 		} else {
 			setFavouriteDeactivating(false)
@@ -93,7 +93,7 @@ const Actions: React.FC<Props> = (props) => {
 			try {
 				res = await client.favouriteStatus(status.id)
 			} catch {
-				toast.push(alert('error', formatMessage({ id: 'alert.failed_favourite' })), { placement: 'topStart' })
+				toast.push(alert('error', formatMessage({ id: 'alert.failedFavourite' })), { placement: 'topStart' })
 			}
 		}
 		props.updateStatus(res.data)
@@ -105,13 +105,13 @@ const Actions: React.FC<Props> = (props) => {
 			try {
 				res = await client.unbookmarkStatus(status.id)
 			} catch {
-				toast.push(alert('error', formatMessage({ id: 'alert.failed_unbookmark' })), { placement: 'topStart' })
+				toast.push(alert('error', formatMessage({ id: 'alert.failedUnbookmark' })), { placement: 'topStart' })
 			}
 		} else {
 			try {
 				res = await client.bookmarkStatus(status.id)
 			} catch {
-				toast.push(alert('error', formatMessage({ id: 'alert.failed_bookmark' })), { placement: 'topStart' })
+				toast.push(alert('error', formatMessage({ id: 'alert.failedBookmark' })), { placement: 'topStart' })
 			}
 		}
 		props.updateStatus(res.data)
@@ -190,7 +190,7 @@ const Actions: React.FC<Props> = (props) => {
 								icon={<Icon as={BsEmojiSmile} />}
 								count={props.showCount ? null : undefined}
 								disabled={(typeof props.disabled === 'boolean' ? props.disabled : props.disabled.emoji) || !isAvailableEmoji}
-								title={formatMessage({ id: 'timeline.actions.emoji_reaction' })}
+								title={formatMessage({ id: 'timeline.actions.emojiReaction' })}
 							/>
 						</Whisper>
 					) : (
@@ -350,11 +350,11 @@ const detailMenu = (props: DetailMenuProps, ref: React.RefCallback<HTMLElement>)
 				</Dropdown.Item>
 				{props.ableToRevoke && (
 					<Dropdown.Item eventKey="revoke" style={{ fontSize: '0.8rem', padding: '5px' }}>
-						<FormattedMessage id="timeline.actions.revoke_quoting" />
+						<FormattedMessage id="timeline.actions.revokeQuoting" />
 					</Dropdown.Item>
 				)}
 				<Dropdown.Item eventKey="from_other_account" style={{ fontSize: '0.8rem', padding: '5px' }}>
-					<FormattedMessage id="timeline.actions.detail.from_other_account" />
+					<FormattedMessage id="timeline.actions.detail.fromOtherAccount" />
 				</Dropdown.Item>
 			</Dropdown.Menu>
 		</Popover>

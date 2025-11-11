@@ -1,20 +1,17 @@
 import generator, { type Entity } from '@cutls/megalodon'
 import { Icon } from '@rsuite/icons'
-import { time } from 'console'
 import { useContext, useEffect, useState } from 'react'
 import { BsBell, BsBookmark, BsChevronLeft, BsEnvelope, BsGlobe2, BsHouseDoor, BsListUl, BsPeople, BsPlus, BsStar } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Button, ButtonToolbar, Container, Content, Dropdown, FlexboxGrid, Header, IconButton, List, Loader, Popover, Whisper } from 'rsuite'
 import { addTimeline, getAccount, listTimelines } from 'utils/storage'
-import { TheDeskContext, TimelineRefreshContext } from '@/context'
-import { Account } from '../../entities/account'
-import { Instruction } from '../../entities/instruction'
+import { TimelineRefreshContext } from '@/context'
 import type { Server, ServerSet } from '../../entities/server'
 import type { TimelineKind } from '../../entities/timeline'
 
 type AuthorizedProps = {
 	server: Server
-	select: (kind: TimelineKind, name: string, list_id: string | null) => void
+	select: (kind: TimelineKind, name: string, listId: string | null) => void
 }
 
 const AuthorizedTimelines: React.FC<AuthorizedProps> = (props) => {
@@ -144,7 +141,7 @@ const New: React.FC<Props> = (props) => {
 	const addTimelineMenu = ({ onClose, left, top, className }, ref: any) => {
 		const handleSelect = (eventKey: string) => {
 			onClose()
-			const target = props.servers.find((s) => s.server.id === Number.parseInt(eventKey))
+			const target = props.servers.find((s) => s.server.id === Number.parseInt(eventKey, 10))
 			setServer(target.server)
 		}
 		return (
@@ -203,8 +200,8 @@ const New: React.FC<Props> = (props) => {
 		</div>
 	)
 
-	const select = async (tl: TimelineKind, name: string, list_id: string | null) => {
-		await addTimeline(server, { kind: tl, name: name, listId: list_id, columnWidth: 'sm' })
+	const select = async (tl: TimelineKind, name: string, listId: string | null) => {
+		await addTimeline(server, { kind: tl, name: name, listId, columnWidth: 'sm' })
 		setServer(null)
 		timelineRefresh(true)
 	}

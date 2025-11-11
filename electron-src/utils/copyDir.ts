@@ -1,5 +1,5 @@
-import fs from 'fs'
-import path from 'path'
+import fs from 'node:fs'
+import path from 'node:path'
 export const copyDir = (src: string, dest: string) => {
 	try {
 		// コピー先ディレクトリが存在しない場合、作成する

@@ -4,7 +4,6 @@ import { type MouseEventHandler, useContext, useState } from 'react'
 import { BsArrowRepeat, BsHouseDoor, BsMenuUp, BsPaperclip, BsPencil, BsStar } from 'react-icons/bs'
 import { useIntl } from 'react-intl'
 import { Avatar, Button, FlexboxGrid, Notification, toaster } from 'rsuite'
-import Reply from '@/components/compose/Status'
 import Time from '@/components/utils/Time'
 import { TIMELINE_STATUSES_COUNT } from '@/defaults'
 import type { Account } from '@/entities/account'
@@ -93,7 +92,7 @@ const actionText = (notification: Entity.Notification, setAccountDetail: (accoun
 				<span
 					style={{ color: 'var(--rs-text-secondary)', cursor: 'pointer' }}
 					dangerouslySetInnerHTML={{
-						__html: emojify(formatMessage({ id: 'timeline.notification.poll_expired.body' }, { user: useName }), notification.account.emojis)
+						__html: emojify(formatMessage({ id: 'timeline.notification.pollExpired.body' }, { user: useName }), notification.account.emojis)
 					}}
 					onClick={() => setAccountDetail(notification.account)}
 				/>
@@ -103,7 +102,7 @@ const actionText = (notification: Entity.Notification, setAccountDetail: (accoun
 				<span
 					style={{ color: 'var(--rs-text-secondary)', cursor: 'pointer' }}
 					dangerouslySetInnerHTML={{
-						__html: emojify(formatMessage({ id: 'timeline.notification.poll_vote.body' }, { user: useName }), notification.account.emojis)
+						__html: emojify(formatMessage({ id: 'timeline.notification.pollVote.body' }, { user: useName }), notification.account.emojis)
 					}}
 					onClick={() => setAccountDetail(notification.account)}
 				/>
@@ -144,7 +143,7 @@ const actionText = (notification: Entity.Notification, setAccountDetail: (accoun
 				<span
 					style={{ color: 'var(--rs-text-secondary)', cursor: 'pointer' }}
 					dangerouslySetInnerHTML={{
-						__html: emojify(formatMessage({ id: 'timeline.notification.emoji_reaction.body' }, { user: useName }), notification.account.emojis)
+						__html: emojify(formatMessage({ id: 'timeline.notification.emojiReaction.body' }, { user: useName }), notification.account.emojis)
 					}}
 					onClick={() => setAccountDetail(notification.account)}
 				/>
@@ -176,14 +175,13 @@ const Reaction: React.FC<Props> = (props) => {
 			if (account) {
 				props.setAccountDetail(account)
 			} else {
-				// biome-ignore lint/style/useConst: <explanation>
 				let confirmToaster: any
 				confirmToaster = toaster.push(
 					notification(
 						'info',
-						formatMessage({ id: 'dialog.account_not_found.title' }),
-						formatMessage({ id: 'dialog.account_not_found.message' }),
-						formatMessage({ id: 'dialog.account_not_found.button' }),
+						formatMessage({ id: 'dialog.accountNotFound.title' }),
+						formatMessage({ id: 'dialog.accountNotFound.message' }),
+						formatMessage({ id: 'dialog.accountNotFound.button' }),
 						() => {
 							open(parsedAccount.url)
 							toaster.remove(confirmToaster)
@@ -312,7 +310,7 @@ async function searchAccount(account: ParsedAccount, status: Entity.Status, clie
 	try {
 		const res = await client.lookupAccount(account.acct)
 		return res.data
-	} catch (e) {
+	} catch {
 		const res = await client.searchAccount(account.url, { resolve: true, limit: 5 })
 		if (res.data.length === 0) return null
 		const user = accountMatch(res.data, account, server.domain)

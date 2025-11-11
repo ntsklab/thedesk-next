@@ -34,9 +34,9 @@ const SimplePoll: React.FC<Props> = (props) => {
 
 	return (
 		<>
-			<RadioGroup value={pollRadio} onChange={(value) => setPollRadio(Number.parseInt(value.toString()))}>
+			<RadioGroup value={pollRadio} onChange={(value) => setPollRadio(Number.parseInt(value.toString(), 10))}>
 				{props.poll.options.map((option, index) => (
-					// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+					// biome-ignore lint/suspicious/noArrayIndexKey: <standard reason>
 					<div key={index}>
 						<Radio value={index}>
 							<span dangerouslySetInnerHTML={{ __html: emojify(option.title, props.emojis) }} />
@@ -67,9 +67,9 @@ const MultiplePoll: React.FC<Props> = (props) => {
 
 	return (
 		<>
-			<CheckboxGroup value={pollCheck} onChange={(value) => setPollCheck(value.map((v) => Number.parseInt(v.toString())))}>
+			<CheckboxGroup value={pollCheck} onChange={(value) => setPollCheck(value.map((v) => Number.parseInt(v.toString(), 10)))}>
 				{props.poll.options.map((option, index) => (
-					// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+					// biome-ignore lint/suspicious/noArrayIndexKey: <stnandard reason>
 					<div key={index}>
 						<Checkbox value={index}>
 							<span dangerouslySetInnerHTML={{ __html: emojify(option.title, props.emojis) }} />
@@ -92,7 +92,7 @@ const PollResult: React.FC<Props> = (props) => {
 	return (
 		<>
 			{props.poll.options.map((option, index) => (
-				// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+				// biome-ignore lint/suspicious/noArrayIndexKey: <standard reason>
 				<div key={index}>
 					<span style={{ paddingLeft: '12px' }}>
 						<span dangerouslySetInnerHTML={{ __html: emojify(option.title, props.emojis) }} />

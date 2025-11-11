@@ -1,7 +1,7 @@
 import generator, { type Entity, type MegalodonInterface } from '@cutls/megalodon'
 import { Icon } from '@rsuite/icons'
 import { useEffect, useState } from 'react'
-import { BsBarChart, BsChatQuote, BsFire, BsHash, BsPeople, BsX } from 'react-icons/bs'
+import { BsChatQuote, BsFire, BsHash, BsPeople, BsX } from 'react-icons/bs'
 import { FormattedMessage } from 'react-intl'
 import { Avatar, Button, Container, Content, Dropdown, FlexboxGrid, Header, List, Loader, Panel } from 'rsuite'
 import { USER_AGENT } from '@/defaults'
@@ -114,7 +114,7 @@ export default function Search(props: Props) {
 	}, [fromAccount])
 
 	const selectAccount = async (eventKey: string) => {
-		const account = accounts[Number.parseInt(eventKey)]
+		const account = accounts[Number.parseInt(eventKey, 10)]
 		setFromAccount(account)
 		await setUsualAccount({ id: account[0].id })
 	}
@@ -182,7 +182,7 @@ export default function Search(props: Props) {
 								</List.Item>
 							))}
 						</List>
-						{!trendTags.length && <FormattedMessage id="search.no_data" />}
+						{!trendTags.length && <FormattedMessage id="search.noData" />}
 
 						<div style={{ display: 'flex', alignItems: 'center', margin: '0.4em 0' }}>
 							<Icon as={BsPeople} style={{ fontSize: '1.2em', marginRight: '0.2em' }} />
@@ -195,7 +195,7 @@ export default function Search(props: Props) {
 								</List.Item>
 							))}
 						</List>
-						{!trendUsers.length && <FormattedMessage id="search.no_data" />}
+						{!trendUsers.length && <FormattedMessage id="search.noData" />}
 
 						<div style={{ display: 'flex', alignItems: 'center', margin: '0.4em 0' }}>
 							<Icon as={BsChatQuote} style={{ fontSize: '1.2em', marginRight: '0.2em' }} />
@@ -221,7 +221,7 @@ export default function Search(props: Props) {
 								<p>{stripForSearch(status.content)}</p>
 							</Panel>
 						))}
-						{!trendPosts.length && <FormattedMessage id="search.no_data" />}
+						{!trendPosts.length && <FormattedMessage id="search.noData" />}
 					</>
 				)}
 			</Content>

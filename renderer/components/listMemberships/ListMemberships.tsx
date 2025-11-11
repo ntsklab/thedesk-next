@@ -78,7 +78,7 @@ export default function ListMemberships(props: Props) {
 				</div>
 				<InputPicker
 					{...focusAttr}
-					placeholder={<FormattedMessage id="list_memberships.search_placeholder" />}
+					placeholder={<FormattedMessage id="listMemberships.searchPlaceholder" />}
 					data={users}
 					labelKey="acct"
 					valueKey="id"

@@ -48,7 +48,7 @@ export default function Statuses(props: Props) {
 					) : (
 						statuses.length === 0 && (
 							<p>
-								<FormattedMessage id="report.statuses.no_status" />
+								<FormattedMessage id="report.statuses.noStatus" />
 							</p>
 						)
 					)}

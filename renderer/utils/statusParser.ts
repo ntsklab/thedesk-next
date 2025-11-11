@@ -1,6 +1,5 @@
 import type { Entity } from '@cutls/megalodon'
 import { BsEnvelope, BsGlobe, BsLock, BsPeople, BsUnlock } from 'react-icons/bs'
-import { Color } from '@/entities/timeline'
 
 export type ParsedAccount = {
 	username: string

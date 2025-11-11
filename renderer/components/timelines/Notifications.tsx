@@ -6,7 +6,7 @@ import { BsArrowClockwise, BsBell, BsCheck2, BsChevronLeft, BsChevronRight, BsSl
 import { FormattedMessage, useIntl } from 'react-intl'
 import { ResizableBox } from 'react-resizable'
 import { Virtuoso } from 'react-virtuoso'
-import { Avatar, Button, Container, Content, Divider, Dropdown, FlexboxGrid, Header, List, Loader, Popover, Radio, RadioGroup, Stack, useToaster, Whisper } from 'rsuite'
+import { Avatar, Button, Container, Content, Divider, FlexboxGrid, Header, List, Loader, Popover, Radio, RadioGroup, Stack, useToaster, Whisper } from 'rsuite'
 import { getAccount, removeTimeline, updateColumnColor, updateColumnOrder, updateColumnStack, updateColumnWidth } from 'utils/storage'
 import alert from '@/components/utils/alert'
 import { TheDeskContext, TimelineRefreshContext } from '@/context'
@@ -68,7 +68,7 @@ const Notifications: React.FC<Props> = (props) => {
 				const res = await loadNotifications(cli)
 				setNotifications(res)
 			} catch {
-				toast.push(alert('error', formatMessage({ id: 'alert.failed_load' }, { timeline: 'notifications' })), { placement: 'topStart' })
+				toast.push(alert('error', formatMessage({ id: 'alert.failedLoad' }, { timeline: 'notifications' })), { placement: 'topStart' })
 			} finally {
 				setLoading(false)
 			}
@@ -202,7 +202,7 @@ const Notifications: React.FC<Props> = (props) => {
 			if (props.server.sns === 'pleroma') await client.readNotifications({ max_id: notifications[0].id })
 			await updateMarker(client)
 		} catch {
-			if (!ignoreError) toast.push(alert('error', formatMessage({ id: 'alert.failed_mark' })), { placement: 'topStart' })
+			if (!ignoreError) toast.push(alert('error', formatMessage({ id: 'alert.failedMark' })), { placement: 'topStart' })
 		}
 	}
 
@@ -213,7 +213,7 @@ const Notifications: React.FC<Props> = (props) => {
 			setNotifications(res)
 		} catch (err) {
 			console.error(err)
-			toast.push(alert('error', formatMessage({ id: 'alert.failed_load' }, { timeline: 'notifications' })), { placement: 'topStart' })
+			toast.push(alert('error', formatMessage({ id: 'alert.failedLoad' }, { timeline: 'notifications' })), { placement: 'topStart' })
 		} finally {
 			setLoading(false)
 		}
@@ -309,7 +309,7 @@ const Notifications: React.FC<Props> = (props) => {
 									<FlexboxGrid.Item>
 										<Button
 											appearance="subtle"
-											title={formatMessage({ id: 'timeline.mark_as_read' })}
+											title={formatMessage({ id: 'timeline.markAsRead' })}
 											disabled={notifications.length > 0 && marker && marker.last_read_id === notifications[0].id}
 											onClick={() => read(false)}
 											style={{ padding: '4px' }}
@@ -365,7 +365,7 @@ const Notifications: React.FC<Props> = (props) => {
 									if (marker) {
 										if (marker.unread_count && pleromaUnreads.includes(notification.id)) {
 											shadow = { boxShadow: '2px 0 1px var(--rs-primary-700) inset' }
-										} else if (Number.parseInt(marker.last_read_id) < Number.parseInt(notification.id)) {
+										} else if (Number.parseInt(marker.last_read_id, 10) < Number.parseInt(notification.id, 10)) {
 											shadow = { boxShadow: '2px 0 1px var(--rs-primary-700) inset' }
 										}
 									}
@@ -412,7 +412,6 @@ const OptionPopover = forwardRef<HTMLDivElement, { timeline: Timeline; close: ()
 	const { timelineRefresh } = useContext(TimelineRefreshContext)
 	const { formatMessage } = useIntl()
 	const isFirst = props.wrapIndex === 0
-	const newRef = useRef()
 	const removeTimelineFn = async (timeline: Timeline) => {
 		await removeTimeline(timeline)
 		timelineRefresh(true)
@@ -454,7 +453,7 @@ const OptionPopover = forwardRef<HTMLDivElement, { timeline: Timeline; close: ()
 		<Popover ref={ref} style={{ opacity: 1 }}>
 			<div style={{ display: 'flex', flexDirection: 'column', width: '220px' }}>
 				<label>
-					<FormattedMessage id="timeline.settings.column_width" />
+					<FormattedMessage id="timeline.settings.columnWidth" />
 				</label>
 				<RadioGroup inline value={props.timeline.column_width} onChange={(value) => updateColumnWidthFn(props.timeline, value.toString())}>
 					<Radio value="xs">xs</Radio>

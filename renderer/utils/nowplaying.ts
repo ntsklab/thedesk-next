@@ -4,8 +4,8 @@ const apiGateway = 'https://ep9jquu2w4.execute-api.ap-northeast-1.amazonaws.com/
 async function spotifyApi(url: string, showToaster: (message: string) => void) {
 	const token = localStorage.getItem('spotifyV2Token')
 	if (!token) nowplayingInit(false, showToaster)
-	const expires = localStorage.getItem('spotifyV2Expires') || `${new Date().getTime()}`
-	const isExpired = new Date().getTime() / 1000 > Number.parseInt(expires, 10)
+	const expires = localStorage.getItem('spotifyV2Expires') || `${Date.now()}`
+	const isExpired = Date.now()/ 1000 > Number.parseInt(expires, 10)
 	const at = isExpired ? await refreshSpotifyToken() : localStorage.getItem('spotifyV2Token')
 	if (!at) return showToaster('compose.nowplaying.error')
 	if (at) {
@@ -57,7 +57,7 @@ export async function nowplaying(key: 'spotify' | 'appleMusic', showToaster: (me
 			const contentRaw = localStorage.getItem('spotifyTemplate')
 			const content = spotifyTemplateReplace(item, contentRaw)
 			return { text: content, file, title: `${item.name} ${item.album.name} ${item.artists[0].name}` }
-		} catch (e: any) {
+		} catch {
 			await refreshSpotifyToken()
 			showToaster('compose.nowplaying.error')
 			return null
@@ -120,9 +120,9 @@ async function refreshSpotifyToken() {
 		const { accessToken, refreshToken: _newRT } = json
 		if (!accessToken) throw new Error('No access token')
 		localStorage.setItem('spotifyV2Token', accessToken)
-		localStorage.setItem('spotifyV2Expires', `${new Date().getTime() / 1000 + 3600}`)
+		localStorage.setItem('spotifyV2Expires', `${Date.now()/ 1000 + 3600}`)
 		return accessToken
-	} catch (e: any) {}
+	} catch {}
 }
 export async function getUnknownAA(q: string, country: string) {
 	const start = `https://itunes.apple.com/search?term=${q}&country=${country}&entity=song`
@@ -199,7 +199,7 @@ export async function nowplayingCode(code: string, showToaster: (m: string) => v
 	const { accessToken, refreshToken } = json
 	localStorage.setItem('spotifyV2Token', accessToken)
 	localStorage.setItem('spotifyV2Refresh', refreshToken)
-	localStorage.setItem('spotifyV2Expires', `${new Date().getTime() / 1000 + 3600}`)
+	localStorage.setItem('spotifyV2Expires', `${Date.now()/ 1000 + 3600}`)
 	showToaster('compose.nowplaying.again')
 }
 
@@ -210,7 +210,6 @@ export function nowplayingDisconnect() {
 }
 const jaPlaylist = '37i9dQZEVXbKXQ4mDTEBXq'
 const enPlaylist = '5FN6Ego7eLX6zHuCMovIR2'
-// biome-ignore lint/complexity/useLiteralKeys: <explanation>
 const mockTrackItem = {
 	album: {
 		album_type: 'compilation',
@@ -639,8 +638,8 @@ const mockTrackItem = {
 export async function getSpotifyPlaylist(lang: 'ja' | 'en', showToaster: (m: string) => void) {
 	const token = localStorage.getItem('spotifyV2Token')
 	if (!token) return mockTrackItem
-	const expires = localStorage.getItem('spotifyV2Expires') || `${new Date().getTime()}`
-	const isExpired = new Date().getTime() / 1000 > Number.parseInt(expires, 10)
+	const expires = localStorage.getItem('spotifyV2Expires') || `${Date.now()}`
+	const isExpired = Date.now()/ 1000 > Number.parseInt(expires, 10)
 	const at = isExpired ? await refreshSpotifyToken() : localStorage.getItem('spotifyV2Token')
 	if (!at) return mockTrackItem
 	const playlist = lang === 'ja' ? jaPlaylist : enPlaylist

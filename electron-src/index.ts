@@ -1,10 +1,10 @@
-import { execFile } from 'child_process'
+import { execFile } from 'node:child_process'
 import serve from 'electron-serve'
 import { getFonts } from 'font-list'
-import fs from 'fs'
+import fs from 'node:fs'
 // Native
-import { join } from 'path'
-import { promisify } from 'util'
+import { join } from 'node:path'
+import { promisify } from 'node:util'
 import * as tar from 'tar'
 
 type SystemConfig = {
@@ -167,7 +167,7 @@ app.on('ready', async () => {
 			song = JSON.parse(stdout)
 			if ((!song || !song.name)) throw new Error('no song data')
 			if (!song.databaseID) return mainWindow?.webContents.send('appleMusic', song)
-		} catch (e: any) {
+		} catch {
 			return mainWindow?.webContents.send('appleMusic', { error: true, message: 'unknown error' })
 		}
 		try {

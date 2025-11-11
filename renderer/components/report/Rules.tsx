@@ -35,7 +35,7 @@ export default function Rules(props: Props) {
 					<CheckboxGroup name="rules" value={values} onChange={(value) => setValues(value.map((v) => v.toString()))}>
 						{rules.length === 0 && (
 							<p>
-								<FormattedMessage id="report.rules.no_rules" />
+								<FormattedMessage id="report.rules.noRules" />
 							</p>
 						)}
 						{rules.map((r) => (

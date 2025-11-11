@@ -54,7 +54,7 @@ const Profile: React.FC<Props> = (props) => {
 			let cli: MegalodonInterface
 			if (router.query.account_id && router.query.server_id) {
 				const [account, server] = await getAccount({
-					id: Number.parseInt(router.query.account_id.toLocaleString())
+					id: Number.parseInt(router.query.account_id.toLocaleString(), 10)
 				})
 				setAccount(account)
 				setServer(server)
@@ -63,7 +63,7 @@ const Profile: React.FC<Props> = (props) => {
 				const u = await cli.verifyAccountCredentials()
 				setMyself(u.data)
 			} else if (router.query.server_id) {
-				const server = await getServer({ id: Number.parseInt(router.query.server_id.toString()) })
+				const server = await getServer({ id: Number.parseInt(router.query.server_id.toString(), 10) })
 				setAccount(null)
 				setServer(server)
 				cli = generator(server.sns, server.base_url, undefined, 'Fedistar')
@@ -109,7 +109,7 @@ const Profile: React.FC<Props> = (props) => {
 			setRelationship(res.data)
 		} catch (err) {
 			console.error(err)
-			toaster.push(alert('error', formatMessage({ id: 'alert.failed_follow' })), { placement: 'topEnd' })
+			toaster.push(alert('error', formatMessage({ id: 'alert.failedFollow' })), { placement: 'topEnd' })
 		}
 	}, [client, account, user])
 
@@ -120,7 +120,7 @@ const Profile: React.FC<Props> = (props) => {
 			setRelationship(res.data)
 		} catch (err) {
 			console.error(err)
-			toaster.push(alert('error', formatMessage({ id: 'alert.failed_unfollow' })), { placement: 'topEnd' })
+			toaster.push(alert('error', formatMessage({ id: 'alert.failedUnfollow' })), { placement: 'topEnd' })
 		}
 	}, [client, account, user])
 
@@ -154,7 +154,7 @@ const Profile: React.FC<Props> = (props) => {
 	}
 
 	const timeline = useCallback(() => {
-		if (!user) return <></>
+		if (!user) return null
 		switch (activeNav) {
 			case 'posts':
 				return (
@@ -223,7 +223,7 @@ const Profile: React.FC<Props> = (props) => {
 								borderRadius: '4px'
 							}}
 						>
-							<FormattedMessage id="detail.profile.follows_you" />
+							<FormattedMessage id="detail.profile.followsYou" />
 						</div>
 					)}
 					<div className="profile-header-image" style={{ width: '100%', backgroundColor: 'var(--rs-body)' }}>
@@ -290,7 +290,7 @@ const Profile: React.FC<Props> = (props) => {
 							}}
 							onClick={onClick}
 						>
-							{user.fields.map((data, index) => (
+							{user.fields.map((data) => (
 								<dl key={data.name} style={{ padding: '8px 16px', margin: 0, borderBottom: '1px solid var(--rs-bg-card)' }}>
 									<dt>{data.name}</dt>
 									<dd dangerouslySetInnerHTML={{ __html: emojify(data.value, user.emojis) }} style={{ margin: 0 }} />
@@ -376,7 +376,7 @@ const profileMenu = ({ className, left, top, onClose, client, myself, user, rela
 		<Popover ref={ref} className={className} style={{ left, top, padding: '0 4px' }}>
 			<Dropdown.Menu onSelect={handleSelect}>
 				<Dropdown.Item eventKey="browser">
-					<FormattedMessage id="detail.profile.open_page" />
+					<FormattedMessage id="detail.profile.openPage" />
 				</Dropdown.Item>
 				{relationship && (
 					<>
@@ -397,16 +397,16 @@ const profileMenu = ({ className, left, top, onClose, client, myself, user, rela
 						</Dropdown.Item>
 						<Dropdown.Separator />
 						<Dropdown.Item eventKey="list_management">
-							<FormattedMessage id="detail.profile.list_management" />
+							<FormattedMessage id="detail.profile.listManagement" />
 						</Dropdown.Item>
 						{domain && (
 							<>
 								<Dropdown.Separator />
 								<Dropdown.Item eventKey="domain_block" disabled={myself.acct === user.acct}>
 									{relationship.domain_blocking ? (
-										<FormattedMessage id="detail.profile.unblock_domain" values={{ server: domain }} />
+										<FormattedMessage id="detail.profile.unblockDomain" values={{ server: domain }} />
 									) : (
-										<FormattedMessage id="detail.profile.block_domain" values={{ server: domain }} />
+										<FormattedMessage id="detail.profile.blockDomain" values={{ server: domain }} />
 									)}
 								</Dropdown.Item>
 							</>
@@ -465,7 +465,7 @@ const FollowButton: React.FC<FollowButtonProps> = (props) => {
 		)
 	}
 	if (props.relationship.requested) {
-		return <Button appearance="primary">{formatMessage({ id: 'detail.profile.follow_requested' })}</Button>
+		return <Button appearance="primary">{formatMessage({ id: 'detail.profile.followRequested' })}</Button>
 	}
 	return (
 		<Button appearance="primary" color="green" onClick={props.follow}>
