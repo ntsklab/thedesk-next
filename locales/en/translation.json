@@ -219,6 +219,12 @@
 			"private": "Private",
 			"direct": "Direct"
 		},
+		"quote": {
+			"by": "Quoted by",
+			"public": "Anyone",
+			"followers": "Followers",
+			"nobody": "Only me"
+		},
 		"spoiler": {
 			"placeholder": "Write your warning here"
 		},
@@ -337,6 +343,7 @@
 			"emoji_reaction": "Emoji reaction",
 			"bookmark": "Bookmark",
 			"quote": "Quote",
+			"revoke_quoting": "Revoke this quote",
 			"detail": {
 				"title": "Detail",
 				"browser": "Open original page",
@@ -362,6 +369,18 @@
 			"people": "{count} people",
 			"closed": "Closed",
 			"left": "left"
+		},
+		"quote_state": {
+			"pending": "The quoted post is being processed.",
+			"accepted": "Quoted successfully.",
+			"rejected": "The quoted post was rejected.",
+			"revoked": "The quoting of the post has been revoked.",
+			"deleted": "The quoted post has been deleted.",
+			"unauthorized": "The quoted post is private.",
+			"blocked_account": "The quoting account is blocked.",
+			"blocked_domain": "The quoting domain is blocked.",
+			"muted_account": "The quoting account is muted.",
+			"view": "View"
 		},
 		"new": "Add a new timeline",
 		"home": "Home",

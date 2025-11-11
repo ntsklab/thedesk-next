@@ -170,7 +170,7 @@ const Status: React.FC<Props> = (props) => {
 					{!spoilered && (
 						<>
 							{status.poll && <Poll poll={status.poll} client={props.client} pollUpdated={refresh} emojis={status.emojis} />}
-							{status.quote_status && <Quote status={status.quote_status} isAnimeIcon={isAnimeIcon} setStatusDetail={() => props.setStatusDetail(status.quote_status.id, props.server.id, props.account.id)} />}
+							{status.quote_status_state && <Quote status={status.quote_status} state={status.quote_status_state} isAnimeIcon={isAnimeIcon} setStatusDetail={() => props.setStatusDetail(status.quote_status.id, props.server.id, props.account.id)} />}
 							{status.media_attachments.length > 0 && <Attachments attachments={status.media_attachments} sensitive={status.sensitive} openMedia={props.openMedia} columnWidth={props.columnWidth} />}
 							{status.emoji_reactions &&
 								status.emoji_reactions.map((e, i) => (

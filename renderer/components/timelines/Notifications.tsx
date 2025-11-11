@@ -22,7 +22,7 @@ import { mapCustomEmojiCategory } from '@/utils/emojiData'
 import FailoverImg from '@/utils/failoverImg'
 import timelineName from '@/utils/timelineName'
 import Notification from './notification/Notification'
-import { listenUser } from '@/utils/socket'
+import { listenUser, listenUserWaiter } from '@/utils/socket'
 
 type Props = {
 	timeline?: Timeline
@@ -79,23 +79,28 @@ const Notifications: React.FC<Props> = (props) => {
 			} catch (err) {
 				console.error(err)
 			}
+			await listenUserWaiter(props.server.id)
+			listenUser<ReceiveNotificationPayload>(
+				'receive-notification',
+				(ev) => {
+					if (ev.payload.server_id !== props.server.id) return
+					updateMarker(cli)
+					if (replyOpened.current || (scrollerRef.current && scrollerRef.current.scrollTop > 10)) {
+						setUnreadNotifications((last) => {
+							if (last.find((n) => n.id === ev.payload.notification.id)) return last
+							return [ev.payload.notification].concat(last)
+						})
+						return
+					}
 
-			listenUser<ReceiveNotificationPayload>('receive-notification', (ev) => {
-				if (ev.payload.server_id !== props.server.id) return
-				updateMarker(cli)
-				if (replyOpened.current || (scrollerRef.current && scrollerRef.current.scrollTop > 10)) {
-					setUnreadNotifications((last) => {
+					setNotifications((last) => {
 						if (last.find((n) => n.id === ev.payload.notification.id)) return last
-						return [ev.payload.notification].concat(last)
+						return [ev.payload.notification].concat(last).slice(0, TIMELINE_STATUSES_COUNT)
 					})
-					return
-				}
-
-				setNotifications((last) => {
-					if (last.find((n) => n.id === ev.payload.notification.id)) return last
-					return [ev.payload.notification].concat(last).slice(0, TIMELINE_STATUSES_COUNT)
-				})
-			}, timelineConfig, false)
+				},
+				timelineConfig,
+				false
+			)
 		}
 		f()
 		setColumnWidth(columnWidthCalc(props.timeline?.column_width || 'sm'))

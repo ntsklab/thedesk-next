@@ -53,6 +53,7 @@ const Compose: React.FC<Props> = (props) => {
 	const [defaultVisibility, setDefaultVisibility] = useState<'public' | 'unlisted' | 'private' | 'direct'>('public')
 	const [defaultNSFW, setDefaultNSFW] = useState(false)
 	const [defaultLanguage, setDefaultLanguage] = useState<string | null>(null)
+	const [defaultQuotePolicy, setDefaultQuotePolicy] = useState<'public' | 'followers' | 'nobody'>('public')
 	const [client, setClient] = useState<MegalodonInterface>()
 
 	useEffect(() => {
@@ -83,6 +84,7 @@ const Compose: React.FC<Props> = (props) => {
 				setDefaultVisibility(res.data.source.privacy as 'public' | 'unlisted' | 'private' | 'direct')
 				setDefaultNSFW(res.data.source.sensitive)
 				setDefaultLanguage(res.data.source.language)
+				setDefaultQuotePolicy(res.data.source.quote_policy as 'public' | 'followers' | 'nobody')
 			}
 		}
 		f()
@@ -170,6 +172,7 @@ const Compose: React.FC<Props> = (props) => {
 						defaultVisibility={defaultVisibility}
 						defaultNSFW={defaultNSFW}
 						defaultLanguage={defaultLanguage}
+						defaultQuotePolicy={defaultQuotePolicy}
 						setOpened={props.setOpened}
 						onClose={() => onClose()}
 						in_reply_to={reply?.type === 'reply' ? reply.replyStatus : undefined}

@@ -143,6 +143,18 @@ export const privacyIcon = (visibility: 'public' | 'unlisted' | 'private' | 'dir
 			return BsGlobe
 	}
 }
+export const quoteIcon = (approvedQuote: 'public' | 'followers' | 'nobody') => {
+	switch (approvedQuote) {
+		case 'public':
+			return BsGlobe
+		case 'followers':
+			return BsPeople
+		case 'nobody':
+			return BsLock
+		default:
+			return BsGlobe
+	}
+}
 export const privacyColor = (visibility: 'public' | 'unlisted' | 'private' | 'direct' | 'local') => {
 	switch (visibility) {
 		case 'public':

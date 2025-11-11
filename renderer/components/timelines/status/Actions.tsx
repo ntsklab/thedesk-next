@@ -34,6 +34,8 @@ type Props = {
 	setShowEdit?: Dispatch<SetStateAction<boolean>>
 	setShowQuote?: Dispatch<SetStateAction<boolean>>
 	updateStatus: (status: Entity.Status) => void
+	revokeQuoting?: () => void
+	ableToRevoke?: boolean
 	openReport?: () => void
 	openFromOtherAccount?: () => void
 	customEmojis: Array<CustomEmojiCategory>
@@ -132,7 +134,7 @@ const Actions: React.FC<Props> = (props) => {
 		</Popover>
 	))
 	const isAvailableEmoji = props.server.emoji_reactions
-	const isAvailableQuote = props.server.quote_support && status.quote_approval !== 'denied'
+	const isAvailableQuote = props.server.quote_support && status.quote_approval.current_user !== 'denied'
 
 	return (
 		<div className="toolbox">
@@ -225,6 +227,10 @@ const Actions: React.FC<Props> = (props) => {
 									onReport: () => {
 										props.openReport()
 									},
+									ableToRevoke: props.ableToRevoke,
+									onRevokeQuoting: () => {
+										props.revokeQuoting()
+									},
 									onFromOtherAccount: () => {
 										props.openFromOtherAccount()
 									}
@@ -277,6 +283,8 @@ type DetailMenuProps = {
 	onDelete: () => void
 	openEdit: () => void
 	onClose: (delay?: number) => NodeJS.Timeout | void
+	ableToRevoke: boolean
+	onRevokeQuoting: () => void
 	onReport: () => void
 	onFromOtherAccount: () => void
 }
@@ -298,6 +306,9 @@ const detailMenu = (props: DetailMenuProps, ref: React.RefCallback<HTMLElement>)
 				return
 			case 'delete':
 				props.onDelete()
+				return
+			case 'revoke':
+				props.onRevokeQuoting()
 				return
 			case 'report':
 				props.onReport()
@@ -330,6 +341,9 @@ const detailMenu = (props: DetailMenuProps, ref: React.RefCallback<HTMLElement>)
 				<Dropdown.Item disabled={props.disabled} eventKey="report" style={{ fontSize: '0.8rem', padding: '5px' }}>
 					<FormattedMessage id="timeline.actions.detail.report" values={{ user: `@${status.account.username}` }} />
 				</Dropdown.Item>
+				{props.ableToRevoke && <Dropdown.Item eventKey="revoke" style={{ fontSize: '0.8rem', padding: '5px' }}>
+					<FormattedMessage id="timeline.actions.revoke_quoting" />
+				</Dropdown.Item>}
 				<Dropdown.Item eventKey="from_other_account" style={{ fontSize: '0.8rem', padding: '5px' }}>
 					<FormattedMessage id="timeline.actions.detail.from_other_account" />
 				</Dropdown.Item>

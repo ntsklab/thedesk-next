@@ -217,6 +217,7 @@ const Reaction: React.FC<Props> = (props) => {
 	const openStatus = () => {
 		props.setStatusDetail(status.id, props.server.id, props.account.id)
 	}
+	const ableToRevoke = props.notification.type === 'quote' && status.quote_status
 
 	return (
 		<div>
@@ -258,7 +259,7 @@ const Reaction: React.FC<Props> = (props) => {
 					{!spoilered && (
 						<>
 							{status.poll && <Poll poll={status.poll} client={props.client} pollUpdated={refresh} emojis={status.emojis} />}
-							{status.quote_status && <Quote status={status.quote_status} isAnimeIcon={false} setStatusDetail={() => props.setStatusDetail(status.quote_status.id, props.server.id, props.account.id)} />}
+							{status.quote_status_state && <Quote status={status.quote_status} state={status.quote_status_state} isAnimeIcon={false} setStatusDetail={() => props.setStatusDetail(status.quote_status.id, props.server.id, props.account.id)} />}
 							{status.media_attachments.map((media, index) => (
 								<div key={media.id}>
 									<Button appearance="subtle" size="sm" onClick={() => props.openMedia(status.media_attachments, index)}>
@@ -280,6 +281,8 @@ const Reaction: React.FC<Props> = (props) => {
 						setShowEdit={() => setReply({ replyStatus: status, inReplyToAccountId: props.account.account_id, type: 'edit' })}
 						setShowQuote={() => setReply({ replyStatus: status, inReplyToAccountId: props.account.account_id, type: 'quote' })}
 						updateStatus={props.updateStatus}
+						revokeQuoting={() => props.client.revokeQuote(status.quote_status.id, status.id).then(() => refresh())}
+						ableToRevoke={!!ableToRevoke}
 						openReport={() => props.openReport(status, props.client)}
 						openFromOtherAccount={() => props.openFromOtherAccount(status)}
 						customEmojis={props.customEmojis}

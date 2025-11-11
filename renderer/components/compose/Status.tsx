@@ -36,7 +36,7 @@ import { data, mapCustomEmojiCategory } from '@/utils/emojiData'
 import languages from '@/utils/languages'
 import { getUnknownAA, nowplaying } from '@/utils/nowplaying'
 import { open } from '@/utils/openBrowser'
-import { privacyColor, privacyIcon } from '@/utils/statusParser'
+import { privacyColor, privacyIcon, quoteIcon } from '@/utils/statusParser'
 import { readSettings } from '@/utils/storage'
 import AutoCompleteTextarea, { type ArgProps as AutoCompleteTextareaProps } from './AutoCompleteTextarea'
 import EditMedia from './EditMedia'
@@ -51,6 +51,7 @@ type Props = {
 	defaultVisibility?: 'public' | 'unlisted' | 'private' | 'direct'
 	defaultNSFW?: boolean
 	defaultLanguage?: string | null
+	defaultQuotePolicy?: 'public' | 'followers' | 'nobody'
 	onClose?: () => void
 	setOpened?: (value: boolean) => void
 }
@@ -104,6 +105,7 @@ const Status: React.FC<Props> = (props) => {
 	const [customEmojis, setCustomEmojis] = useState<Array<CustomEmojiCategory>>([])
 	const [loading, setLoading] = useState<boolean>(false)
 	const [visibility, setVisibility] = useState<'public' | 'unlisted' | 'private' | 'direct' | 'local'>('public')
+	const [approvedQuote, setApproveQuote] = useState<'public' | 'followers' | 'nobody'>('public')
 	const [cw, setCW] = useState<boolean>(false)
 	const [config, setConfig] = useState<Settings['compose']>(defaultSetting.compose)
 	const [language, setLanguage] = useState<string>('en')
@@ -171,6 +173,14 @@ const Status: React.FC<Props> = (props) => {
 				}
 				setFormValue(value)
 				setVisibility(target.visibility)
+				const targets = target.quote_approval.automatic
+				if (targets.includes('public')) {
+					setApproveQuote('public')
+				} else if (targets.includes('followers')) {
+					setApproveQuote('followers')
+				} else {
+					setApproveQuote('nobody')
+				}
 				if (target.language) {
 					setLanguage(target.language)
 				}
@@ -185,6 +195,14 @@ const Status: React.FC<Props> = (props) => {
 	useEffect(() => {
 		if (props.defaultVisibility) {
 			setVisibility(props.defaultVisibility)
+		}
+	}, [props.defaultVisibility])
+
+
+	// Set quote approval policy
+	useEffect(() => {
+		if (props.defaultQuotePolicy) {
+			setApproveQuote(props.defaultQuotePolicy)
 		}
 	}, [props.defaultVisibility])
 
@@ -231,6 +249,11 @@ const Status: React.FC<Props> = (props) => {
 					in_reply_to_id: props.in_reply_to.id
 				})
 			}
+			if (props.server.quote_support) {
+				options = Object.assign({}, options, {
+					quote_approval_policy: approvedQuote
+				})
+			}
 			if (formValue.attachments) {
 				options = Object.assign({}, options, {
 					media_ids: formValue.attachments.map((m) => m.id)
@@ -267,6 +290,7 @@ const Status: React.FC<Props> = (props) => {
 				})
 			}
 			if (props.edit_target) {
+				console.log(options)
 				await props.client.editStatus(
 					props.edit_target.id,
 					Object.assign({}, options, {
@@ -468,6 +492,9 @@ const Status: React.FC<Props> = (props) => {
 			if (key === 'public' || key === 'unlisted' || key === 'private' || key === 'direct') {
 				setVisibility(key)
 			}
+			if (key === 'quote:public') setApproveQuote('public')
+			if (key === 'quote:followers') setApproveQuote('followers')
+			if (key === 'quote:nobody') setApproveQuote('nobody')
 		}
 		return (
 			<Popover ref={ref} className={className} style={{ left, top }} full>
@@ -484,6 +511,11 @@ const Status: React.FC<Props> = (props) => {
 					<Dropdown.Item eventKey={'direct'} icon={<Icon as={BsEnvelope} />}>
 						<FormattedMessage id="compose.visibility.direct" />
 					</Dropdown.Item>
+					{props.server.quote_support && <Dropdown.Menu title={formatMessage({ id: 'compose.quote.by' })}>
+						<Dropdown.Item eventKey={'quote:public'}><FormattedMessage id="compose.quote.public" /></Dropdown.Item>
+						<Dropdown.Item eventKey={'quote:followers'}><FormattedMessage id="compose.quote.followers" /></Dropdown.Item>
+						<Dropdown.Item eventKey={'quote:nobody'}><FormattedMessage id="compose.quote.nobody" /></Dropdown.Item>
+					</Dropdown.Menu>}
 				</Dropdown.Menu>
 			</Popover>
 		)
@@ -606,9 +638,11 @@ const Status: React.FC<Props> = (props) => {
 						<Button appearance="subtle" onClick={togglePoll}>
 							<Icon as={BsMenuButtonWide} style={{ fontSize: '1.1em' }} />
 						</Button>
-						<Whisper placement="bottomStart" trigger="click" speaker={VisibilityDropdown}>
+						<Whisper placement="auto" trigger="click" speaker={VisibilityDropdown}>
 							<Button appearance="subtle">
-								<Icon as={privacyIcon(visibility)} style={{ fontSize: '1.1em', color: privacyColor(visibility) }} />
+								<Icon as={privacyIcon(visibility)} style={{ fontSize: props.server.quote_support ? '0.8em' : '1.1em', color: privacyColor(visibility) }} />
+								{props.server.quote_support && <span>/</span>}
+								{props.server.quote_support && <Icon as={quoteIcon(approvedQuote)} style={{ fontSize: '0.7em', position: 'relative', top: 3 }} />}
 							</Button>
 						</Whisper>
 						<Button appearance="subtle" onClick={() => toggleCW()}>

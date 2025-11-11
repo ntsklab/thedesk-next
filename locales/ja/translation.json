@@ -219,6 +219,12 @@
 			"private": "フォロワーのみ",
 			"direct": "指定された相手のみ"
 		},
+		"quote": {
+			"by": "引用許可",
+			"public": "誰でも",
+			"followers": "フォロワー",
+			"nobody": "自分だけ"
+		},
 		"spoiler": {
 			"placeholder": "ここに警告を書いてください"
 		},
@@ -337,6 +343,7 @@
 			"emoji_reaction": "絵文字リアクション",
 			"bookmark": "ブックマーク",
 			"quote": "引用",
+			"revoke_quoting": "この引用の取り消させる",
 			"detail": {
 				"title": "詳細",
 				"browser": "元のページを開く",
@@ -362,6 +369,18 @@
 			"people": "{count} 人",
 			"closed": "終了",
 			"left": "残り"
+		},
+		"quote_state": {
+			"pending": "引用は承認待ちです",
+			"accepted": "引用は承認されました",
+			"rejected": "引用は拒否されました",
+			"revoked": "引用は取り消されました",
+			"deleted": "引用元の投稿は削除されました",
+			"unauthorized": "引用元の投稿を表示する権限がありません",
+			"blocked_account": "引用元のアカウントはブロックされています",
+			"blocked_domain": "引用元のドメインはブロックされています",
+			"muted_account": "引用元のアカウントはミュートされています",
+			"view": "表示"
 		},
 		"new": "タイムラインを追加",
 		"home": "ホーム",
