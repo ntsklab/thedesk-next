@@ -425,3 +425,10 @@
 .fe-info .rs-message-container {
   padding: 10px;
 }
+
+.link-preview-panel {
+  &:hover {
+    background-color: var(--rs-avatar-offset-color);
+    transition-duration: 0.2s;
+  }
+}
