@@ -14,7 +14,7 @@ import emojify from '@/utils/emojify'
 import Time from '../utils/Time'
 import { useRouter } from 'next/router'
 import { User } from './Results'
-import { graphDrawCore } from '../utils/graph'
+import { GraphDraw } from '../utils/Graph'
 
 type Props = {
 	setOpened: (value: boolean) => void
@@ -178,7 +178,7 @@ export default function Search(props: Props) {
 									<div style={{ padding: '12px 8px', cursor: 'pointer' }} onClick={() => setTagDetail(tag.name, fromAccount[1].id, fromAccount[0].id)}>
 										#{tag.name}
 									</div>
-									<div dangerouslySetInnerHTML={{ __html: graphDrawCore(tag.history) }} />
+									<GraphDraw his={tag.history} />
 								</List.Item>
 							))}
 						</List>

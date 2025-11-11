@@ -12,7 +12,7 @@ import type { CustomEmojiCategory } from '@/entities/emoji'
 import type { Server } from '@/entities/server'
 import { mapCustomEmojiCategory } from '@/utils/emojiData'
 import emojify from '@/utils/emojify'
-import { graphDrawCore } from '../utils/graph'
+import { GraphDraw } from '../utils/Graph'
 
 type Props = {
 	account: Account
@@ -143,7 +143,8 @@ export default function Results(props: Props) {
 								<div style={{ padding: '12px 8px', cursor: 'pointer' }} onClick={() => openTag(tag)}>
 									#{tag.name}
 								</div>
-								<div dangerouslySetInnerHTML={{ __html: graphDrawCore(tag.history) }} />
+
+								<GraphDraw his={tag.history} />
 							</List.Item>
 						))}
 						<List.Item key="more" style={{ backgroundColor: 'var(--rs-border-primary)', padding: '1em 0', textAlign: 'center', cursor: 'pointer' }} onClick={() => loadMoreHashtag()}>

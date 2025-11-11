@@ -1,7 +1,7 @@
 import { Entity } from '@cutls/megalodon'
 
-export function graphDrawCore(his: Entity.Tag['history']) {
-	if (!his || !his[0]?.uses) return ''
+export function GraphDraw({ his }: { his: Entity.Tag['history'] }) {
+	if (!his || !his[0]?.uses) return null
 	const max = Math.max.apply(null, [
 		parseInt(his[0].uses.toString(), 10),
 		parseInt(his[1].uses.toString(), 10),
@@ -20,11 +20,11 @@ export function graphDrawCore(his: Entity.Tag['history']) {
 	const zero = 50 - (parseInt(his[0].uses.toString(), 10) / max) * 50
 	const ratio = 30 / 25
 	const height = 40
-	return `<svg version="1.1" viewbox="0 0 60 50" width="${height * ratio}" height="${height}">
-						<g>
-							<path d="M0,${six} L10,${five} 20,${four} 30,${three} 40,${two} 50,${one} 60,${zero} 61,61 0,61" 
-							style="stroke: #0f8c0c;fill: rgba(13,113,19,.25); stroke-width: 1;">
-								</path>
-						</g>
-					</svg>`
+	return (
+		<svg version="1.1" viewBox="0 0 60 50" width={height * ratio} height={height}>
+			<g>
+				<path d={`M0,${six} L10,${five} 20,${four} 30,${three} 40,${two} 50,${one} 60,${zero} 61,61 0,61`} style={{ stroke: '#0f8c0c', fill: 'rgba(13,113,19,.25)', strokeWidth: 1 }}></path>
+			</g>
+		</svg>
+	)
 }
