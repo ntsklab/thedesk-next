@@ -30,6 +30,7 @@ type Props = {
 	account: Account | null
 	status: Entity.Status
 	client: MegalodonInterface
+	showCount?: boolean
 	setShowReply?: Dispatch<SetStateAction<boolean>>
 	setShowEdit?: Dispatch<SetStateAction<boolean>>
 	setShowQuote?: Dispatch<SetStateAction<boolean>>
@@ -142,6 +143,7 @@ const Actions: React.FC<Props> = (props) => {
 				<FlexboxGrid.Item>
 					<ActionButton
 						disabled={typeof props.disabled === 'boolean' ? props.disabled : props.disabled.reply}
+						count={props.showCount ? status.replies_count : undefined}
 						icon={<Icon as={BsReply} />}
 						onClick={() => props.setShowReply((current) => !current)}
 						title={formatMessage({ id: 'timeline.actions.reply' })}
@@ -151,6 +153,7 @@ const Actions: React.FC<Props> = (props) => {
 					<ActionButton
 						disabled={(typeof props.disabled === 'boolean' ? props.disabled : props.disabled.reblog) || status.visibility === 'direct' || status.visibility === 'private'}
 						className="reblog-action"
+						count={props.showCount ? status.reblogs_count : undefined}
 						activating={reblogActivating}
 						deactivating={reblogDeactivating}
 						icon={reblogIcon(props.status)}
@@ -162,6 +165,7 @@ const Actions: React.FC<Props> = (props) => {
 					<ActionButton
 						disabled={typeof props.disabled === 'boolean' ? props.disabled : props.disabled.favourite}
 						className="favourite-action"
+						count={props.showCount ? status.favourites_count : undefined}
 						activating={favouriteActivating}
 						deactivating={favouriteDeactivating}
 						icon={favouriteIcon(props.status)}
@@ -173,6 +177,7 @@ const Actions: React.FC<Props> = (props) => {
 					<ActionButton
 						disabled={typeof props.disabled === 'boolean' ? props.disabled : props.disabled.bookmark}
 						icon={bookmarkIcon(props.status)}
+						count={props.showCount ? null : undefined}
 						onClick={bookmark}
 						title={formatMessage({ id: 'timeline.actions.bookmark' })}
 					/>
@@ -183,6 +188,7 @@ const Actions: React.FC<Props> = (props) => {
 							<IconButton
 								appearance="link"
 								icon={<Icon as={BsEmojiSmile} />}
+								count={props.showCount ? null : undefined}
 								disabled={(typeof props.disabled === 'boolean' ? props.disabled : props.disabled.emoji) || !isAvailableEmoji}
 								title={formatMessage({ id: 'timeline.actions.emoji_reaction' })}
 							/>
@@ -191,6 +197,7 @@ const Actions: React.FC<Props> = (props) => {
 						<ActionButton
 							disabled={(typeof props.disabled === 'boolean' ? props.disabled : props.disabled.quote) || !isAvailableQuote}
 							icon={<Icon as={BsQuote} />}
+							count={props.showCount ? status.quotes_count : undefined}
 							onClick={() => props.setShowQuote((current) => !current)}
 							title={formatMessage({ id: 'timeline.actions.quote' })}
 						/>
@@ -341,9 +348,11 @@ const detailMenu = (props: DetailMenuProps, ref: React.RefCallback<HTMLElement>)
 				<Dropdown.Item disabled={props.disabled} eventKey="report" style={{ fontSize: '0.8rem', padding: '5px' }}>
 					<FormattedMessage id="timeline.actions.detail.report" values={{ user: `@${status.account.username}` }} />
 				</Dropdown.Item>
-				{props.ableToRevoke && <Dropdown.Item eventKey="revoke" style={{ fontSize: '0.8rem', padding: '5px' }}>
-					<FormattedMessage id="timeline.actions.revoke_quoting" />
-				</Dropdown.Item>}
+				{props.ableToRevoke && (
+					<Dropdown.Item eventKey="revoke" style={{ fontSize: '0.8rem', padding: '5px' }}>
+						<FormattedMessage id="timeline.actions.revoke_quoting" />
+					</Dropdown.Item>
+				)}
 				<Dropdown.Item eventKey="from_other_account" style={{ fontSize: '0.8rem', padding: '5px' }}>
 					<FormattedMessage id="timeline.actions.detail.from_other_account" />
 				</Dropdown.Item>

@@ -163,6 +163,7 @@ const StatusDetail: React.FC<Props> = (props) => {
 									server={server}
 									account={account}
 									columnWidth={340}
+									showCount={true}
 									updateStatus={updateStatus}
 									openMedia={props.openMedia}
 									setAccountDetail={setAccountDetail}

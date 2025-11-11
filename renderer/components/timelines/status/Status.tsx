@@ -26,6 +26,7 @@ type Props = {
 	account: Account | null
 	pinned?: boolean
 	columnWidth: number
+	showCount?: boolean
 	updateStatus: (status: Entity.Status) => void
 	openMedia: (media: Array<Entity.Attachment>, index: number) => void
 	setStatusDetail?: (statusId: string, serverId: number, accountId?: number) => void
@@ -194,6 +195,7 @@ const Status: React.FC<Props> = (props) => {
 						account={props.account}
 						status={status}
 						client={client}
+						showCount={props.showCount}
 						setShowReply={() => setReply({ replyStatus: status, inReplyToAccountId: props.account.account_id, type: 'reply' })}
 						setShowEdit={() => setReply({ replyStatus: status, inReplyToAccountId: props.account.account_id, type: 'edit' })}
 						setShowQuote={() => setReply({ replyStatus: status, inReplyToAccountId: props.account.account_id, type: 'quote' })}
