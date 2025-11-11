@@ -73,6 +73,7 @@ const template: MenuItemConstructorOptions[] = [
 const appMenu: MenuItemConstructorOptions = {
 	role: 'appMenu',
 	submenu: [
+		{ label: isJa ? 'TheDeskについて' : 'About TheDesk', click: () => mainWindow?.webContents.send('showAbout') },
 		{ type: 'separator' },
 		{ label: isJa ? '設定' : 'Prefrences', click: () => mainWindow?.loadURL('app://-/setting.html'), accelerator: isMac ? 'Command+,' : undefined },
 		{ type: 'separator' },

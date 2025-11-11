@@ -146,8 +146,11 @@ function App() {
 
 		// Push Notification
 		const isInit = !localStorage.getItem('servers')
-		if (window.electronAPI) window.electronAPI.requestInitialInfo(isInit)
-		if (window.electronAPI)
+		if (window.electronAPI) {
+			window.electronAPI.showAbout(() => {
+				dispatch({ target: 'thirdparty', value: true })
+			})
+			window.electronAPI.requestInitialInfo(isInit)
 			window.electronAPI.onInitialInfo((_event, data: InitialInfo) => {
 				console.log(data)
 				localStorage.setItem('os', data.os)
@@ -159,6 +162,7 @@ function App() {
 				loadAppearance()
 				if (isInit && !data.isFirstRun) setMigrate(`file://${data.currentRendererAbsolutePath}/old.html?at=${location.href}`)
 			})
+		}
 
 		return () => {
 			document.removeEventListener('keydown', handleKeyPress)
