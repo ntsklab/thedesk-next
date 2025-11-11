@@ -1,6 +1,6 @@
 import type { Entity, MegalodonInterface } from '@cutls/megalodon'
 import { Icon } from '@rsuite/icons'
-import { type MouseEventHandler, useState } from 'react'
+import { type MouseEventHandler, useContext, useState } from 'react'
 import { BsArrowRepeat, BsHouseDoor, BsMenuUp, BsPaperclip, BsPencil, BsStar } from 'react-icons/bs'
 import { useIntl } from 'react-intl'
 import { Avatar, Button, FlexboxGrid, Notification, toaster } from 'rsuite'
@@ -16,6 +16,8 @@ import { accountMatch, findAccount, findLink, findTag, type ParsedAccount } from
 import Actions from '../status/Actions'
 import Body from '../status/Body'
 import Poll from '../status/Poll'
+import { TheDeskContext } from '@/context'
+import Quote from '../status/Quote'
 
 type Props = {
 	server: Server
@@ -154,10 +156,9 @@ const actionText = (notification: Entity.Notification, setAccountDetail: (accoun
 
 const Reaction: React.FC<Props> = (props) => {
 	const { formatMessage } = useIntl()
+	const { setReply } = useContext(TheDeskContext)
 	const status = props.notification.status
 	const [spoilered, setSpoilered] = useState<boolean>(status.spoiler_text.length > 0)
-	const [showReply, setShowReply] = useState<boolean>(false)
-	const [showEdit, setShowEdit] = useState<boolean>(false)
 
 	const refresh = async () => {
 		const res = await props.client.getStatus(status.id)
@@ -257,6 +258,7 @@ const Reaction: React.FC<Props> = (props) => {
 					{!spoilered && (
 						<>
 							{status.poll && <Poll poll={status.poll} client={props.client} pollUpdated={refresh} emojis={status.emojis} />}
+							{status.quote_status && <Quote status={status.quote_status} isAnimeIcon={false} setStatusDetail={() => props.setStatusDetail(status.quote_status.id, props.server.id, props.account.id)} />}
 							{status.media_attachments.map((media, index) => (
 								<div key={media.id}>
 									<Button appearance="subtle" size="sm" onClick={() => props.openMedia(status.media_attachments, index)}>
@@ -274,8 +276,9 @@ const Reaction: React.FC<Props> = (props) => {
 						account={props.account}
 						status={status}
 						client={props.client}
-						setShowReply={setShowReply}
-						setShowEdit={setShowEdit}
+						setShowReply={() => setReply({ replyStatus: status, inReplyToAccountId: props.account.account_id, type: 'reply' })}
+						setShowEdit={() => setReply({ replyStatus: status, inReplyToAccountId: props.account.account_id, type: 'edit' })}
+						setShowQuote={() => setReply({ replyStatus: status, inReplyToAccountId: props.account.account_id, type: 'quote' })}
 						updateStatus={props.updateStatus}
 						openReport={() => props.openReport(status, props.client)}
 						openFromOtherAccount={() => props.openFromOtherAccount(status)}
@@ -283,16 +286,6 @@ const Reaction: React.FC<Props> = (props) => {
 					/>
 				</div>
 			</div>
-			{showReply && (
-				<div style={{ padding: '8px 12px' }}>
-					<Reply client={props.client} server={props.server} account={props.account} in_reply_to={status} onClose={() => setShowReply(false)} />
-				</div>
-			)}
-			{showEdit && (
-				<div style={{ padding: '8px 12px' }}>
-					<Reply client={props.client} server={props.server} account={props.account} edit_target={status} onClose={() => setShowEdit(false)} />
-				</div>
-			)}
 		</div>
 	)
 }

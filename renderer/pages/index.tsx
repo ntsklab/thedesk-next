@@ -7,7 +7,7 @@ import Draggable from 'react-draggable'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { ResizableBox } from 'react-resizable'
 import { Animation, Container, Content, DOMHelper, useToaster } from 'rsuite'
-import { listAccounts, listServers, listTimelines, migrateTimelineV1toV2, readSettings, updateColumnWidth } from 'utils/storage'
+import { listAccounts, listServers, listTimelines, migrateTimelineV1toV2, readSettings, updateColumnWidth, updateServers } from 'utils/storage'
 import AddListMember from '@/components/addListMember/AddListMember'
 import Announcements from '@/components/announcements/Announcements'
 import Compose from '@/components/compose/Compose'
@@ -81,11 +81,15 @@ function App() {
 				return formatMessage({ id: 'timeline.notification.status.body' }, { user: useName })
 			case 'update':
 				return formatMessage({ id: 'timeline.notification.update.body' }, { user: useName })
+			case 'follow':
+				return formatMessage({ id: 'timeline.notification.follow.body' }, { user: useName })
+			case 'follow_request':
+				return formatMessage({ id: 'timeline.notification.follow_request.body' }, { user: useName })
 			case 'emoji_reaction':
 			case 'reaction':
 				return formatMessage({ id: 'timeline.notification.emoji_reaction.body' }, { user: useName })
 			default:
-				return null
+				return formatMessage({ id: 'timeline.notifications' })
 		}
 	}
 
@@ -129,6 +133,7 @@ function App() {
 				dispatch({ target: 'newServer', value: true })
 				toaster.push(alert('info', formatMessage({ id: 'alert.no_server' })), { placement: 'topCenter' })
 			} else {
+				updateServers(res.map((s) => s[0]))
 				setServers(
 					res.map((r) => ({
 						server: r[0],

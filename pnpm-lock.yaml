@@ -13,8 +13,8 @@ importers:
   .:
     dependencies:
       '@cutls/megalodon':
-        specifier: 6.3.15
-        version: 6.3.15
+        specifier: 7.0.8
+        version: 7.0.8
       '@emoji-mart/react':
         specifier: ^1.1.1
         version: 1.1.1(emoji-mart@5.6.0)(react@18.2.0)
@@ -90,6 +90,9 @@ importers:
       sass:
         specifier: ^1.93.2
         version: 1.93.2
+      semver:
+        specifier: ^7.7.3
+        version: 7.7.3
       superagent:
         specifier: ^10.0.3
         version: 10.2.3
@@ -121,6 +124,9 @@ importers:
       '@types/sanitize-html':
         specifier: ^2.11.0
         version: 2.16.0
+      '@types/semver':
+        specifier: ^7.7.1
+        version: 7.7.1
       '@types/superagent':
         specifier: ^8.1.9
         version: 8.1.9
@@ -209,8 +215,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@cutls/megalodon@6.3.15':
-    resolution: {integrity: sha512-pPNJffLVr9iTR5lqFKI3g9jB0EV35bcFmtiOaJWSoPyfQ4eG9y5/hLLRBzbGgo78Ud3PUIBDuQAhDoGKeTxnsw==}
+  '@cutls/megalodon@7.0.8':
+    resolution: {integrity: sha512-vAEUAxqt3aMpofY4M4UHZH7n3YBjCaQt3NeaJX0YygHk4tWlajLXnHV23vCN+alhgQ1t+SG1u90lrdHypbcymA==}
     engines: {node: '>=22.16.0'}
 
   '@develar/schema-utils@2.6.5':
@@ -576,6 +582,9 @@ packages:
 
   '@types/scheduler@0.16.8':
     resolution: {integrity: sha512-WZLiwShhwLRmeV6zH+GkbOFT6Z6VklCItrDioxUnv+u4Ll+8vKeFySoFyK/0ctcRpOmwAicELfmys1sDc/Rw+A==}
+
+  '@types/semver@7.7.1':
+    resolution: {integrity: sha512-FmgJfu+MOcQ370SD0ev7EI8TlCAfKYU+B4m5T3yXc1CiRN94g/SZPtsCkk506aUDtlMnFZvasDwHHUcZUEaYuA==}
 
   '@types/superagent@8.1.9':
     resolution: {integrity: sha512-pTVjI73witn+9ILmoJdajHGW2jkSaOzhiFYF1Rd3EQ94kymLqB9PjD9ISg7WaALC7+dCHT0FGe9T2LktLq/3GQ==}
@@ -2484,7 +2493,7 @@ snapshots:
   '@biomejs/cli-win32-x64@2.2.7':
     optional: true
 
-  '@cutls/megalodon@6.3.15':
+  '@cutls/megalodon@7.0.8':
     dependencies:
       '@badgateway/oauth2-client': 2.4.2
       '@types/ws': 8.18.1
@@ -2908,6 +2917,8 @@ snapshots:
       htmlparser2: 8.0.2
 
   '@types/scheduler@0.16.8': {}
+
+  '@types/semver@7.7.1': {}
 
   '@types/superagent@8.1.9':
     dependencies:

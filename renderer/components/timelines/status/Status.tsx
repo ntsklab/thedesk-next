@@ -1,18 +1,15 @@
 import type { Entity, MegalodonInterface } from '@cutls/megalodon'
 import { Icon } from '@rsuite/icons'
-import { type HTMLAttributes, type MouseEventHandler, useContext, useEffect, useState } from 'react'
+import { type HTMLAttributes, type MouseEventHandler, useContext, useState } from 'react'
 import { BsArrowRepeat, BsPin } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Avatar, Button, FlexboxGrid, Notification, useToaster } from 'rsuite'
-import Reply from '@/components/compose/Status'
 import Time from '@/components/utils/Time'
 import { TheDeskContext } from '@/context'
 import { TIMELINE_STATUSES_COUNT } from '@/defaults'
 import type { Account } from '@/entities/account'
 import type { CustomEmojiCategory } from '@/entities/emoji'
 import type { Server } from '@/entities/server'
-import type { Settings } from '@/entities/settings'
-import type { ColumnWidth } from '@/entities/timeline'
 import emojify from '@/utils/emojify'
 import { open } from '@/utils/openBrowser'
 import { accountMatch, findAccount, findLink, findTag, type ParsedAccount, privacyColor, privacyIcon } from '@/utils/statusParser'
@@ -20,6 +17,7 @@ import Actions from './Actions'
 import Attachments from './Attachments'
 import Body from './Body'
 import Poll from './Poll'
+import Quote from './Quote'
 
 type Props = {
 	status: Entity.Status
@@ -172,10 +170,11 @@ const Status: React.FC<Props> = (props) => {
 					{!spoilered && (
 						<>
 							{status.poll && <Poll poll={status.poll} client={props.client} pollUpdated={refresh} emojis={status.emojis} />}
+							{status.quote_status && <Quote status={status.quote_status} isAnimeIcon={isAnimeIcon} setStatusDetail={() => props.setStatusDetail(status.quote_status.id, props.server.id, props.account.id)} />}
 							{status.media_attachments.length > 0 && <Attachments attachments={status.media_attachments} sensitive={status.sensitive} openMedia={props.openMedia} columnWidth={props.columnWidth} />}
 							{status.emoji_reactions &&
 								status.emoji_reactions.map((e, i) => (
-									<Button appearance="subtle" size="sm" style={{ marginLeft: i === 0 ? 0 : 2 }} key={e.name} onClick={() => emojiClicked(e)} active={e.me} disabled={e.name.includes('@') && props.server.sns === 'firefish'} title={e.name}>
+									<Button appearance="subtle" size="sm" style={{ marginLeft: i === 0 ? 0 : 2 }} key={e.name} onClick={() => emojiClicked(e)} active={e.me} disabled={e.name.includes('@') && props.server.sns === 'misskey'} title={e.name}>
 										{e.url ? (
 											<>
 												<img src={e.url} style={{ height: '20px' }} alt={e.name} /> <span style={{ marginLeft: '0.2em' }}>{e.count}</span>
@@ -197,6 +196,7 @@ const Status: React.FC<Props> = (props) => {
 						client={client}
 						setShowReply={() => setReply({ replyStatus: status, inReplyToAccountId: props.account.account_id, type: 'reply' })}
 						setShowEdit={() => setReply({ replyStatus: status, inReplyToAccountId: props.account.account_id, type: 'edit' })}
+						setShowQuote={() => setReply({ replyStatus: status, inReplyToAccountId: props.account.account_id, type: 'quote' })}
 						updateStatus={props.updateStatus}
 						openReport={() => props.openReport(status, props.client)}
 						openFromOtherAccount={() => props.openFromOtherAccount(status)}

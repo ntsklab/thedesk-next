@@ -1,5 +1,5 @@
 import type { Timeline } from '@/entities/timeline'
-import generator, { detector, type WebSocketInterface } from '@cutls/megalodon'
+import generator, { type WebSocketInterface } from '@cutls/megalodon'
 import { listServers, getAccount } from './storage'
 import type { Server } from '@/entities/server'
 import type { Settings } from '@/entities/settings'
@@ -36,8 +36,7 @@ export const start = async (timelines: Array<[Timeline, Server, Account]>, gener
 				const noStreaming = server.no_streaming
 				const isSubscribable = !server.cannot_subscribe
 				try {
-					const sns = await detector(server.base_url)
-					const client = generator(sns, server.base_url, account?.access_token)
+					const client = generator(server.sns, server.base_url, account?.access_token)
 					const streaming = !noStreaming && (isSubscribable || account) ? await client.userStreamingSubscription() : undefined
 					userStreamings.push([server.id, streaming, 'home'])
 				} catch (e) {
@@ -56,8 +55,7 @@ export const start = async (timelines: Array<[Timeline, Server, Account]>, gener
 			try {
 				const accountId = server.account_id
 				const [account] = accountId ? await getAccount({ id: accountId }) : [null]
-				const sns = await detector(server.base_url)
-				const client = generator(sns, server.base_url, account?.access_token, 'TheDesk(Desktop)')
+				const client = generator(server.sns, server.base_url, account?.access_token, 'TheDesk(Desktop)')
 				const noStreaming = server.no_streaming
 				const isSubscribable = !server.cannot_subscribe
 				if (noStreaming) continue

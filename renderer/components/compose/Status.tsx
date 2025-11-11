@@ -47,6 +47,7 @@ type Props = {
 	client: MegalodonInterface
 	in_reply_to?: Entity.Status
 	edit_target?: Entity.Status
+	quote_target?: Entity.Status
 	defaultVisibility?: 'public' | 'unlisted' | 'private' | 'direct'
 	defaultNSFW?: boolean
 	defaultLanguage?: string | null
@@ -253,6 +254,11 @@ const Status: React.FC<Props> = (props) => {
 			if (formValue.poll !== undefined && formValue.poll.options.length > 0) {
 				options = Object.assign({}, options, {
 					poll: formValue.poll
+				})
+			}
+			if (props.quote_target) {
+				options = Object.assign({}, options, {
+					quoted_status_id: props.quote_target.id
 				})
 			}
 			if (formValue.scheduled_at !== undefined) {

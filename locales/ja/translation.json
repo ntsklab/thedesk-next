@@ -102,7 +102,7 @@
 			"finish": "完了",
 			"authorization_code": "認証コード",
 			"authorization_help": "ブラウザに表示された認証コードを貼り付けてください",
-			"without_code_authorize": "MisskeyやFirefishのサポートはかなり限定的で、サポート対象外です。お使いのブラウザでFedistarを許可してください。その後、認証ボタンを押してください",
+			"without_code_authorize": "Misskeyのサポートはかなり限定的で、サポート対象外です。お使いのブラウザでFedistarを許可してください。その後、認証ボタンを押してください",
 			"authorization_url": "自動でブラウザが開かない場合はURLをコピーして貼り付けてください。",
 			"authorize": "認証",
 			"loading": "読み込み中"
@@ -336,6 +336,7 @@
 			"favourite": "お気に入り",
 			"emoji_reaction": "絵文字リアクション",
 			"bookmark": "ブックマーク",
+			"quote": "引用",
 			"detail": {
 				"title": "詳細",
 				"browser": "元のページを開く",

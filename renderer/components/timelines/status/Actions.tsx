@@ -2,7 +2,7 @@ import type { Entity, MegalodonInterface, Response } from '@cutls/megalodon'
 import Picker from '@emoji-mart/react'
 import { Icon } from '@rsuite/icons'
 import { type Dispatch, forwardRef, type ReactElement, type SetStateAction, useContext, useRef, useState } from 'react'
-import { BsBookmark, BsEmojiSmile, BsEnvelope, BsFillBookmarkFill, BsLock, BsRepeat, BsReply, BsStar, BsStarFill, BsThreeDots } from 'react-icons/bs'
+import { BsBookmark, BsEmojiSmile, BsEnvelope, BsFillBookmarkFill, BsLock, BsQuote, BsRepeat, BsReply, BsStar, BsStarFill, BsThreeDots } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Dropdown, FlexboxGrid, IconButton, Popover, useToaster, Whisper } from 'rsuite'
 import alert from '@/components/utils/alert'
@@ -23,6 +23,7 @@ type Props = {
 				favourite: boolean
 				bookmark: boolean
 				emoji: boolean
+				quote: boolean
 				detail: boolean
 		  }
 	server: Server
@@ -31,6 +32,7 @@ type Props = {
 	client: MegalodonInterface
 	setShowReply?: Dispatch<SetStateAction<boolean>>
 	setShowEdit?: Dispatch<SetStateAction<boolean>>
+	setShowQuote?: Dispatch<SetStateAction<boolean>>
 	updateStatus: (status: Entity.Status) => void
 	openReport?: () => void
 	openFromOtherAccount?: () => void
@@ -129,7 +131,8 @@ const Actions: React.FC<Props> = (props) => {
 			<Picker data={data} custom={props.customEmojis} onEmojiSelect={onEmojiSelect} previewPosition="none" set="native" perLine="6" theme={theme === 'high-contrast' ? 'dark' : theme} />
 		</Popover>
 	))
-	const isDisabledEmoji = props.server.domain !== 'fedibird.com' && props.server.sns === 'mastodon' && !(props.server.emoji_reactions ?? false)
+	const isAvailableEmoji = props.server.emoji_reactions
+	const isAvailableQuote = props.server.quote_support && status.quote_approval !== 'denied'
 
 	return (
 		<div className="toolbox">
@@ -173,15 +176,23 @@ const Actions: React.FC<Props> = (props) => {
 					/>
 				</FlexboxGrid.Item>
 				<FlexboxGrid.Item>
-					{/** delay is required to fix popover position **/}
-					<Whisper trigger="click" preventOverflow delay={100} ref={emojiPickerRef} speaker={<EmojiPicker />}>
-						<IconButton
-							appearance="link"
-							icon={<Icon as={BsEmojiSmile} />}
-							disabled={(typeof props.disabled === 'boolean' ? props.disabled : props.disabled.emoji) || isDisabledEmoji}
-							title={formatMessage({ id: 'timeline.actions.emoji_reaction' })}
+					{isAvailableEmoji ? (
+						<Whisper trigger="click" preventOverflow delay={100} ref={emojiPickerRef} speaker={<EmojiPicker />}>
+							<IconButton
+								appearance="link"
+								icon={<Icon as={BsEmojiSmile} />}
+								disabled={(typeof props.disabled === 'boolean' ? props.disabled : props.disabled.emoji) || !isAvailableEmoji}
+								title={formatMessage({ id: 'timeline.actions.emoji_reaction' })}
+							/>
+						</Whisper>
+					) : (
+						<ActionButton
+							disabled={(typeof props.disabled === 'boolean' ? props.disabled : props.disabled.quote) || !isAvailableQuote}
+							icon={<Icon as={BsQuote} />}
+							onClick={() => props.setShowQuote((current) => !current)}
+							title={formatMessage({ id: 'timeline.actions.quote' })}
 						/>
-					</Whisper>
+					)}
 				</FlexboxGrid.Item>
 				<FlexboxGrid.Item>
 					<Whisper

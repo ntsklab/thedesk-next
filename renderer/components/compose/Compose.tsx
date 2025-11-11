@@ -174,6 +174,7 @@ const Compose: React.FC<Props> = (props) => {
 						onClose={() => onClose()}
 						in_reply_to={reply?.type === 'reply' ? reply.replyStatus : undefined}
 						edit_target={reply?.type === 'edit' ? reply.replyStatus : undefined}
+						quote_target={reply?.type === 'quote' ? reply.replyStatus : undefined}
 					/>
 				)}
 			</Content>

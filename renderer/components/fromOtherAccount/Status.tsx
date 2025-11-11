@@ -149,6 +149,7 @@ function Post(props: PostProps) {
 								reblog: false,
 								favourite: false,
 								bookmark: false,
+								quote: true,
 								emoji: true,
 								detail: true
 							}}
