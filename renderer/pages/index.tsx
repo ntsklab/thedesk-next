@@ -51,6 +51,7 @@ function App() {
 	const [unreads, setUnreads] = useState<Unread[]>([])
 	const [composeOpened, setComposeOpened] = useState<boolean>(false)
 	const [searchOpened, setSearchOpened] = useState<boolean>(false)
+	const [isFloatingCompose, setIsFloatingCompose] = useState<boolean>(true)
 	const [style, setStyle] = useState<CSSProperties>({})
 	const [highlighted, setHighlighted] = useState<Timeline | null>(null)
 	const [composePosition, setComposePosition] = useState<[number, number]>([0, 0])
@@ -243,6 +244,7 @@ function App() {
 			dayjs.locale(res.appearance.language)
 			loadTheme()
 			saveTimelineConfig(res.timeline)
+			setIsFloatingCompose(res.compose.floating === 'yes')
 			document.documentElement.setAttribute('lang', res.appearance.language)
 		})
 	}
@@ -250,6 +252,7 @@ function App() {
 	const toggleCompose = () => {
 		if (servers.find((s) => s.account !== null)) {
 			setSearchOpened(false)
+			if (!composeOpened) setTimeout(() => document.getElementById('status').focus(), 100)
 			setComposeOpened((previous) => !previous)
 		} else {
 			toaster.push(alert('info', formatMessage({ id: 'alert.needAuth' })), { placement: 'topStart' })
@@ -266,6 +269,8 @@ function App() {
 	}
 	const [px, py] = composePosition
 	const draggalePosition = { x: Math.min(px >= 0 ? px : 0, width - 300), y: Math.min(py >= 0 ? py : 0, height - 300) }
+	const disableDrag = !isFloatingCompose
+	const composeClass = disableDrag ? 'compose-left-' : 'compose-drag-'
 
 	return (
 		<TimelineRefreshContext.Provider value={{ timelineRefresh }}>
@@ -311,11 +316,11 @@ function App() {
 						<FormattedMessage id="migrate" /> <a href={migrate}>Migrate</a>
 					</div>
 				)}
-				<Container style={{ height: 'calc(100% - 56px)' }}>
-					<Animation.Transition in={composeOpened} exitedClassName="compose-exited" exitingClassName="compose-exiting" enteredClassName="compose-entered" enteringClassName="compose-entering">
+				<Container style={{ height: 'calc(100% - 56px)', display: 'flex', flexDirection: 'row' }}>
+					<Animation.Transition in={composeOpened} exitedClassName={`${composeClass}exited`} exitingClassName={`${composeClass}exiting`} enteredClassName={`${composeClass}entered`} enteringClassName={`${composeClass}entering`}>
 						{(props, ref) => (
-							<Draggable handle=".draggable" position={draggalePosition} onStop={(_e, data) => setComposePosition([data.x, data.y])}>
-								<div {...props} ref={ref} style={{ position: 'fixed', zIndex: 4, width: '320px' }}>
+							<Draggable handle=".draggable" disabled={disableDrag} position={disableDrag ? { x: 0, y: 0 } : draggalePosition} onStop={(_e, data) => setComposePosition([data.x, data.y])}>
+								<div {...props} ref={ref} style={disableDrag ? { width: '320px', flexGrow: 1 } : { position: 'fixed', zIndex: 4, width: '320px' }}>
 									<Compose setOpened={setComposeOpened} servers={servers} />
 								</div>
 							</Draggable>

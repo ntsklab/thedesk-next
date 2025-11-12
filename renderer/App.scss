@@ -22,27 +22,37 @@
   }
 }
 
-.compose-exiting,
-.compose-entering {
+.compose-drag-exiting,
+.compose-drag-entering,
+.compose-left-exiting,
+.compose-left-entering {
   animation: .1s linear;
   animation-fill-mode: forwards;
 }
 
 
-.compose-exiting {
+.compose-drag-exiting {
   animation-name: fadeOutCompose;
 }
-
-.compose-entering {
-  animation-name: fadeInCompose;
+.compose-left-exiting {
+  animation-name: slideOutCompose;
 }
 
 
-.compose-entered {
+.compose-drag-entering {
+  animation-name: fadeInCompose;
+}
+.compose-left-entering {
+  opacity: 1;
+  animation-name: slideInCompose;
+}
+
+
+.compose-drag-entered {
   opacity: 1;
 }
 
-.compose-exited {
+.compose-drag-exited, .compose-left-exited {
   opacity: 0;
   display: none;
 }

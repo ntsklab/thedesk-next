@@ -45,6 +45,7 @@ const themes = [
 const time = ['relative', 'absolute', '12h']
 const afterPost = ['close', 'stay']
 const btnPosition = ['left', 'right']
+const floating = ['yes', 'no']
 const vis = ['public', 'unlisted', 'private', 'direct']
 
 function App() {
@@ -368,22 +369,26 @@ function App() {
 					<p style={{ fontSize: '1.3em', marginTop: 12, fontWeight: 'bold' }}>
 						<FormattedMessage id="settings.settings.compose.title" />
 					</p>
-					<SelectForm
+					<RadioForm
+						label={formatMessage({ id: 'settings.settings.compose.floating.title' })}
+						hint={formatMessage({ id: 'settings.settings.compose.floating.hint' })}
+						value={compose.floating}
+						onChange={(value) => updateCompose('floating', value)}
+						data={labelValueBuilder('compose.floating', floating)}
+						fontSize="1.1em"
+					/>
+					<RadioForm
 						label={formatMessage({ id: 'settings.settings.compose.btnPosition.title' })}
 						value={compose.btnPosition}
 						onChange={(value) => updateCompose('btnPosition', value)}
 						data={labelValueBuilder('compose.btnPosition', btnPosition)}
-						searchable={false}
-						style={{ width: '100%' }}
 						fontSize="1.1em"
 					/>
-					<SelectForm
+					<RadioForm
 						label={formatMessage({ id: 'settings.settings.compose.afterPost.title' })}
 						value={compose.afterPost}
 						onChange={(value) => updateCompose('afterPost', value)}
 						data={labelValueBuilder('compose.afterPost', afterPost)}
-						searchable={false}
-						style={{ width: '100%' }}
 						fontSize="1.1em"
 					/>
 					<SelectForm

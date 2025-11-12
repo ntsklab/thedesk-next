@@ -172,6 +172,12 @@
 					"left": "Left",
 					"right": "Right"
 				},
+				"floating": {
+					"title": "Floating compose box",
+					"hint": "You can move the compose box anywhere on the screen",
+					"yes": "Enable",
+					"no": "Disable(fixed to left)"
+				},
 				"afterPost": {
 					"title": "After posting, compose box will be...",
 					"close": "Close",
