@@ -108,6 +108,33 @@ export default function Results(props: Props) {
 					</InputGroup>
 				</Form>
 			</div>
+			{/* hashtags */}
+			{hashtags.length > 0 && (
+				<div style={{ width: '100%' }}>
+					<div style={{ fontSize: '1.2em', margin: '0.4em 0' }}>
+						<Icon as={BsHash} style={{ fontSize: '1.2em', marginRight: '0.2em' }} />
+						<FormattedMessage id="search.results.hashtags" />
+					</div>
+					<List>
+						{hashtags.map((tag) => (
+							<List.Item
+								key={tag.name}
+								style={{ backgroundColor: 'var(--rs-border-primary)', padding: '4px', paddingRight: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+								title={`#${tag.name}`}
+							>
+								<div style={{ padding: '12px 8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} onClick={() => openTag(tag)}>
+									#{tag.name}
+								</div>
+
+								<GraphDraw his={tag.history} />
+							</List.Item>
+						))}
+						<List.Item key="more" style={{ backgroundColor: 'var(--rs-border-primary)', padding: '1em 0', textAlign: 'center', cursor: 'pointer' }} onClick={() => loadMoreHashtag()}>
+							<FormattedMessage id="search.results.more" />
+						</List.Item>
+					</List>
+				</div>
+			)}
 			{/* accounts */}
 			{accounts.length > 0 && (
 				<div style={{ width: '100%' }}>
@@ -122,32 +149,6 @@ export default function Results(props: Props) {
 							</List.Item>
 						))}
 						<List.Item key="more" style={{ backgroundColor: 'var(--rs-border-primary)', padding: '1em 0', textAlign: 'center', cursor: 'pointer' }} onClick={() => loadMoreAccount()}>
-							<FormattedMessage id="search.results.more" />
-						</List.Item>
-					</List>
-				</div>
-			)}
-			{/* hashtags */}
-			{hashtags.length > 0 && (
-				<div style={{ width: '100%' }}>
-					<div style={{ fontSize: '1.2em', margin: '0.4em 0' }}>
-						<Icon as={BsHash} style={{ fontSize: '1.2em', marginRight: '0.2em' }} />
-						<FormattedMessage id="search.results.hashtags" />
-					</div>
-					<List>
-						{hashtags.map((tag) => (
-							<List.Item
-								key={tag.name}
-								style={{ backgroundColor: 'var(--rs-border-primary)', padding: '4px', paddingRight: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-							>
-								<div style={{ padding: '12px 8px', cursor: 'pointer' }} onClick={() => openTag(tag)}>
-									#{tag.name}
-								</div>
-
-								<GraphDraw his={tag.history} />
-							</List.Item>
-						))}
-						<List.Item key="more" style={{ backgroundColor: 'var(--rs-border-primary)', padding: '1em 0', textAlign: 'center', cursor: 'pointer' }} onClick={() => loadMoreHashtag()}>
 							<FormattedMessage id="search.results.more" />
 						</List.Item>
 					</List>

@@ -383,9 +383,9 @@
   padding: 10px;
 }
 
-.link-preview-panel {
+.link-preview-panel, .rs-list-item {
   &:hover {
-    background-color: var(--rs-avatar-offset-color);
+    background-color: var(--rs-avatar-offset-color) !important;
     transition-duration: 0.2s;
   }
 }

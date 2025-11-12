@@ -160,22 +160,34 @@ export default function Search(props: Props) {
 						setTagDetail={setTagDetail}
 					/>
 				)}
-				{isShowTrend && isLoading ? <div style={{ display: 'flex', width: '100%', justifyContent: 'center', marginTop: 30 }}><Loader /></div>: (
+				{isShowTrend && isLoading ? (
+					<div style={{ display: 'flex', width: '100%', justifyContent: 'center', marginTop: 30 }}>
+						<Loader />
+					</div>
+				) : (
 					<>
 						<div style={{ display: 'flex', alignItems: 'center', margin: '0.4em 0' }}>
 							<Icon as={BsFire} style={{ fontSize: '1.4em', marginRight: '0.2em' }} />
-							<p style={{ fontSize: '1.4em' }}><FormattedMessage id="search.trend" /></p>
+							<p style={{ fontSize: '1.4em' }}>
+								<FormattedMessage id="search.trend" />
+							</p>
 						</div>
 
 						<div style={{ display: 'flex', alignItems: 'center', margin: '0.4em 0' }}>
 							<Icon as={BsHash} style={{ fontSize: '1.2em', marginRight: '0.2em' }} />
-							<p style={{ fontSize: '1.2em' }}><FormattedMessage id="search.results.hashtags" /></p>
+							<p style={{ fontSize: '1.2em' }}>
+								<FormattedMessage id="search.results.hashtags" />
+							</p>
 						</div>
 
 						<List>
 							{trendTags.map((tag) => (
-								<List.Item key={tag.name} style={{ backgroundColor: 'var(--rs-border-primary)', padding: '4px', paddingRight: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-									<div style={{ padding: '12px 8px', cursor: 'pointer' }} onClick={() => setTagDetail(tag.name, fromAccount[1].id, fromAccount[0].id)}>
+								<List.Item
+									key={tag.name}
+									style={{ backgroundColor: 'var(--rs-border-primary)', padding: '4px', paddingRight: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+									title={`#${tag.name}`}
+								>
+									<div style={{ padding: '12px 8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} onClick={() => setTagDetail(tag.name, fromAccount[1].id, fromAccount[0].id)}>
 										#{tag.name}
 									</div>
 									<GraphDraw his={tag.history} />
@@ -186,7 +198,9 @@ export default function Search(props: Props) {
 
 						<div style={{ display: 'flex', alignItems: 'center', margin: '0.4em 0' }}>
 							<Icon as={BsPeople} style={{ fontSize: '1.2em', marginRight: '0.2em' }} />
-							<p style={{ fontSize: '1.2em' }}><FormattedMessage id="search.results.accounts" /></p>
+							<p style={{ fontSize: '1.2em' }}>
+								<FormattedMessage id="search.results.accounts" />
+							</p>
 						</div>
 						<List>
 							{trendUsers.map((account) => (
@@ -199,7 +213,9 @@ export default function Search(props: Props) {
 
 						<div style={{ display: 'flex', alignItems: 'center', margin: '0.4em 0' }}>
 							<Icon as={BsChatQuote} style={{ fontSize: '1.2em', marginRight: '0.2em' }} />
-							<p style={{ fontSize: '1.2em' }}><FormattedMessage id="search.results.statuses" /></p>
+							<p style={{ fontSize: '1.2em' }}>
+								<FormattedMessage id="search.results.statuses" />
+							</p>
 						</div>
 						{trendPosts.map((status) => (
 							<Panel
@@ -210,15 +226,24 @@ export default function Search(props: Props) {
 								style={{ cursor: 'pointer', marginTop: '0.2em', padding: 5 }}
 								className="link-preview-panel"
 							>
-								<div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5em', justifyContent: 'space-between' }}>
-									<div style={{ display: 'flex', alignItems: 'center' }}>
+								<div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5em', justifyContent: 'flex-start' }}>
+									<div style={{ width: '10%' }}>
 										<Avatar src={status.account.avatar_static} title={status.account.acct} alt={status.account.acct} size="xs" />
-										<span dangerouslySetInnerHTML={{ __html: emojify(status.account.display_name, status.account.emojis) }} style={{ marginLeft: 2 }} />
-										<span style={{ color: 'var(--rs-text-tertiary)' }}>@{status.account.acct}</span>
 									</div>
-									<Time style={{ color: 'var(--rs-text-tertiary)' }} time={status.created_at} />
+									<div style={{ width: '70%', display: 'flex', alignItems: 'center' }}>
+										<p
+											dangerouslySetInnerHTML={{ __html: emojify(status.account.display_name, status.account.emojis) }}
+											style={{ marginLeft: 2, overflow: 'hidden', width: '70%', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+										/>
+										<p style={{ color: 'var(--rs-text-tertiary)', marginLeft: 2, marginTop: 0, width: '30%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+											@{status.account.acct}
+										</p>
+									</div>
+									<div style={{ width: '20%', display: 'flex', justifyContent: 'flex-end' }}>
+										<Time style={{ color: 'var(--rs-text-tertiary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} time={status.created_at} />
+									</div>
 								</div>
-								<p>{stripForSearch(status.content)}</p>
+								<p dangerouslySetInnerHTML={{ __html: emojify(stripForSearch(status.content), status.emojis) }} />
 							</Panel>
 						))}
 						{!trendPosts.length && <FormattedMessage id="search.noData" />}
