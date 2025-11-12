@@ -57,6 +57,7 @@ export async function addTimeline(server: Server, timeline: AddTimeline): Promis
 			sort: flatTls.length + 1,
 			server_id: server.id,
 			list_id: timeline.listId || null,
+			is_misskey_antenna: timeline.isMisskeyAntenna || false,
 			column_width: timeline.columnWidth
 		}
 	])

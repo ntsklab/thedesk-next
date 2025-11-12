@@ -3,7 +3,7 @@ import { Icon } from '@rsuite/icons'
 import { useRouter } from 'next/router'
 import parse from 'parse-link-header'
 import { type CSSProperties, forwardRef, useCallback, useContext, useEffect, useRef, useState } from 'react'
-import { BsArrowClockwise, BsBookmark, BsChevronLeft, BsChevronRight, BsGlobe2, BsHash, BsHouseDoor, BsListUl, BsPeople, BsSliders, BsSquare, BsStar, BsViewStacked, BsX } from 'react-icons/bs'
+import { BsArrowClockwise, BsBookmark, BsBroadcast, BsChevronLeft, BsChevronRight, BsGlobe2, BsHash, BsHouseDoor, BsListUl, BsPeople, BsSliders, BsSquare, BsStar, BsViewStacked, BsX } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Virtuoso } from 'react-virtuoso'
 import { Avatar, Button, Container, Content, Divider, FlexboxGrid, Header, List, Loader, Popover, Radio, RadioGroup, Stack, useToaster, Whisper } from 'rsuite'
@@ -255,7 +255,7 @@ export default function TimelineColumn(props: Props) {
 			}
 			case 'list': {
 				if (tl.list_id) {
-					const res = await client.getListTimeline(tl.list_id, options)
+					const res = await client.getListTimeline(tl.list_id, options, tl.is_misskey_antenna)
 					return res.data
 				}
 				return []
@@ -292,7 +292,8 @@ export default function TimelineColumn(props: Props) {
 		}
 	}, [client, props.timeline])
 
-	const timelineIcon = (kind: TimelineKind) => {
+	const timelineIcon = (kind: TimelineKind, isMisskeyAntenna: boolean) => {
+		if (isMisskeyAntenna) return <Icon as={BsBroadcast} />
 		switch (kind) {
 			case 'home':
 				return <Icon as={BsHouseDoor} />
@@ -431,7 +432,7 @@ export default function TimelineColumn(props: Props) {
 									width: 'calc(2.4em - 6px)'
 								}}
 							>
-								{timelineIcon(props.timeline.kind)}
+								{timelineIcon(props.timeline.kind, props.timeline.is_misskey_antenna)}
 							</FlexboxGrid.Item>
 							{/** name **/}
 							<FlexboxGrid.Item

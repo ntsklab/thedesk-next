@@ -182,8 +182,8 @@ const Actions: React.FC<Props> = (props) => {
 						title={formatMessage({ id: 'timeline.actions.bookmark' })}
 					/>
 				</FlexboxGrid.Item>
-				<FlexboxGrid.Item>
-					{isAvailableEmoji ? (
+				{isAvailableEmoji && (
+					<FlexboxGrid.Item>
 						<Whisper trigger="click" preventOverflow delay={100} ref={emojiPickerRef} speaker={<EmojiPicker />}>
 							<IconButton
 								appearance="link"
@@ -193,15 +193,16 @@ const Actions: React.FC<Props> = (props) => {
 								title={formatMessage({ id: 'timeline.actions.emojiReaction' })}
 							/>
 						</Whisper>
-					) : (
-						<ActionButton
-							disabled={(typeof props.disabled === 'boolean' ? props.disabled : props.disabled.quote) || !isAvailableQuote}
-							icon={<Icon as={BsQuote} />}
-							count={props.showCount ? status.quotes_count : undefined}
-							onClick={() => props.setShowQuote((current) => !current)}
-							title={formatMessage({ id: 'timeline.actions.quote' })}
-						/>
-					)}
+					</FlexboxGrid.Item>
+				)}
+				<FlexboxGrid.Item>
+					<ActionButton
+						disabled={(typeof props.disabled === 'boolean' ? props.disabled : props.disabled.quote) || !isAvailableQuote}
+						icon={<Icon as={BsQuote} />}
+						count={props.showCount ? status.quotes_count : undefined}
+						onClick={() => props.setShowQuote((current) => !current)}
+						title={formatMessage({ id: 'timeline.actions.quote' })}
+					/>
 				</FlexboxGrid.Item>
 				<FlexboxGrid.Item>
 					<Whisper

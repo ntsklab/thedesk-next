@@ -11,11 +11,13 @@ export type Timeline = {
 	tts?: boolean
 	mediaOnly?: boolean
 	stacked?: boolean
+	is_misskey_antenna?: boolean
 }
 export type AddTimeline = {
 	kind: TimelineKind
 	name: string
 	listId?: string
+	isMisskeyAntenna?: boolean
 	columnWidth: ColumnWidth | number
 }
 export const colorList = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet'] as const
