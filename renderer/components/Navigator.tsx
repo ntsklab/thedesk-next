@@ -35,6 +35,7 @@ import type { Unread } from '@/entities/unread'
 import FailoverImg from '@/utils/failoverImg'
 import Notifications from './timelines/Notifications'
 import { openInApp } from '@/utils/openBrowser'
+import { Context } from '@/theme'
 
 type ImitateFormattedMessage = ({ id }: { id: string }) => string
 
@@ -62,6 +63,8 @@ const diceCt = (dice: number) => {
 const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 	const { formatMessage } = useIntl()
 	const { timelineConfig } = useContext(TheDeskContext)
+	const { theme } = useContext(Context)
+	const isDark = theme === 'dark'
 	const { timelineRefresh } = useContext(TimelineRefreshContext)
 	const { servers, openAuthorize, openAnnouncements, openThirdparty, openSettings } = props
 	const [awake, setAwake] = useState(0)
@@ -166,7 +169,7 @@ const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 			<div style={{ display: 'flex', alignItems: 'center' }}>
 				<div style={{ display: 'flex', alignItems: 'center' }}>
 					{config.btnPosition === 'left' && (
-						<Button appearance="primary" color="green" size="lg" onClick={props.toggleCompose} startIcon={<Icon as={BsPencilSquare} />} style={{ marginLeft: '15px' }}>
+						<Button appearance="primary" color="green" size="lg" onClick={props.toggleCompose} startIcon={<Icon as={BsPencilSquare} />} style={{ marginLeft: '15px', borderRadius: 16 }}>
 							<FormattedMessage id="compose.post" />
 						</Button>
 					)}
@@ -219,7 +222,7 @@ const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 				</div>
 			</div>
 			<div style={{ display: 'flex', alignItems: 'center', paddingRight: '10px' }}>
-				<div style={{ display: 'flex', alignItems: 'center', border: '1px solid', borderRadius: '5px', marginRight: '10px' }}>
+				<div style={{ display: 'flex', alignItems: 'center', border: '1px solid', borderColor: isDark ? 'white' : 'var(--rs-text-active)', borderRadius: '16px', marginRight: '10px' }}>
 					<Whisper
 						placement="top"
 						controlId="control-id-setting-menu"
@@ -248,7 +251,7 @@ const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 					</Button>
 				</div>
 				{(!config.btnPosition || config.btnPosition === 'right') && (
-					<Button appearance="primary" color="green" size="lg" onClick={props.toggleCompose} startIcon={<Icon as={BsPencilSquare} />}>
+					<Button appearance="primary" color="green" size="lg" style={{ borderRadius: 16 }} onClick={props.toggleCompose} startIcon={<Icon as={BsPencilSquare} />}>
 						<FormattedMessage id="compose.post" />
 					</Button>
 				)}
@@ -354,7 +357,11 @@ const serverMenu = (
 					<FormattedMessage id="navigator.servers.requiresLogin" />
 				)}
 			</div>
-			{server.server.account_id !== null && isMAS && (<Button onClick={() => handleSelect('delete_account')} appearance="link" color="red"><FormattedMessage id="navigator.servers.accountDeleteOption" /></Button>)}
+			{server.server.account_id !== null && isMAS && (
+				<Button onClick={() => handleSelect('delete_account')} appearance="link" color="red">
+					<FormattedMessage id="navigator.servers.accountDeleteOption" />
+				</Button>
+			)}
 		</Popover>
 	)
 }

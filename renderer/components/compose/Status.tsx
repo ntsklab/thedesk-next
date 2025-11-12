@@ -600,7 +600,7 @@ const Status: React.FC<Props> = (props) => {
 							<Icon as={BsMenuButtonWide} style={{ fontSize: '1.1em' }} />
 						</Button>
 						<Whisper placement="auto" trigger="click" speaker={VisibilityDropdown}>
-							<Button appearance="subtle">
+							<Button appearance="subtle" style={{ padding: '8px 8px' }}>
 								<Icon as={privacyIcon(visibility)} style={{ fontSize: props.server.quote_support ? '0.8em' : '1.1em', color: privacyColor(visibility) }} />
 								{props.server.quote_support && <span>/</span>}
 								{props.server.quote_support && <Icon as={quoteIcon(approvedQuote)} style={{ fontSize: '0.7em', position: 'relative', top: 3 }} />}

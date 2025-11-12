@@ -320,8 +320,8 @@ function App() {
 					<Animation.Transition in={composeOpened} exitedClassName={`${composeClass}exited`} exitingClassName={`${composeClass}exiting`} enteredClassName={`${composeClass}entered`} enteringClassName={`${composeClass}entering`}>
 						{(props, ref) => (
 							<Draggable handle=".draggable" disabled={disableDrag} position={disableDrag ? { x: 0, y: 0 } : draggalePosition} onStop={(_e, data) => setComposePosition([data.x, data.y])}>
-								<div {...props} ref={ref} style={disableDrag ? { width: '320px', flexGrow: 1 } : { position: 'fixed', zIndex: 4, width: '320px' }}>
-									<Compose setOpened={setComposeOpened} servers={servers} />
+								<div {...props} ref={ref} style={disableDrag ? { width: '320px', flexGrow: 1, backgroundColor: 'var(--rs-border-secondary)' } : { position: 'fixed', zIndex: 4, width: '320px' }}>
+									<Compose setOpened={setComposeOpened} servers={servers} disableDrag={disableDrag} />
 								</div>
 							</Draggable>
 						)}

@@ -44,6 +44,7 @@ export const renderAccountIcon = (props: any, ref: any, account: [Account, Serve
 type Props = {
 	setOpened: (value: boolean) => void
 	servers: Array<ServerSet>
+	disableDrag: boolean
 }
 
 const Compose: React.FC<Props> = (props) => {
@@ -102,9 +103,10 @@ const Compose: React.FC<Props> = (props) => {
 		setReply(null)
 		props.setOpened(false)
 	}
+	const addStyle = props.disableDrag ? {} : { borderColor: 'var(--rs-border-primary)', borderWidth: '1px', borderStyle: 'solid', borderRadius: '8px' }
 
 	return (
-		<Container style={{ backgroundColor: 'var(--rs-border-secondary)', overflowY: 'auto', width: '320px' }}>
+		<Container style={{ backgroundColor: 'var(--rs-border-secondary)', overflowY: 'auto', width: '320px', ...addStyle }}>
 			<Header style={{ borderBottom: '1px solid var(--rs-divider-border)', backgroundColor: 'var(--rs-state-hover-bg)', cursor: 'move' }} className="draggable">
 				<FlexboxGrid justify="space-between" align="middle">
 					<FlexboxGrid.Item style={{ paddingLeft: '12px' }}>

@@ -28,6 +28,7 @@ import FailoverImg from '@/utils/failoverImg'
 import timelineName from '@/utils/timelineName'
 import Status from './status/Status'
 import { listenTimeline, listenUser, listenTimelineWaiter, listenUserWaiter } from '@/utils/socket'
+import { Context } from '@/theme'
 
 type Props = {
 	timeline: Timeline
@@ -43,6 +44,8 @@ export default function TimelineColumn(props: Props) {
 	const { formatMessage } = useIntl()
 	const { timelineConfig } = useContext(TheDeskContext)
 	const { timelineRefresh } = useContext(TimelineRefreshContext)
+	const { theme } = useContext(Context)
+	const isDark = theme === 'dark'
 
 	const [statuses, setStatuses] = useState<Array<Entity.Status>>([])
 	const [unreadStatuses, setUnreadStatuses] = useState<Array<Entity.Status>>([])
@@ -401,10 +404,13 @@ export default function TimelineColumn(props: Props) {
 		})
 	}
 	const headerStyle: CSSProperties = {
-		backgroundColor: props.timeline.color ? `var(--rs-color-${props.timeline.color})` : 'var(--rs-carousel-bg)',
+		backgroundColor: props.timeline.color ? `var(--rs-color-${props.timeline.color})` : isDark ? 'var(--rs-carousel-bg)' : 'var(--rs-bg-backdrop)',
+		color: props.timeline.color ? 'white' : undefined,
 		borderBottomWidth: '3px',
 		borderBottomStyle: 'solid',
-		borderBottomColor: account && account.color ? `var(--rs-color-${account.color})` : 'transparent'
+		borderBottomColor: account && account.color ? `var(--rs-color-${account.color})` : 'transparent',
+		borderTopLeftRadius: 8,
+		borderTopRightRadius: 8,
 	}
 	if (!props.server) return null
 

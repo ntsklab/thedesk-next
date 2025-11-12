@@ -1,7 +1,14 @@
 .server-icon {
   background-color: transparent;
 }
-
+.rs-popover {
+  border-radius: 16px;
+  padding: 0.3% !important;
+  .rs-dropdown-item {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+}
 @keyframes fadeInCompose {
   from {
     opacity: 0;
