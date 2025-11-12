@@ -31,7 +31,7 @@ import type { Server } from '@/entities/server'
 import { defaultSetting, type Settings } from '@/entities/settings'
 import { Context } from '@/theme'
 import { data, mapCustomEmojiCategory } from '@/utils/emojiData'
-import languages from '@/utils/languages'
+import { languagesDefault, sortedLanguages} from '@/utils/languages'
 import { getUnknownAA, nowplaying } from '@/utils/nowplaying'
 import { privacyColor, privacyIcon, quoteIcon } from '@/utils/statusParser'
 import { readSettings } from '@/utils/storage'
@@ -93,7 +93,9 @@ const Status: React.FC<Props> = (props) => {
 	const [editMedia, setEditMedia] = useState<Entity.Attachment | null>(null)
 	const [maxCharacters, setMaxCharacters] = useState<number | null>(null)
 	const [remaining, setRemaining] = useState<number | null>(null)
-
+	const [isSortedLanguage, setIsSortedLanguage] = useState(true)
+	const [languages, setLanguages] = useState(sortedLanguages)
+	const selectPickerRef = useRef<any>(null)
 	const formRef = useRef<any>()
 	const cwRef = useRef<HTMLDivElement>()
 	const statusRef = useRef<HTMLDivElement>()
@@ -101,6 +103,17 @@ const Status: React.FC<Props> = (props) => {
 	const uploaderRef = useRef<HTMLInputElement>()
 	const toast = useToaster()
 	const isStandaloneDarwin = localStorage.getItem('os') === 'darwin' && localStorage.getItem('isStore') === 'false'
+
+	useEffect(() => {
+		if (isSortedLanguage) {
+			const lastUsed = JSON.parse(localStorage.getItem('lastUseedLanguage')) || []
+			const primary = sortedLanguages.filter((lang) => lastUsed.includes(lang.languageCode))
+			const secondary = sortedLanguages.filter((lang) => !lastUsed.includes(lang.languageCode))
+			setLanguages([...primary, ...secondary])
+		} else {
+			setLanguages(languagesDefault)
+		}
+	}, [isSortedLanguage])
 
 	// Update instance custom emoji
 	useEffect(() => {
@@ -221,6 +234,13 @@ const Status: React.FC<Props> = (props) => {
 		}
 		if (formRef === undefined || formRef.current === undefined) return
 		setLoading(true)
+		// language set
+		const pre = JSON.parse(localStorage.getItem('lastUseedLanguage')) || []
+		const newLangs = [language, ...pre.filter((l) => l !== language)].slice(0, 5)
+		// to unique
+		const newLangUnique = Array.from(new Set(newLangs))
+		localStorage.setItem('lastUseedLanguage', JSON.stringify(newLangUnique))
+		
 		try {
 			let options = { visibility: useVis || visibility }
 			if (props.inReplyTo) {
@@ -612,12 +632,21 @@ const Status: React.FC<Props> = (props) => {
 						<SelectPicker
 							data={languages}
 							appearance="subtle"
+							ref={selectPickerRef}
 							value={language}
 							onChange={setLanguage}
 							onOpen={() => setFocused(true)}
 							onClose={() => setFocused(false)}
 							cleanable={false}
 							style={{ width: '43px' }}
+							renderExtraFooter={() => 
+								<Button appearance="link" onClick={() => setIsSortedLanguage(!isSortedLanguage)}>
+									{isSortedLanguage ? <FormattedMessage id="compose.language.unsorted" /> : <FormattedMessage id="compose.language.sorted" />}
+								</Button>
+							}
+							renderMenuItem={(_label, item) => (<>
+								<p style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '240px' }}>{item.native} ({item.english})</p>
+							</>)}
 							renderValue={() => (
 								<>
 									<span style={{ position: 'absolute', fontSize: '0.9em' }}>{language.toUpperCase()}</span>

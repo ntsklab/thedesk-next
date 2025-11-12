@@ -267,7 +267,11 @@
 			"unkwnownAaBtn": "アートワークをネットワークから取得",
 			"accessibilityError": "音楽情報にアクセスできません。システム環境設定 > セキュリティとプライバシー > プライバシー > アクセシビリティでTheDeskが制御する許可があることを確認してください。"
 		},
-		"editMyPost": "自分の投稿を編集しています"
+		"editMyPost": "自分の投稿を編集しています",
+		"language": {
+			"unsorted": "デフォルト順に",
+			"sorted": "よく使う順に"
+		}
 	},
 	"search": {
 		"title": "検索",

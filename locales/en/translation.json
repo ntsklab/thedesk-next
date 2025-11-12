@@ -267,7 +267,11 @@
 			"unkwnownAaBtn": "Get not-found artwork from network",
 			"accessibilityError": "Cannot access music information. Please make sure TheDesk has permission to control the music app in System Preferences > Security & Privacy > Privacy > Accessibility."
 		},
-		"editMyPost": "Editing my post"
+		"editMyPost": "Editing my post",
+		"language": {
+			"unsorted": "Default order",
+			"sorted": "Frequently used order"
+		}
 	},
 	"search": {
 		"title": "Search",
