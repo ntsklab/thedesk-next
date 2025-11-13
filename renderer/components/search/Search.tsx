@@ -1,15 +1,20 @@
 import generator, { type Entity, type MegalodonInterface } from '@cutls/megalodon'
 import { Icon } from '@rsuite/icons'
 import { useEffect, useState } from 'react'
-import { BsX } from 'react-icons/bs'
+import { BsChatQuote, BsFire, BsHash, BsPeople, BsX } from 'react-icons/bs'
 import { FormattedMessage } from 'react-intl'
-import { Button, Container, Content, Dropdown, FlexboxGrid, Header } from 'rsuite'
+import { Avatar, Button, Container, Content, Dropdown, FlexboxGrid, Header, List, Loader, Panel } from 'rsuite'
 import { USER_AGENT } from '@/defaults'
 import type { Account } from '@/entities/account'
 import type { Server, ServerSet } from '@/entities/server'
 import { listAccounts, setUsualAccount } from '@/utils/storage'
 import { renderAccountIcon } from '../compose/Compose'
 import Results from './Results'
+import emojify from '@/utils/emojify'
+import Time from '../utils/Time'
+import { useRouter } from 'next/router'
+import { User } from './Results'
+import { GraphDraw } from '../utils/Graph'
 
 type Props = {
 	setOpened: (value: boolean) => void
@@ -18,11 +23,48 @@ type Props = {
 	openReport: (status: Entity.Status, client: MegalodonInterface) => void
 	openFromOtherAccount: (status: Entity.Status) => void
 }
-
+const stripForSearch = (html: string) => {
+	const div = document.createElement('div')
+	div.innerHTML = html
+	const text = div.textContent || div.innerText || ''
+	const protomatch = /(https?|ftp):\/\//g
+	const b = text.replace(protomatch, '').replace(/:[a-zA-Z0-9_]:/g, '')
+	return b
+}
 export default function Search(props: Props) {
 	const [accounts, setAccounts] = useState<Array<[Account, Server]>>([])
 	const [fromAccount, setFromAccount] = useState<[Account, Server]>()
 	const [client, setClient] = useState<MegalodonInterface>()
+	const [isShowTrend, setIsShowTrend] = useState<boolean>(true)
+	const [isLoading, setIsLoading] = useState<boolean>(true)
+	const [trendTags, setTrendTags] = useState<Array<Entity.Tag>>([])
+	const [trendUsers, setTrendUsers] = useState<Array<Entity.Account>>([])
+	const [trendPosts, setTrendPosts] = useState<Array<Entity.Status>>([])
+	const router = useRouter()
+
+	const setStatusDetail = (statusId: string, serverId: number, accountId?: number) => {
+		if (accountId) {
+			router.push({ query: { status_id: statusId, server_id: serverId, account_id: accountId } })
+		} else {
+			router.push({ query: { status_id: statusId, server_id: serverId } })
+		}
+	}
+
+	const setAccountDetail = (userId: string, serverId: number, accountId?: number) => {
+		if (accountId) {
+			router.push({ query: { user_id: userId, server_id: serverId, account_id: accountId } })
+		} else {
+			router.push({ query: { user_id: userId, server_id: serverId } })
+		}
+	}
+
+	const setTagDetail = (tag: string, serverId: number, accountId?: number) => {
+		if (accountId) {
+			router.push({ query: { tag: tag, server_id: serverId, account_id: accountId } })
+		} else {
+			router.push({ query: { tag: tag, server_id: serverId } })
+		}
+	}
 
 	useEffect(() => {
 		const f = async () => {
@@ -45,13 +87,38 @@ export default function Search(props: Props) {
 		}
 		const client = generator(fromAccount[1].sns, fromAccount[1].base_url, fromAccount[0].access_token, USER_AGENT)
 		setClient(client)
+		const fn = async () => {
+			setIsLoading(true)
+			setIsShowTrend(true)
+			try {
+				const res1 = await client.getInstanceTrends(10)
+				setTrendTags(res1.data)
+			} catch (e) {
+				setTrendTags([])
+			}
+			try {
+				const res2 = await client.getInstanceTrendUsers(10)
+				setTrendUsers(res2.data)
+			} catch (e) {
+				setTrendUsers([])
+			}
+			try {
+				const res3 = await client.getInstanceTrendPosts(10)
+				setTrendPosts(res3.data)
+			} catch (e) {
+				setTrendPosts([])
+			}
+			setIsLoading(false)
+		}
+		fn()
 	}, [fromAccount])
 
 	const selectAccount = async (eventKey: string) => {
-		const account = accounts[Number.parseInt(eventKey)]
+		const account = accounts[Number.parseInt(eventKey, 10)]
 		setFromAccount(account)
 		await setUsualAccount({ id: account[0].id })
 	}
+	const hideTrend = () => setIsShowTrend(false)
 
 	return (
 		<Container style={{ backgroundColor: 'var(--rs-border-secondary)', height: '100%' }}>
@@ -80,7 +147,107 @@ export default function Search(props: Props) {
 					</FlexboxGrid.Item>
 				</FlexboxGrid>
 				{fromAccount && (
-					<Results client={client} server={fromAccount[1]} account={fromAccount[0]} openMedia={props.openMedia} openReport={props.openReport} openFromOtherAccount={props.openFromOtherAccount} />
+					<Results
+						hideTrend={hideTrend}
+						client={client}
+						server={fromAccount[1]}
+						account={fromAccount[0]}
+						openMedia={props.openMedia}
+						openReport={props.openReport}
+						openFromOtherAccount={props.openFromOtherAccount}
+						setStatusDetail={setStatusDetail}
+						setAccountDetail={setAccountDetail}
+						setTagDetail={setTagDetail}
+					/>
+				)}
+				{isShowTrend && isLoading ? (
+					<div style={{ display: 'flex', width: '100%', justifyContent: 'center', marginTop: 30 }}>
+						<Loader />
+					</div>
+				) : (
+					<>
+						<div style={{ display: 'flex', alignItems: 'center', margin: '0.4em 0' }}>
+							<Icon as={BsFire} style={{ fontSize: '1.4em', marginRight: '0.2em' }} />
+							<p style={{ fontSize: '1.4em' }}>
+								<FormattedMessage id="search.trend" />
+							</p>
+						</div>
+
+						<div style={{ display: 'flex', alignItems: 'center', margin: '0.4em 0' }}>
+							<Icon as={BsHash} style={{ fontSize: '1.2em', marginRight: '0.2em' }} />
+							<p style={{ fontSize: '1.2em' }}>
+								<FormattedMessage id="search.results.hashtags" />
+							</p>
+						</div>
+
+						<List>
+							{trendTags.map((tag) => (
+								<List.Item
+									key={tag.name}
+									style={{ backgroundColor: 'var(--rs-border-primary)', padding: '4px', paddingRight: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+									title={`#${tag.name}`}
+								>
+									<div style={{ padding: '12px 8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} onClick={() => setTagDetail(tag.name, fromAccount[1].id, fromAccount[0].id)}>
+										#{tag.name}
+									</div>
+									<GraphDraw his={tag.history} />
+								</List.Item>
+							))}
+						</List>
+						{!trendTags.length && <FormattedMessage id="search.noData" />}
+
+						<div style={{ display: 'flex', alignItems: 'center', margin: '0.4em 0' }}>
+							<Icon as={BsPeople} style={{ fontSize: '1.2em', marginRight: '0.2em' }} />
+							<p style={{ fontSize: '1.2em' }}>
+								<FormattedMessage id="search.results.accounts" />
+							</p>
+						</div>
+						<List>
+							{trendUsers.map((account) => (
+								<List.Item key={account.id} style={{ backgroundColor: 'var(--rs-border-primary)', padding: '4px 0' }}>
+									<User user={account} open={(user: Entity.Account) => setAccountDetail(user.id, fromAccount[1].id, fromAccount[0].id)} />
+								</List.Item>
+							))}
+						</List>
+						{!trendUsers.length && <FormattedMessage id="search.noData" />}
+
+						<div style={{ display: 'flex', alignItems: 'center', margin: '0.4em 0' }}>
+							<Icon as={BsChatQuote} style={{ fontSize: '1.2em', marginRight: '0.2em' }} />
+							<p style={{ fontSize: '1.2em' }}>
+								<FormattedMessage id="search.results.statuses" />
+							</p>
+						</div>
+						{trendPosts.map((status) => (
+							<Panel
+								key={status.id}
+								bordered
+								bodyFill
+								onClick={() => setStatusDetail(status.id, fromAccount[1].id, fromAccount[0].id)}
+								style={{ cursor: 'pointer', marginTop: '0.2em', padding: 5 }}
+								className="link-preview-panel"
+							>
+								<div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5em', justifyContent: 'flex-start' }}>
+									<div style={{ width: '10%' }}>
+										<Avatar src={status.account.avatar_static} title={status.account.acct} alt={status.account.acct} size="xs" />
+									</div>
+									<div style={{ width: '70%', display: 'flex', alignItems: 'center' }}>
+										<p
+											dangerouslySetInnerHTML={{ __html: emojify(status.account.display_name, status.account.emojis) }}
+											style={{ marginLeft: 2, overflow: 'hidden', width: '70%', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+										/>
+										<p style={{ color: 'var(--rs-text-tertiary)', marginLeft: 2, marginTop: 0, width: '30%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+											@{status.account.acct}
+										</p>
+									</div>
+									<div style={{ width: '20%', display: 'flex', justifyContent: 'flex-end' }}>
+										<Time style={{ color: 'var(--rs-text-tertiary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} time={status.created_at} />
+									</div>
+								</div>
+								<p dangerouslySetInnerHTML={{ __html: emojify(stripForSearch(status.content), status.emojis) }} />
+							</Panel>
+						))}
+						{!trendPosts.length && <FormattedMessage id="search.noData" />}
+					</>
 				)}
 			</Content>
 		</Container>

@@ -46,7 +46,7 @@ function AttachmentBox(props: AttachmentBoxProps) {
 	return (
 		<div style={{ display: 'flex' }}>
 			{attachments.map((media, index) => (
-				// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+				// biome-ignore lint/suspicious/noArrayIndexKey: <standard reason>
 				<div key={media.id + index} style={{ margin: '1px', width: imageWidth }}>
 					<Attachment media={media} changeSensitive={props.changeSensitive} width={imageWidth} sensitive={props.sensitive} cropImage={props.cropImage} openMedia={() => props.openMedia(attachments, index)} />
 				</div>

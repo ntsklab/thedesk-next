@@ -69,11 +69,11 @@ export default function FromOtherAccount(props: Props) {
 				}}
 			>
 				<Modal.Header>
-					<FormattedMessage id="from_other_account.title" />
+					<FormattedMessage id="fromOtherAccount.title" />
 				</Modal.Header>
 				{body()}
 			</Modal>
 		)
 	}
-	return <></>
+	return null
 }

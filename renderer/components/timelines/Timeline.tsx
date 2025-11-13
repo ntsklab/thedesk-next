@@ -3,11 +3,11 @@ import { Icon } from '@rsuite/icons'
 import { useRouter } from 'next/router'
 import parse from 'parse-link-header'
 import { type CSSProperties, forwardRef, useCallback, useContext, useEffect, useRef, useState } from 'react'
-import { BsArrowClockwise, BsBookmark, BsChevronLeft, BsChevronRight, BsGlobe2, BsHash, BsHouseDoor, BsListUl, BsPeople, BsSliders, BsSquare, BsStar, BsViewStacked, BsX } from 'react-icons/bs'
+import { BsArrowClockwise, BsBookmark, BsBroadcast, BsChevronLeft, BsChevronRight, BsGlobe2, BsHash, BsHouseDoor, BsListUl, BsPeople, BsSliders, BsSquare, BsStar, BsViewStacked, BsX } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Virtuoso } from 'react-virtuoso'
 import { Avatar, Button, Container, Content, Divider, FlexboxGrid, Header, List, Loader, Popover, Radio, RadioGroup, Stack, useToaster, Whisper } from 'rsuite'
-import { getAccount, removeTimeline, updateColumnColor, updateColumnMediaOnly, updateColumnOrder, updateColumnStack, updateColumnTts, updateColumnWidth } from 'utils/storage'
+import { removeTimeline, updateColumnColor, updateColumnMediaOnly, updateColumnOrder, updateColumnStack, updateColumnTts, updateColumnWidth } from 'utils/storage'
 import alert from '@/components/utils/alert'
 import { TheDeskContext, TimelineRefreshContext } from '@/context'
 import { TIMELINE_MAX_STATUSES, TIMELINE_STATUSES_COUNT } from '@/defaults'
@@ -28,6 +28,7 @@ import FailoverImg from '@/utils/failoverImg'
 import timelineName from '@/utils/timelineName'
 import Status from './status/Status'
 import { listenTimeline, listenUser, listenTimelineWaiter, listenUserWaiter } from '@/utils/socket'
+import { Context } from '@/theme'
 
 type Props = {
 	timeline: Timeline
@@ -43,6 +44,8 @@ export default function TimelineColumn(props: Props) {
 	const { formatMessage } = useIntl()
 	const { timelineConfig } = useContext(TheDeskContext)
 	const { timelineRefresh } = useContext(TimelineRefreshContext)
+	const { theme } = useContext(Context)
+	const isDark = theme === 'dark'
 
 	const [statuses, setStatuses] = useState<Array<Entity.Status>>([])
 	const [unreadStatuses, setUnreadStatuses] = useState<Array<Entity.Status>>([])
@@ -84,7 +87,7 @@ export default function TimelineColumn(props: Props) {
 				setCustomEmojis(mapCustomEmojiCategory(props.server.domain, emojis.data))
 			} catch (err) {
 				console.error(err)
-				toast.push(alert('error', formatMessage({ id: 'alert.failed_load' }, { timeline: `${props.timeline.name} timeline` })), {
+				toast.push(alert('error', formatMessage({ id: 'alert.failedLoad' }, { timeline: `${props.timeline.name} timeline` })), {
 					placement: 'topStart'
 				})
 			} finally {
@@ -101,7 +104,6 @@ export default function TimelineColumn(props: Props) {
 				listenUser<ReceiveHomeStatusPayload>(
 					'receive-home-status',
 					(ev) => {
-						console.log(ev.payload.server_id, props.server.id)
 						if (ev.payload.server_id !== props.server.id) {
 							return
 						}
@@ -120,7 +122,6 @@ export default function TimelineColumn(props: Props) {
 				listenUser<ReceiveHomeStatusUpdatePayload>(
 					'receive-home-status-update',
 					(ev) => {
-						console.log('receive-home-status-update', ev.payload.server_id, props.server.id)
 						if (ev.payload.server_id !== props.server.id) {
 							return
 						}
@@ -254,7 +255,7 @@ export default function TimelineColumn(props: Props) {
 			}
 			case 'list': {
 				if (tl.list_id) {
-					const res = await client.getListTimeline(tl.list_id, options)
+					const res = await client.getListTimeline(tl.list_id, options, tl.is_misskey_antenna)
 					return res.data
 				}
 				return []
@@ -283,7 +284,7 @@ export default function TimelineColumn(props: Props) {
 			setStatuses(res)
 		} catch (err) {
 			console.error(err)
-			toast.push(alert('error', formatMessage({ id: 'alert.failed_load' }, { timeline: `${props.timeline.name} timeline` })), {
+			toast.push(alert('error', formatMessage({ id: 'alert.failedLoad' }, { timeline: `${props.timeline.name} timeline` })), {
 				placement: 'topStart'
 			})
 		} finally {
@@ -291,7 +292,8 @@ export default function TimelineColumn(props: Props) {
 		}
 	}, [client, props.timeline])
 
-	const timelineIcon = (kind: TimelineKind) => {
+	const timelineIcon = (kind: TimelineKind, isMisskeyAntenna: boolean) => {
+		if (isMisskeyAntenna) return <Icon as={BsBroadcast} />
 		switch (kind) {
 			case 'home':
 				return <Icon as={BsHouseDoor} />
@@ -403,10 +405,13 @@ export default function TimelineColumn(props: Props) {
 		})
 	}
 	const headerStyle: CSSProperties = {
-		backgroundColor: props.timeline.color ? `var(--rs-color-${props.timeline.color})` : 'var(--rs-carousel-bg)',
+		backgroundColor: props.timeline.color ? `var(--rs-color-${props.timeline.color})` : isDark ? 'var(--rs-carousel-bg)' : 'var(--rs-bg-backdrop)',
+		color: props.timeline.color ? 'white' : undefined,
 		borderBottomWidth: '3px',
 		borderBottomStyle: 'solid',
-		borderBottomColor: account && account.color ? `var(--rs-color-${account.color})` : 'transparent'
+		borderBottomColor: account && account.color ? `var(--rs-color-${account.color})` : 'transparent',
+		borderTopLeftRadius: 8,
+		borderTopRightRadius: 8,
 	}
 	if (!props.server) return null
 
@@ -427,7 +432,7 @@ export default function TimelineColumn(props: Props) {
 									width: 'calc(2.4em - 6px)'
 								}}
 							>
-								{timelineIcon(props.timeline.kind)}
+								{timelineIcon(props.timeline.kind, props.timeline.is_misskey_antenna)}
 							</FlexboxGrid.Item>
 							{/** name **/}
 							<FlexboxGrid.Item
@@ -613,7 +618,7 @@ const OptionPopover = forwardRef<HTMLDivElement, { timeline: Timeline; close: ()
 		<Popover ref={ref} style={{ opacity: 1 }}>
 			<div style={{ display: 'flex', flexDirection: 'column', width: '220px' }}>
 				<label>
-					<FormattedMessage id="timeline.settings.column_width" />
+					<FormattedMessage id="timeline.settings.columnWidth" />
 				</label>
 				<RadioGroup inline value={props.timeline.column_width} onChange={(value) => updateColumnWidthFn(props.timeline, value.toString())}>
 					<Radio value="xs">xs</Radio>
@@ -640,11 +645,11 @@ const OptionPopover = forwardRef<HTMLDivElement, { timeline: Timeline; close: ()
 				</FlexboxGrid>
 				<Divider style={{ margin: '8px 0' }} />
 				<label>
-					<FormattedMessage id="timeline.settings.media_only" />
+					<FormattedMessage id="timeline.settings.mediaOnly" />
 				</label>
 				<RadioGroup inline value={props.timeline?.mediaOnly?.toString() || 'false'} onChange={(value) => updateColumnMediaOnlyFn(props.timeline, value === 'true')}>
 					<Radio value="false">
-						<FormattedMessage id="timeline.settings.not_do" />
+						<FormattedMessage id="timeline.settings.notDo" />
 					</Radio>
 					<Radio value="true">
 						<FormattedMessage id="timeline.settings.do" />
@@ -656,7 +661,7 @@ const OptionPopover = forwardRef<HTMLDivElement, { timeline: Timeline; close: ()
 				</label>
 				<RadioGroup inline value={props.timeline?.tts?.toString() || 'false'} onChange={(value) => updateColumnTtsFn(props.timeline, value === 'true')}>
 					<Radio value="false">
-						<FormattedMessage id="timeline.settings.not_do" />
+						<FormattedMessage id="timeline.settings.notDo" />
 					</Radio>
 					<Radio value="true">
 						<FormattedMessage id="timeline.settings.do" />
@@ -709,11 +714,11 @@ const appendStatus = (statuses: Array<Entity.Status>, status: Entity.Status): Ar
 	return [status].concat(statuses).slice(0, TIMELINE_STATUSES_COUNT)
 }
 
-const deleteStatus = (statuses: Array<Entity.Status>, deleted_id: string): Array<Entity.Status> => {
+const deleteStatus = (statuses: Array<Entity.Status>, deletedId: string): Array<Entity.Status> => {
 	return statuses.filter((status) => {
-		if (status.reblog !== null && status.reblog.id === deleted_id) {
+		if (status.reblog !== null && status.reblog.id === deletedId) {
 			return false
 		}
-		return status.id !== deleted_id
+		return status.id !== deletedId
 	})
 }

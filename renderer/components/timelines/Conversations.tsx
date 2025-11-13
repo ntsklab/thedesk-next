@@ -7,7 +7,7 @@ import { BsChevronLeft, BsChevronRight, BsEnvelope, BsSliders, BsSquare, BsViewS
 import { FormattedMessage, useIntl } from 'react-intl'
 import { ResizableBox } from 'react-resizable'
 import { Virtuoso } from 'react-virtuoso'
-import { Avatar, Button, Container, Content, Divider, Dropdown, FlexboxGrid, Header, List, Loader, Popover, Radio, RadioGroup, Stack, useToaster, Whisper } from 'rsuite'
+import { Avatar, Button, Container, Content, Divider, FlexboxGrid, Header, List, Loader, Popover, Radio, RadioGroup, Stack, useToaster, Whisper } from 'rsuite'
 import { getAccount, removeTimeline, updateColumnColor, updateColumnOrder, updateColumnStack, updateColumnWidth } from 'utils/storage'
 import { TheDeskContext, TimelineRefreshContext } from '@/context'
 import { TIMELINE_MAX_STATUSES, TIMELINE_STATUSES_COUNT } from '@/defaults'
@@ -59,7 +59,7 @@ const Conversations: React.FC<Props> = (props) => {
 					setConversations(res)
 				} catch (err) {
 					console.error(err)
-					toast.push(alert('error', formatMessage({ id: 'alert.failed_load' }, { timeline: 'conversations' })), { placement: 'topStart' })
+					toast.push(alert('error', formatMessage({ id: 'alert.failedLoad' }, { timeline: 'conversations' })), { placement: 'topStart' })
 				} finally {
 					setLoading(false)
 				}
@@ -250,7 +250,6 @@ const OptionPopover = forwardRef<HTMLDivElement, { timeline: Timeline; close: ()
 	const { timelineRefresh } = useContext(TimelineRefreshContext)
 	const { formatMessage } = useIntl()
 	const isFirst = props.wrapIndex === 0
-	const newRef = useRef()
 	const removeTimelineFn = async (timeline: Timeline) => {
 		await removeTimeline({ id: timeline.id })
 		timelineRefresh(true)
@@ -292,7 +291,7 @@ const OptionPopover = forwardRef<HTMLDivElement, { timeline: Timeline; close: ()
 		<Popover ref={ref} style={{ opacity: 1 }}>
 			<div style={{ display: 'flex', flexDirection: 'column', width: '220px' }}>
 				<label>
-					<FormattedMessage id="timeline.settings.column_width" />
+					<FormattedMessage id="timeline.settings.columnWidth" />
 				</label>
 				<RadioGroup inline value={props.timeline.column_width} onChange={(value) => updateColumnWidthFn(props.timeline, value.toString())}>
 					<Radio value="xs">xs</Radio>

@@ -49,7 +49,6 @@ const misskeyPremission = [
 ]
 export async function addApplication({ url, redirectUrl, inAppBrowser }: { url: string; redirectUrl: string; inAppBrowser: boolean }): Promise<OAuth.AppData> {
 	const sns = await detector(url)
-	if (sns === 'gotosocial') return
 	const client = generator(sns, url)
 	const isMisskey = sns === 'misskey'
 	const scopes = isMisskey ? misskeyPremission : ['read', 'write', 'follow']

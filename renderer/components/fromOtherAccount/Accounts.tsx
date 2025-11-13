@@ -25,10 +25,10 @@ export default function Accounts(props: Props) {
 		<>
 			<Modal.Body>
 				<Modal.Title>
-					<FormattedMessage id="from_other_account.accounts.title" />
+					<FormattedMessage id="fromOtherAccount.accounts.title" />
 				</Modal.Title>
 				<div style={{ paddingTop: '2em' }}>
-					<RadioGroup name="account" value={index} onChange={(v) => setIndex(Number.parseInt(v.toString()))}>
+					<RadioGroup name="account" value={index} onChange={(v) => setIndex(Number.parseInt(v.toString(), 10))}>
 						{accounts.map((account, i) => (
 							<Radio key={account[0].id} value={i}>
 								{account[0].username}@{account[1].domain}
@@ -39,7 +39,7 @@ export default function Accounts(props: Props) {
 			</Modal.Body>
 			<Modal.Footer>
 				<Button appearance="primary" block onClick={() => props.next(accounts[index][1], accounts[index][0])}>
-					<FormattedMessage id="from_other_account.accounts.next" />
+					<FormattedMessage id="fromOtherAccount.accounts.next" />
 				</Button>
 			</Modal.Footer>
 		</>

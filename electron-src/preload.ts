@@ -31,6 +31,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
 	onInitialInfo: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => {
 		ipcRenderer.on('initialInfo', callback)
 	},
+	showAbout: (callback: (event: Electron.IpcRendererEvent) => void) => {
+		ipcRenderer.on('showAbout', callback)
+	},
 	appleMusic: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => {
 		ipcRenderer.on('appleMusic', callback)
 	},

@@ -44,6 +44,7 @@ export const renderAccountIcon = (props: any, ref: any, account: [Account, Serve
 type Props = {
 	setOpened: (value: boolean) => void
 	servers: Array<ServerSet>
+	disableDrag: boolean
 }
 
 const Compose: React.FC<Props> = (props) => {
@@ -53,6 +54,7 @@ const Compose: React.FC<Props> = (props) => {
 	const [defaultVisibility, setDefaultVisibility] = useState<'public' | 'unlisted' | 'private' | 'direct'>('public')
 	const [defaultNSFW, setDefaultNSFW] = useState(false)
 	const [defaultLanguage, setDefaultLanguage] = useState<string | null>(null)
+	const [defaultQuotePolicy, setDefaultQuotePolicy] = useState<'public' | 'followers' | 'nobody'>('public')
 	const [client, setClient] = useState<MegalodonInterface>()
 
 	useEffect(() => {
@@ -83,6 +85,7 @@ const Compose: React.FC<Props> = (props) => {
 				setDefaultVisibility(res.data.source.privacy as 'public' | 'unlisted' | 'private' | 'direct')
 				setDefaultNSFW(res.data.source.sensitive)
 				setDefaultLanguage(res.data.source.language)
+				setDefaultQuotePolicy(res.data.source.quote_policy as 'public' | 'followers' | 'nobody')
 			}
 		}
 		f()
@@ -100,9 +103,10 @@ const Compose: React.FC<Props> = (props) => {
 		setReply(null)
 		props.setOpened(false)
 	}
+	const addStyle = props.disableDrag ? {} : { borderColor: 'var(--rs-border-primary)', borderWidth: '1px', borderStyle: 'solid', borderRadius: '8px' }
 
 	return (
-		<Container style={{ backgroundColor: 'var(--rs-border-secondary)', overflowY: 'auto' }}>
+		<Container style={{ backgroundColor: 'var(--rs-border-secondary)', overflowY: 'auto', width: '320px', ...addStyle }}>
 			<Header style={{ borderBottom: '1px solid var(--rs-divider-border)', backgroundColor: 'var(--rs-state-hover-bg)', cursor: 'move' }} className="draggable">
 				<FlexboxGrid justify="space-between" align="middle">
 					<FlexboxGrid.Item style={{ paddingLeft: '12px' }}>
@@ -152,7 +156,7 @@ const Compose: React.FC<Props> = (props) => {
 								<BsPencil style={{ fontSize: '0.8em', marginLeft: 3 }} />
 							</div>
 							<Text style={{ flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-								<FormattedMessage id="compose.edit_my_post" />
+								<FormattedMessage id="compose.editMyPost" />
 							</Text>
 							<div style={{ width: 20 }}>
 								<Button appearance="link" onClick={() => setReply(null)} style={{ padding: 0 }}>
@@ -170,10 +174,12 @@ const Compose: React.FC<Props> = (props) => {
 						defaultVisibility={defaultVisibility}
 						defaultNSFW={defaultNSFW}
 						defaultLanguage={defaultLanguage}
+						defaultQuotePolicy={defaultQuotePolicy}
 						setOpened={props.setOpened}
 						onClose={() => onClose()}
-						in_reply_to={reply?.type === 'reply' ? reply.replyStatus : undefined}
-						edit_target={reply?.type === 'edit' ? reply.replyStatus : undefined}
+						inReplyTo={reply?.type === 'reply' ? reply.replyStatus : undefined}
+						editTarget={reply?.type === 'edit' ? reply.replyStatus : undefined}
+						quoteTarget={reply?.type === 'quote' ? reply.replyStatus : undefined}
 					/>
 				)}
 			</Content>

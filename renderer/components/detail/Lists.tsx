@@ -5,8 +5,6 @@ import { useEffect, useState } from 'react'
 import { BsChevronLeft, BsListUl, BsPencil, BsX } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Button, Content, FlexboxGrid, Header, List } from 'rsuite'
-import { Account } from '@/entities/account'
-import { Server } from '@/entities/server'
 import { getAccount } from '@/utils/storage'
 
 type Props = {
@@ -24,7 +22,7 @@ export default function ListsDetail(props: Props) {
 		if (!router.query.account_id || !router.query.server_id) return
 		const f = async () => {
 			const [account, server] = await getAccount({
-				id: Number.parseInt(router.query.account_id.toLocaleString())
+				id: Number.parseInt(router.query.account_id.toLocaleString(), 10)
 			})
 			const cli = generator(server.sns, server.base_url, account.access_token, 'Fedistar')
 			setClient(cli)
@@ -68,7 +66,7 @@ export default function ListsDetail(props: Props) {
 			</Header>
 			<Content style={{ height: '100%', backgroundColor: 'var(--rs-bg-card)' }}>
 				<List style={{ height: '100%' }}>
-					{lists.map((list, index) => (
+					{lists.map((list) => (
 						<List.Item key={list.id}>
 							<div style={{ display: 'flex', justifyContent: 'space-between' }}>
 								<FlexboxGrid

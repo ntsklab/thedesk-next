@@ -1,14 +1,14 @@
-import { createContext, Dispatch, SetStateAction, useState } from 'react'
+import { createContext, useState } from 'react'
 import { defaultSetting, type Settings } from './entities/settings'
-import { type Reply } from './entities/reply'
+import type { Reply } from './entities/reply'
 
 export const TheDeskContext = createContext({
 	timelineConfig: defaultSetting.timeline,
-	saveTimelineConfig: (config: Settings['timeline']) => {},
+	saveTimelineConfig: (_config: Settings['timeline']) => {},
 	focused: false,
-	setFocused: (focused: boolean) => {},
+	setFocused: (_focused: boolean) => {},
 	reply: null as (Reply | null),
-	setReply: (d: Reply | null) => {}
+	setReply: (_d: Reply | null) => {}
 })
 export const TimelineRefreshContext = createContext({
 	timelineRefresh: (_str: boolean) => {}

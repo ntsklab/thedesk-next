@@ -5,9 +5,6 @@ import { useEffect, useState } from 'react'
 import { BsChevronLeft, BsX } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Button, Content, FlexboxGrid, Header, List } from 'rsuite'
-
-import { Account } from '@/entities/account'
-import { Server } from '@/entities/server'
 import { getAccount } from '@/utils/storage'
 
 export default function FollowedHashtags() {
@@ -21,7 +18,7 @@ export default function FollowedHashtags() {
 		if (!router.query.account_id || !router.query.server_id) return
 		const f = async () => {
 			const [account, server] = await getAccount({
-				id: Number.parseInt(router.query.account_id.toLocaleString())
+				id: Number.parseInt(router.query.account_id.toLocaleString(), 10)
 			})
 			const cli = generator(server.sns, server.base_url, account.access_token, 'Fedistar')
 			setClient(cli)
@@ -69,7 +66,7 @@ export default function FollowedHashtags() {
 			</Header>
 			<Content style={{ height: '100%', backgroundColor: 'var(--rs-bg-card)' }}>
 				<List style={{ height: '100%' }}>
-					{hashtags.map((tag, index) => (
+					{hashtags.map((tag) => (
 						<List.Item key={tag.name}>
 							<div style={{ padding: '0 1.2em', cursor: 'pointer' }} onClick={() => openTag(tag.name)}>
 								{tag.name}

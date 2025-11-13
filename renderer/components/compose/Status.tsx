@@ -16,10 +16,8 @@ import {
 	IconButton,
 	Input,
 	InputPicker,
-	InputProps,
 	Popover,
 	Radio,
-	Schema,
 	SelectPicker,
 	Toggle,
 	useToaster,
@@ -33,10 +31,9 @@ import type { Server } from '@/entities/server'
 import { defaultSetting, type Settings } from '@/entities/settings'
 import { Context } from '@/theme'
 import { data, mapCustomEmojiCategory } from '@/utils/emojiData'
-import languages from '@/utils/languages'
+import { languagesDefault, sortedLanguages} from '@/utils/languages'
 import { getUnknownAA, nowplaying } from '@/utils/nowplaying'
-import { open } from '@/utils/openBrowser'
-import { privacyColor, privacyIcon } from '@/utils/statusParser'
+import { privacyColor, privacyIcon, quoteIcon } from '@/utils/statusParser'
 import { readSettings } from '@/utils/storage'
 import AutoCompleteTextarea, { type ArgProps as AutoCompleteTextareaProps } from './AutoCompleteTextarea'
 import EditMedia from './EditMedia'
@@ -45,11 +42,13 @@ type Props = {
 	server: Server
 	account: Account
 	client: MegalodonInterface
-	in_reply_to?: Entity.Status
-	edit_target?: Entity.Status
+	inReplyTo?: Entity.Status
+	editTarget?: Entity.Status
+	quoteTarget?: Entity.Status
 	defaultVisibility?: 'public' | 'unlisted' | 'private' | 'direct'
 	defaultNSFW?: boolean
 	defaultLanguage?: string | null
+	defaultQuotePolicy?: 'public' | 'followers' | 'nobody'
 	onClose?: () => void
 	setOpened?: (value: boolean) => void
 }
@@ -60,7 +59,7 @@ type FormValue = {
 	attachments?: Array<Entity.Attachment | Entity.AsyncAttachment>
 	nsfw?: boolean
 	poll?: Poll
-	scheduled_at?: Date
+	scheduledAt?: Date
 }
 
 type Poll = {
@@ -68,24 +67,6 @@ type Poll = {
 	expires_in: number
 	multiple: boolean
 }
-
-const model = Schema.Model({
-	status: Schema.Types.StringType(),
-	attachments: Schema.Types.ArrayType(),
-	poll: Schema.Types.ObjectType().shape({
-		options: Schema.Types.ArrayType().of(Schema.Types.StringType().isRequired('Required')).minLength(2, 'Minimum 2 choices required'),
-		expires_in: Schema.Types.NumberType().isRequired('Required'),
-		multiple: Schema.Types.BooleanType().isRequired('Required')
-	}),
-	scheduled_at: Schema.Types.DateType().addRule((value, _data) => {
-		const limit = new Date()
-		limit.setMinutes(limit.getMinutes() + 5)
-		if (value <= limit) {
-			return false
-		}
-		return true
-	}, 'Must be at least 5 minutes in the future')
-})
 const Status: React.FC<Props> = (props) => {
 	const { formatMessage } = useIntl()
 	const { theme } = useContext(Context)
@@ -103,6 +84,7 @@ const Status: React.FC<Props> = (props) => {
 	const [customEmojis, setCustomEmojis] = useState<Array<CustomEmojiCategory>>([])
 	const [loading, setLoading] = useState<boolean>(false)
 	const [visibility, setVisibility] = useState<'public' | 'unlisted' | 'private' | 'direct' | 'local'>('public')
+	const [approvedQuote, setApproveQuote] = useState<'public' | 'followers' | 'nobody'>('public')
 	const [cw, setCW] = useState<boolean>(false)
 	const [config, setConfig] = useState<Settings['compose']>(defaultSetting.compose)
 	const [language, setLanguage] = useState<string>('en')
@@ -111,7 +93,9 @@ const Status: React.FC<Props> = (props) => {
 	const [editMedia, setEditMedia] = useState<Entity.Attachment | null>(null)
 	const [maxCharacters, setMaxCharacters] = useState<number | null>(null)
 	const [remaining, setRemaining] = useState<number | null>(null)
-
+	const [isSortedLanguage, setIsSortedLanguage] = useState(true)
+	const [languages, setLanguages] = useState(sortedLanguages)
+	const selectPickerRef = useRef<any>(null)
 	const formRef = useRef<any>()
 	const cwRef = useRef<HTMLDivElement>()
 	const statusRef = useRef<HTMLDivElement>()
@@ -119,6 +103,17 @@ const Status: React.FC<Props> = (props) => {
 	const uploaderRef = useRef<HTMLInputElement>()
 	const toast = useToaster()
 	const isStandaloneDarwin = localStorage.getItem('os') === 'darwin' && localStorage.getItem('isStore') === 'false'
+
+	useEffect(() => {
+		if (isSortedLanguage) {
+			const lastUsed = JSON.parse(localStorage.getItem('lastUseedLanguage')) || []
+			const primary = sortedLanguages.filter((lang) => lastUsed.includes(lang.languageCode))
+			const secondary = sortedLanguages.filter((lang) => !lastUsed.includes(lang.languageCode))
+			setLanguages([...primary, ...secondary])
+		} else {
+			setLanguages(languagesDefault)
+		}
+	}, [isSortedLanguage])
 
 	// Update instance custom emoji
 	useEffect(() => {
@@ -137,17 +132,17 @@ const Status: React.FC<Props> = (props) => {
 
 	// Set replyTo or edit target
 	useEffect(() => {
-		if (props.in_reply_to) {
-			const mentionAccounts = [props.in_reply_to.account.acct, ...props.in_reply_to.mentions.map((a) => a.acct)]
+		if (props.inReplyTo) {
+			const mentionAccounts = [props.inReplyTo.account.acct, ...props.inReplyTo.mentions.map((a) => a.acct)]
 				.filter((a, i, self) => self.indexOf(a) === i)
 				.filter((a) => a !== props.account.username)
 			setFormValue({ spoiler: '', status: `${mentionAccounts.map((m) => `@${m}`).join(' ')} ` })
-			setVisibility(props.in_reply_to.visibility)
-			if (props.in_reply_to.language) {
-				setLanguage(props.in_reply_to.language)
+			setVisibility(props.inReplyTo.visibility)
+			if (props.inReplyTo.language) {
+				setLanguage(props.inReplyTo.language)
 			}
-		} else if (props.edit_target) {
-			const target = props.edit_target
+		} else if (props.editTarget) {
+			const target = props.editTarget
 
 			const f = async () => {
 				// The content is wrapped with HTML, so we want plain content.
@@ -170,6 +165,14 @@ const Status: React.FC<Props> = (props) => {
 				}
 				setFormValue(value)
 				setVisibility(target.visibility)
+				const targets = target.quote_approval.automatic
+				if (targets.includes('public')) {
+					setApproveQuote('public')
+				} else if (targets.includes('followers')) {
+					setApproveQuote('followers')
+				} else {
+					setApproveQuote('nobody')
+				}
 				if (target.language) {
 					setLanguage(target.language)
 				}
@@ -178,12 +181,20 @@ const Status: React.FC<Props> = (props) => {
 		} else {
 			clear(false)
 		}
-	}, [props.in_reply_to, props.edit_target, props.account, props.client])
+	}, [props.inReplyTo, props.editTarget, props.account, props.client])
 
 	// Set visibility
 	useEffect(() => {
 		if (props.defaultVisibility) {
 			setVisibility(props.defaultVisibility)
+		}
+	}, [props.defaultVisibility])
+
+
+	// Set quote approval policy
+	useEffect(() => {
+		if (props.defaultQuotePolicy) {
+			setApproveQuote(props.defaultQuotePolicy)
 		}
 	}, [props.defaultVisibility])
 
@@ -223,11 +234,23 @@ const Status: React.FC<Props> = (props) => {
 		}
 		if (formRef === undefined || formRef.current === undefined) return
 		setLoading(true)
+		// language set
+		const pre = JSON.parse(localStorage.getItem('lastUseedLanguage')) || []
+		const newLangs = [language, ...pre.filter((l) => l !== language)].slice(0, 5)
+		// to unique
+		const newLangUnique = Array.from(new Set(newLangs))
+		localStorage.setItem('lastUseedLanguage', JSON.stringify(newLangUnique))
+		
 		try {
 			let options = { visibility: useVis || visibility }
-			if (props.in_reply_to) {
+			if (props.inReplyTo) {
 				options = Object.assign({}, options, {
-					in_reply_to_id: props.in_reply_to.id
+					in_reply_to_id: props.inReplyTo.id
+				})
+			}
+			if (props.server.quote_support) {
+				options = Object.assign({}, options, {
+					quote_approval_policy: approvedQuote
 				})
 			}
 			if (formValue.attachments) {
@@ -255,14 +278,20 @@ const Status: React.FC<Props> = (props) => {
 					poll: formValue.poll
 				})
 			}
-			if (formValue.scheduled_at !== undefined) {
+			if (props.quoteTarget) {
 				options = Object.assign({}, options, {
-					scheduled_at: formValue.scheduled_at.toISOString()
+					quoted_status_id: props.quoteTarget.id
 				})
 			}
-			if (props.edit_target) {
+			if (formValue.scheduledAt !== undefined) {
+				options = Object.assign({}, options, {
+					scheduled_at: formValue.scheduledAt.toISOString()
+				})
+			}
+			if (props.editTarget) {
+				console.log(options)
 				await props.client.editStatus(
-					props.edit_target.id,
+					props.editTarget.id,
 					Object.assign({}, options, {
 						status: formValue.status
 					})
@@ -274,7 +303,7 @@ const Status: React.FC<Props> = (props) => {
 			}
 		} catch (err) {
 			console.error(err)
-			toast.push(alert('error', formatMessage({ id: 'alert.failed_post' })), { placement: 'topStart' })
+			toast.push(alert('error', formatMessage({ id: 'alert.failedPost' })), { placement: 'topStart' })
 		} finally {
 			setLoading(false)
 		}
@@ -359,7 +388,7 @@ const Status: React.FC<Props> = (props) => {
 			return
 		}
 		if (!file.type.includes('image') && !file.type.includes('video')) {
-			toast.push(alert('error', formatMessage({ id: 'alert.validation_attachments_type' })), { placement: 'topStart' })
+			toast.push(alert('error', formatMessage({ id: 'alert.validationAttachmentsType' })), { placement: 'topStart' })
 			return
 		}
 
@@ -374,14 +403,14 @@ const Status: React.FC<Props> = (props) => {
 				return Object.assign({}, current, { attachments: [res.data] })
 			})
 		} catch {
-			toast.push(alert('error', formatMessage({ id: 'alert.upload_error' })), { placement: 'topStart' })
+			toast.push(alert('error', formatMessage({ id: 'alert.uploadError' })), { placement: 'topStart' })
 		} finally {
 			setLoading(false)
 		}
 	}
 	const fileChanged = async (_filepath: string, event: ChangeEvent<HTMLInputElement>) => {
 		if (formValue.attachments && formValue.attachments.length > 4) {
-			toast.push(alert('error', formatMessage({ id: 'alert.validation_attachments_length' }, { limit: 5 })), { placement: 'topStart' })
+			toast.push(alert('error', formatMessage({ id: 'alert.validationAttachmentsLength' }, { limit: 5 })), { placement: 'topStart' })
 			return
 		}
 
@@ -419,7 +448,7 @@ const Status: React.FC<Props> = (props) => {
 	}
 
 	const toggleSchedule = () => {
-		if (formValue.scheduled_at) {
+		if (formValue.scheduledAt) {
 			setFormValue((current) =>
 				Object.assign({}, current, {
 					scheduled_at: undefined
@@ -462,6 +491,9 @@ const Status: React.FC<Props> = (props) => {
 			if (key === 'public' || key === 'unlisted' || key === 'private' || key === 'direct') {
 				setVisibility(key)
 			}
+			if (key === 'quote:public') setApproveQuote('public')
+			if (key === 'quote:followers') setApproveQuote('followers')
+			if (key === 'quote:nobody') setApproveQuote('nobody')
 		}
 		return (
 			<Popover ref={ref} className={className} style={{ left, top }} full>
@@ -478,29 +510,16 @@ const Status: React.FC<Props> = (props) => {
 					<Dropdown.Item eventKey={'direct'} icon={<Icon as={BsEnvelope} />}>
 						<FormattedMessage id="compose.visibility.direct" />
 					</Dropdown.Item>
+					{props.server.quote_support && <Dropdown.Menu title={formatMessage({ id: 'compose.quote.by' })}>
+						<Dropdown.Item eventKey={'quote:public'}><FormattedMessage id="compose.quote.public" /></Dropdown.Item>
+						<Dropdown.Item eventKey={'quote:followers'}><FormattedMessage id="compose.quote.followers" /></Dropdown.Item>
+						<Dropdown.Item eventKey={'quote:nobody'}><FormattedMessage id="compose.quote.nobody" /></Dropdown.Item>
+					</Dropdown.Menu>}
 				</Dropdown.Menu>
 			</Popover>
 		)
 	}
 
-	const LanguageDropdown = ({ onClose, left, top, className }, ref: any) => {
-		const handleSelect = (key: string) => {
-			setLanguage(key)
-			onClose()
-		}
-
-		return (
-			<Popover ref={ref} className={className} style={{ left, top }} full>
-				<Dropdown.Menu onSelect={handleSelect} style={{ maxHeight: '300px', overflowX: 'scroll' }}>
-					{languages.map((l, index) => (
-						<Dropdown.Item key={l.value} eventKey={l.value}>
-							{l.label}
-						</Dropdown.Item>
-					))}
-				</Dropdown.Menu>
-			</Popover>
-		)
-	}
 	const NowPlayingDropdown = ({ onClose, left, top, className }, ref: any) => {
 		const handleSelect = async (key: string) => {
 			const showToaster = (message: string, duration?: number) => toast.push(alert('info', formatMessage({ id: message })), { placement: 'topStart', duration })
@@ -539,11 +558,11 @@ const Status: React.FC<Props> = (props) => {
 	}
 
 	const targetId = () => {
-		if (props.in_reply_to) {
-			return `emoji-picker-reply-${props.in_reply_to.id}`
+		if (props.inReplyTo) {
+			return `emoji-picker-reply-${props.inReplyTo.id}`
 		}
-		if (props.edit_target) {
-			return `emoji-picker-edit-${props.edit_target.id}`
+		if (props.editTarget) {
+			return `emoji-picker-edit-${props.editTarget.id}`
 		}
 		return 'emoji-picker-compose'
 	}
@@ -551,7 +570,7 @@ const Status: React.FC<Props> = (props) => {
 
 	return (
 		<>
-			<Form fluid model={model} ref={formRef} onChange={setFormValue} onCheck={setFormError} formValue={formValue}>
+			<Form fluid ref={formRef} onChange={setFormValue} onCheck={setFormError} formValue={formValue}>
 				{cw && (
 					<Form.Group controlId="spoiler">
 						<Form.Control name="spoiler" {...focusAttr} ref={cwRef} placeholder={formatMessage({ id: 'compose.spoiler.placeholder' })} />
@@ -589,7 +608,7 @@ const Status: React.FC<Props> = (props) => {
 					)}
 				</Form.Group>
 				{formValue.poll && <Form.Control name="poll" {...focusAttr} accepter={PollInputControl} fieldError={formError.poll} />}
-				{formValue.scheduled_at && <Form.Control name="scheduled_at" {...focusAttr} accepter={DatePicker} format="yyyy-MM-dd HH:mm" />}
+				{formValue.scheduledAt && <Form.Control name="scheduled_at" {...focusAttr} accepter={DatePicker} format="yyyy-MM-dd HH:mm" />}
 
 				<Form.Group controlId="actions" style={{ marginBottom: '4px' }}>
 					<ButtonToolbar style={{ gap: 0 }}>
@@ -600,9 +619,11 @@ const Status: React.FC<Props> = (props) => {
 						<Button appearance="subtle" onClick={togglePoll}>
 							<Icon as={BsMenuButtonWide} style={{ fontSize: '1.1em' }} />
 						</Button>
-						<Whisper placement="bottomStart" trigger="click" speaker={VisibilityDropdown}>
-							<Button appearance="subtle">
-								<Icon as={privacyIcon(visibility)} style={{ fontSize: '1.1em', color: privacyColor(visibility) }} />
+						<Whisper placement="auto" trigger="click" speaker={VisibilityDropdown}>
+							<Button appearance="subtle" style={{ padding: '8px 8px' }}>
+								<Icon as={privacyIcon(visibility)} style={{ fontSize: props.server.quote_support ? '0.8em' : '1.1em', color: privacyColor(visibility) }} />
+								{props.server.quote_support && <span>/</span>}
+								{props.server.quote_support && <Icon as={quoteIcon(approvedQuote)} style={{ fontSize: '0.7em', position: 'relative', top: 3 }} />}
 							</Button>
 						</Whisper>
 						<Button appearance="subtle" onClick={() => toggleCW()}>
@@ -611,12 +632,21 @@ const Status: React.FC<Props> = (props) => {
 						<SelectPicker
 							data={languages}
 							appearance="subtle"
+							ref={selectPickerRef}
 							value={language}
 							onChange={setLanguage}
 							onOpen={() => setFocused(true)}
 							onClose={() => setFocused(false)}
 							cleanable={false}
 							style={{ width: '43px' }}
+							renderExtraFooter={() => 
+								<Button appearance="link" onClick={() => setIsSortedLanguage(!isSortedLanguage)}>
+									{isSortedLanguage ? <FormattedMessage id="compose.language.unsorted" /> : <FormattedMessage id="compose.language.sorted" />}
+								</Button>
+							}
+							renderMenuItem={(_label, item) => (<>
+								<p style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '240px' }}>{item.native} ({item.english})</p>
+							</>)}
 							renderValue={() => (
 								<>
 									<span style={{ position: 'absolute', fontSize: '0.9em' }}>{language.toUpperCase()}</span>
@@ -637,7 +667,7 @@ const Status: React.FC<Props> = (props) => {
 				</Form.Group>
 				{formValue.attachments?.length > 0 && (
 					<Form.Group controlId="nsfw" style={{ marginBottom: '4px' }}>
-						<Form.Control name="nsfw" accepter={Toggle} checkedChildren={<FormattedMessage id="compose.nsfw.sensitive" />} unCheckedChildren={<FormattedMessage id="compose.nsfw.not_sensitive" />} />
+						<Form.Control name="nsfw" accepter={Toggle} checkedChildren={<FormattedMessage id="compose.nsfw.sensitive" />} unCheckedChildren={<FormattedMessage id="compose.nsfw.notSensitive" />} />
 					</Form.Group>
 				)}
 
@@ -678,7 +708,7 @@ const Status: React.FC<Props> = (props) => {
 				</Form.Group>
 				<Form.Group>
 					<ButtonToolbar style={{ justifyContent: 'flex-end' }}>
-						{(props.in_reply_to || props.edit_target) && (
+						{(props.inReplyTo || props.editTarget) && (
 							<Button onClick={() => clear(false)}>
 								<FormattedMessage id="compose.cancel" />
 							</Button>
@@ -694,7 +724,7 @@ const Status: React.FC<Props> = (props) => {
 			</Form>
 			{searchAA !== '' && (
 				<Button onClick={() => getUnknownAAFn()} appearance="link">
-					<FormattedMessage id="compose.nowplaying.unkwnown_aa_btn" />
+					<FormattedMessage id="compose.nowplaying.unkwnownAaBtn" />
 				</Button>
 			)}
 			<EditMedia
@@ -809,7 +839,7 @@ const PollInputControl: FormControlProps<Poll, any> = ({ value, onChange, fieldE
 					</FlexboxGrid.Item>
 					<FlexboxGrid.Item>
 						<Button appearance="ghost" onClick={addOption}>
-							<FormattedMessage id="compose.poll.add_choice" />
+							<FormattedMessage id="compose.poll.addChoice" />
 						</Button>
 					</FlexboxGrid.Item>
 					<FlexboxGrid.Item>

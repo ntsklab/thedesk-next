@@ -1,20 +1,17 @@
 import generator, { type Entity } from '@cutls/megalodon'
 import { Icon } from '@rsuite/icons'
-import { time } from 'console'
 import { useContext, useEffect, useState } from 'react'
-import { BsBell, BsBookmark, BsChevronLeft, BsEnvelope, BsGlobe2, BsHouseDoor, BsListUl, BsPeople, BsPlus, BsStar } from 'react-icons/bs'
+import { BsBell, BsBookmark, BsBroadcast, BsChevronLeft, BsEnvelope, BsGlobe2, BsHouseDoor, BsListUl, BsPeople, BsPlus, BsStar } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Button, ButtonToolbar, Container, Content, Dropdown, FlexboxGrid, Header, IconButton, List, Loader, Popover, Whisper } from 'rsuite'
 import { addTimeline, getAccount, listTimelines } from 'utils/storage'
-import { TheDeskContext, TimelineRefreshContext } from '@/context'
-import { Account } from '../../entities/account'
-import { Instruction } from '../../entities/instruction'
+import { TimelineRefreshContext } from '@/context'
 import type { Server, ServerSet } from '../../entities/server'
 import type { TimelineKind } from '../../entities/timeline'
 
 type AuthorizedProps = {
 	server: Server
-	select: (kind: TimelineKind, name: string, list_id: string | null) => void
+	select: (kind: TimelineKind, name: string, listId: string | null, isMisskeyAntenna?: boolean) => void
 }
 
 const AuthorizedTimelines: React.FC<AuthorizedProps> = (props) => {
@@ -28,7 +25,7 @@ const AuthorizedTimelines: React.FC<AuthorizedProps> = (props) => {
 			try {
 				const [account, _] = await getAccount({ id: server.account_id })
 				const client = generator(server.sns, server.base_url, account.access_token, 'Fedistar')
-				const res = await client.getLists()
+				const res = await client.getLists(true)
 				setLists(res.data)
 			} catch (e) {
 				console.error(e)
@@ -107,10 +104,10 @@ const AuthorizedTimelines: React.FC<AuthorizedProps> = (props) => {
 				</List.Item>
 			)}
 			{lists.map((list, index) => (
-				<List.Item key={list.id} index={8 + index} onClick={() => select('list', list.title, list.id)} style={{ cursor: 'pointer' }}>
+				<List.Item key={list.id} index={8 + index} onClick={() => select('list', list.title, list.id, list.is_misskey_antenna)} style={{ cursor: 'pointer' }}>
 					<FlexboxGrid align="middle">
 						<FlexboxGrid.Item colspan={4} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-							<Icon as={BsListUl} />
+							<Icon as={list.is_misskey_antenna ? BsBroadcast : BsListUl} />
 						</FlexboxGrid.Item>
 						<FlexboxGrid.Item colspan={20}>
 							<div>{list.title}</div>
@@ -144,7 +141,7 @@ const New: React.FC<Props> = (props) => {
 	const addTimelineMenu = ({ onClose, left, top, className }, ref: any) => {
 		const handleSelect = (eventKey: string) => {
 			onClose()
-			const target = props.servers.find((s) => s.server.id === Number.parseInt(eventKey))
+			const target = props.servers.find((s) => s.server.id === Number.parseInt(eventKey, 10))
 			setServer(target.server)
 		}
 		return (
@@ -203,8 +200,8 @@ const New: React.FC<Props> = (props) => {
 		</div>
 	)
 
-	const select = async (tl: TimelineKind, name: string, list_id: string | null) => {
-		await addTimeline(server, { kind: tl, name: name, listId: list_id, columnWidth: 'sm' })
+	const select = async (tl: TimelineKind, name: string, listId: string | null, isMisskeyAntenna?: boolean) => {
+		await addTimeline(server, { kind: tl, name: name, listId, columnWidth: 'sm', isMisskeyAntenna })
 		setServer(null)
 		timelineRefresh(true)
 	}

@@ -1,4 +1,4 @@
-import type { TimelineKind } from './entities/timeline'
+
 
 export type IPCEvent = (ev: { payload: T }) => void
 export interface IElectronAPI {
@@ -8,6 +8,7 @@ export interface IElectronAPI {
 	openBrowser: (url: string) => void
 	openInAppBrowser: (url: string) => void
 	onInitialInfo: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => void
+	showAbout: (callback: (event: Electron.IpcRendererEvent) => void) => void
 	customUrl: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => void
 	appleMusic: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => void
 	openAppDataFolder: () => void

@@ -1,7 +1,7 @@
-import fs from 'fs'
+import fs from 'node:fs'
 import type { WindowState } from '../types'
 import { screen, app } from 'electron'
-import { join } from 'path'
+import { join } from 'node:path'
 
 const appDataPath = join(app.getPath('appData'), app.getName())
 const windowStatePath = join(appDataPath, 'window-state.json')

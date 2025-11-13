@@ -1,10 +1,10 @@
-import { execFile } from 'child_process'
+import { execFile } from 'node:child_process'
 import serve from 'electron-serve'
 import { getFonts } from 'font-list'
-import fs from 'fs'
+import fs from 'node:fs'
 // Native
-import { join } from 'path'
-import { promisify } from 'util'
+import { join } from 'node:path'
+import { promisify } from 'node:util'
 import * as tar from 'tar'
 
 type SystemConfig = {
@@ -73,6 +73,7 @@ const template: MenuItemConstructorOptions[] = [
 const appMenu: MenuItemConstructorOptions = {
 	role: 'appMenu',
 	submenu: [
+		{ label: isJa ? 'TheDeskについて' : 'About TheDesk', click: () => mainWindow?.webContents.send('showAbout') },
 		{ type: 'separator' },
 		{ label: isJa ? '設定' : 'Prefrences', click: () => mainWindow?.loadURL('app://-/setting.html'), accelerator: isMac ? 'Command+,' : undefined },
 		{ type: 'separator' },
@@ -166,7 +167,7 @@ app.on('ready', async () => {
 			song = JSON.parse(stdout)
 			if ((!song || !song.name)) throw new Error('no song data')
 			if (!song.databaseID) return mainWindow?.webContents.send('appleMusic', song)
-		} catch (e: any) {
+		} catch {
 			return mainWindow?.webContents.send('appleMusic', { error: true, message: 'unknown error' })
 		}
 		try {

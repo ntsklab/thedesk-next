@@ -2,7 +2,7 @@ import type { Entity, MegalodonInterface, Response } from '@cutls/megalodon'
 import Picker from '@emoji-mart/react'
 import { Icon } from '@rsuite/icons'
 import { type Dispatch, forwardRef, type ReactElement, type SetStateAction, useContext, useRef, useState } from 'react'
-import { BsBookmark, BsEmojiSmile, BsEnvelope, BsFillBookmarkFill, BsLock, BsRepeat, BsReply, BsStar, BsStarFill, BsThreeDots } from 'react-icons/bs'
+import { BsBookmark, BsEmojiSmile, BsEnvelope, BsFillBookmarkFill, BsLock, BsQuote, BsRepeat, BsReply, BsStar, BsStarFill, BsThreeDots } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Dropdown, FlexboxGrid, IconButton, Popover, useToaster, Whisper } from 'rsuite'
 import alert from '@/components/utils/alert'
@@ -23,15 +23,20 @@ type Props = {
 				favourite: boolean
 				bookmark: boolean
 				emoji: boolean
+				quote: boolean
 				detail: boolean
 		  }
 	server: Server
 	account: Account | null
 	status: Entity.Status
 	client: MegalodonInterface
+	showCount?: boolean
 	setShowReply?: Dispatch<SetStateAction<boolean>>
 	setShowEdit?: Dispatch<SetStateAction<boolean>>
+	setShowQuote?: Dispatch<SetStateAction<boolean>>
 	updateStatus: (status: Entity.Status) => void
+	revokeQuoting?: () => void
+	ableToRevoke?: boolean
 	openReport?: () => void
 	openFromOtherAccount?: () => void
 	customEmojis: Array<CustomEmojiCategory>
@@ -58,7 +63,7 @@ const Actions: React.FC<Props> = (props) => {
 			try {
 				res = await client.unreblogStatus(status.id)
 			} catch {
-				toast.push(alert('error', formatMessage({ id: 'alert.failed_unreblog' })), { placement: 'topStart' })
+				toast.push(alert('error', formatMessage({ id: 'alert.failedUnreblog' })), { placement: 'topStart' })
 			}
 		} else {
 			setReblogDeactivating(false)
@@ -66,7 +71,7 @@ const Actions: React.FC<Props> = (props) => {
 			try {
 				res = await client.reblogStatus(status.id)
 			} catch {
-				toast.push(alert('error', formatMessage({ id: 'alert.failed_reblog' })), { placement: 'topStart' })
+				toast.push(alert('error', formatMessage({ id: 'alert.failedReblog' })), { placement: 'topStart' })
 			}
 		}
 		props.updateStatus(res.data)
@@ -80,7 +85,7 @@ const Actions: React.FC<Props> = (props) => {
 			try {
 				res = await client.unfavouriteStatus(status.id)
 			} catch {
-				toast.push(alert('error', formatMessage({ id: 'alert.failed_unfavourite' })), { placement: 'topStart' })
+				toast.push(alert('error', formatMessage({ id: 'alert.failedUnfavourite' })), { placement: 'topStart' })
 			}
 		} else {
 			setFavouriteDeactivating(false)
@@ -88,7 +93,7 @@ const Actions: React.FC<Props> = (props) => {
 			try {
 				res = await client.favouriteStatus(status.id)
 			} catch {
-				toast.push(alert('error', formatMessage({ id: 'alert.failed_favourite' })), { placement: 'topStart' })
+				toast.push(alert('error', formatMessage({ id: 'alert.failedFavourite' })), { placement: 'topStart' })
 			}
 		}
 		props.updateStatus(res.data)
@@ -100,13 +105,13 @@ const Actions: React.FC<Props> = (props) => {
 			try {
 				res = await client.unbookmarkStatus(status.id)
 			} catch {
-				toast.push(alert('error', formatMessage({ id: 'alert.failed_unbookmark' })), { placement: 'topStart' })
+				toast.push(alert('error', formatMessage({ id: 'alert.failedUnbookmark' })), { placement: 'topStart' })
 			}
 		} else {
 			try {
 				res = await client.bookmarkStatus(status.id)
 			} catch {
-				toast.push(alert('error', formatMessage({ id: 'alert.failed_bookmark' })), { placement: 'topStart' })
+				toast.push(alert('error', formatMessage({ id: 'alert.failedBookmark' })), { placement: 'topStart' })
 			}
 		}
 		props.updateStatus(res.data)
@@ -129,7 +134,8 @@ const Actions: React.FC<Props> = (props) => {
 			<Picker data={data} custom={props.customEmojis} onEmojiSelect={onEmojiSelect} previewPosition="none" set="native" perLine="6" theme={theme === 'high-contrast' ? 'dark' : theme} />
 		</Popover>
 	))
-	const isDisabledEmoji = props.server.domain !== 'fedibird.com' && props.server.sns === 'mastodon' && !(props.server.emoji_reactions ?? false)
+	const isAvailableEmoji = props.server.emoji_reactions
+	const isAvailableQuote = props.server.quote_support && status.quote_approval?.current_user !== 'denied'
 
 	return (
 		<div className="toolbox">
@@ -137,6 +143,7 @@ const Actions: React.FC<Props> = (props) => {
 				<FlexboxGrid.Item>
 					<ActionButton
 						disabled={typeof props.disabled === 'boolean' ? props.disabled : props.disabled.reply}
+						count={props.showCount ? status.replies_count : undefined}
 						icon={<Icon as={BsReply} />}
 						onClick={() => props.setShowReply((current) => !current)}
 						title={formatMessage({ id: 'timeline.actions.reply' })}
@@ -146,6 +153,7 @@ const Actions: React.FC<Props> = (props) => {
 					<ActionButton
 						disabled={(typeof props.disabled === 'boolean' ? props.disabled : props.disabled.reblog) || status.visibility === 'direct' || status.visibility === 'private'}
 						className="reblog-action"
+						count={props.showCount ? status.reblogs_count : undefined}
 						activating={reblogActivating}
 						deactivating={reblogDeactivating}
 						icon={reblogIcon(props.status)}
@@ -157,6 +165,7 @@ const Actions: React.FC<Props> = (props) => {
 					<ActionButton
 						disabled={typeof props.disabled === 'boolean' ? props.disabled : props.disabled.favourite}
 						className="favourite-action"
+						count={props.showCount ? status.favourites_count : undefined}
 						activating={favouriteActivating}
 						deactivating={favouriteDeactivating}
 						icon={favouriteIcon(props.status)}
@@ -168,20 +177,32 @@ const Actions: React.FC<Props> = (props) => {
 					<ActionButton
 						disabled={typeof props.disabled === 'boolean' ? props.disabled : props.disabled.bookmark}
 						icon={bookmarkIcon(props.status)}
+						count={props.showCount ? null : undefined}
 						onClick={bookmark}
 						title={formatMessage({ id: 'timeline.actions.bookmark' })}
 					/>
 				</FlexboxGrid.Item>
+				{isAvailableEmoji && (
+					<FlexboxGrid.Item>
+						<Whisper trigger="click" preventOverflow delay={100} ref={emojiPickerRef} speaker={<EmojiPicker />}>
+							<IconButton
+								appearance="link"
+								icon={<Icon as={BsEmojiSmile} />}
+								count={props.showCount ? null : undefined}
+								disabled={(typeof props.disabled === 'boolean' ? props.disabled : props.disabled.emoji) || !isAvailableEmoji}
+								title={formatMessage({ id: 'timeline.actions.emojiReaction' })}
+							/>
+						</Whisper>
+					</FlexboxGrid.Item>
+				)}
 				<FlexboxGrid.Item>
-					{/** delay is required to fix popover position **/}
-					<Whisper trigger="click" preventOverflow delay={100} ref={emojiPickerRef} speaker={<EmojiPicker />}>
-						<IconButton
-							appearance="link"
-							icon={<Icon as={BsEmojiSmile} />}
-							disabled={(typeof props.disabled === 'boolean' ? props.disabled : props.disabled.emoji) || isDisabledEmoji}
-							title={formatMessage({ id: 'timeline.actions.emoji_reaction' })}
-						/>
-					</Whisper>
+					<ActionButton
+						disabled={(typeof props.disabled === 'boolean' ? props.disabled : props.disabled.quote) || !isAvailableQuote}
+						icon={<Icon as={BsQuote} />}
+						count={props.showCount ? status.quotes_count : undefined}
+						onClick={() => props.setShowQuote((current) => !current)}
+						title={formatMessage({ id: 'timeline.actions.quote' })}
+					/>
 				</FlexboxGrid.Item>
 				<FlexboxGrid.Item>
 					<Whisper
@@ -213,6 +234,10 @@ const Actions: React.FC<Props> = (props) => {
 									},
 									onReport: () => {
 										props.openReport()
+									},
+									ableToRevoke: props.ableToRevoke,
+									onRevokeQuoting: () => {
+										props.revokeQuoting()
 									},
 									onFromOtherAccount: () => {
 										props.openFromOtherAccount()
@@ -266,6 +291,8 @@ type DetailMenuProps = {
 	onDelete: () => void
 	openEdit: () => void
 	onClose: (delay?: number) => NodeJS.Timeout | void
+	ableToRevoke: boolean
+	onRevokeQuoting: () => void
 	onReport: () => void
 	onFromOtherAccount: () => void
 }
@@ -287,6 +314,9 @@ const detailMenu = (props: DetailMenuProps, ref: React.RefCallback<HTMLElement>)
 				return
 			case 'delete':
 				props.onDelete()
+				return
+			case 'revoke':
+				props.onRevokeQuoting()
 				return
 			case 'report':
 				props.onReport()
@@ -319,8 +349,13 @@ const detailMenu = (props: DetailMenuProps, ref: React.RefCallback<HTMLElement>)
 				<Dropdown.Item disabled={props.disabled} eventKey="report" style={{ fontSize: '0.8rem', padding: '5px' }}>
 					<FormattedMessage id="timeline.actions.detail.report" values={{ user: `@${status.account.username}` }} />
 				</Dropdown.Item>
+				{props.ableToRevoke && (
+					<Dropdown.Item eventKey="revoke" style={{ fontSize: '0.8rem', padding: '5px' }}>
+						<FormattedMessage id="timeline.actions.revokeQuoting" />
+					</Dropdown.Item>
+				)}
 				<Dropdown.Item eventKey="from_other_account" style={{ fontSize: '0.8rem', padding: '5px' }}>
-					<FormattedMessage id="timeline.actions.detail.from_other_account" />
+					<FormattedMessage id="timeline.actions.detail.fromOtherAccount" />
 				</Dropdown.Item>
 			</Dropdown.Menu>
 		</Popover>

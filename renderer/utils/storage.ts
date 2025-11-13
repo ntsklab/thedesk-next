@@ -1,9 +1,11 @@
-import { detector } from '@cutls/megalodon'
+import { getData } from '@cutls/megalodon'
+import semver from 'semver'
 import type { Account } from '@/entities/account'
 import type { Server } from '@/entities/server'
 import { defaultSetting, type Settings } from '@/entities/settings'
 import { type AddTimeline, type Color, colorList, columnWidth as columnWidthCalc, type Timeline } from '@/entities/timeline'
 import { localTypeList } from '@/i18n'
+import { getFavicon } from './favicon'
 export function migrateTimelineV1toV2() {
 	const timelinesV2Str = localStorage.getItem('timelinesV2')
 	if (!timelinesV2Str) {
@@ -26,7 +28,7 @@ export async function listTimelines(): Promise<[Timeline, Server, Account | null
 			oneColumn
 				.map((timeline) => {
 					const server = servers.find((server) => server.id === timeline.server_id)
-					return [timeline, server, (accounts.find((acct) => acct.id === server?.account_id) || null)]
+					return [timeline, server, accounts.find((acct) => acct.id === server?.account_id) || null]
 				})
 				.filter((pair) => pair[1] !== undefined)
 		)
@@ -55,6 +57,7 @@ export async function addTimeline(server: Server, timeline: AddTimeline): Promis
 			sort: flatTls.length + 1,
 			server_id: server.id,
 			list_id: timeline.listId || null,
+			is_misskey_antenna: timeline.isMisskeyAntenna || false,
 			column_width: timeline.columnWidth
 		}
 	])
@@ -102,25 +105,37 @@ export async function addServer({ domain }: { domain: string }): Promise<Server>
 	const serversStr = localStorage.getItem('servers')
 	const servers: Server[] = JSON.parse(serversStr || '[]')
 	const serverMaxId = servers.reduce((max, server) => (server.id > max ? server.id : max), 0)
-	const sns = await detector(`https://${domain}`)
-	if (sns === 'gotosocial' || sns === 'pixelfed') return
-	const noStreaming = sns === 'friendica'
-	const noSubscribe = sns === 'pleroma' || sns === 'firefish'
+	const { compatibleSns: sns, semanticVersionCompatibleNumber } = await getData(`https://${domain}`)
+	const noSubscribe = sns === 'pleroma'
 	const server = {
 		id: serverMaxId + 1,
 		domain: domain,
 		base_url: `https://${domain}`,
 		sns,
-		favicon: null,
+		favicon: await getFavicon(domain),
 		account_id: null,
-		no_streaming: noStreaming,
+		no_streaming: false,
 		cannot_subscribe: noSubscribe,
-		emoji_reactions: sns === 'misskey' || domain === 'fedibird.com'
+		emoji_reactions: sns === 'misskey' || domain === 'fedibird.com',
+		quote_support: sns === 'misskey' || domain === 'fedibird.com' || (sns === 'mastodon' && !semver.lt(semanticVersionCompatibleNumber, '4.5.0'))
 	}
 	servers.push(server)
 	localStorage.setItem('servers', JSON.stringify(servers))
 	return server
 }
+
+export async function updateServers(servers: Server[]): Promise<void> {
+	const newServers: Server[] = []
+	for (const server of servers) {
+		const domain = server.domain
+		const { compatibleSns: sns, semanticVersionCompatibleNumber } = await getData(`https://${domain}`)
+		server.quote_support = sns === 'misskey' || domain === 'fedibird.com' || (sns === 'mastodon' && !semver.lt(semanticVersionCompatibleNumber, '4.5.0'))
+		server.favicon = await getFavicon(domain)
+		newServers.push(server)
+	}
+	localStorage.setItem('servers', JSON.stringify(newServers))
+}
+
 export async function getServer({ id }: { id: number }): Promise<Server> {
 	const serversStr = localStorage.getItem('servers')
 	const servers: Server[] = JSON.parse(serversStr || '[]')
@@ -192,7 +207,7 @@ export async function setUsualAccount({ id }: { id: number }): Promise<void> {
 }
 export async function getUsualAccount(): Promise<number> {
 	localStorage.getItem('usualAccount')
-	return Number.parseInt(localStorage.getItem('usualAccount') || '0')
+	return Number.parseInt(localStorage.getItem('usualAccount') || '0', 10)
 }
 async function updateColumnSettingCore(timelines: Timeline[][], id: number, key: keyof Timeline, value: any) {
 	const newTimelines: Timeline[][] = []

@@ -22,6 +22,7 @@ export type Settings = {
 		ttsVoice: string
 	}
 	compose: {
+		floating: FormBoolean
 		btnPosition: 'left' | 'right'
 		afterPost: 'close' | 'stay'
 		secondaryToot: 'no' | 'public' | 'unlisted' | 'private' | 'direct'
@@ -51,6 +52,7 @@ export const defaultSetting: Settings = {
 		ttsVoice: ''
 	},
 	compose: {
+		floating: 'yes',
 		btnPosition: 'right',
 		afterPost: 'close',
 		secondaryToot: 'no'

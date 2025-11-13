@@ -1,10 +1,9 @@
 import type { Entity, MegalodonInterface } from '@cutls/megalodon'
 import { Icon } from '@rsuite/icons'
-import { type MouseEventHandler, useState } from 'react'
+import { type MouseEventHandler, useContext, useState } from 'react'
 import { BsArrowRepeat, BsHouseDoor, BsMenuUp, BsPaperclip, BsPencil, BsStar } from 'react-icons/bs'
 import { useIntl } from 'react-intl'
 import { Avatar, Button, FlexboxGrid, Notification, toaster } from 'rsuite'
-import Reply from '@/components/compose/Status'
 import Time from '@/components/utils/Time'
 import { TIMELINE_STATUSES_COUNT } from '@/defaults'
 import type { Account } from '@/entities/account'
@@ -16,6 +15,8 @@ import { accountMatch, findAccount, findLink, findTag, type ParsedAccount } from
 import Actions from '../status/Actions'
 import Body from '../status/Body'
 import Poll from '../status/Poll'
+import { TheDeskContext } from '@/context'
+import Quote from '../status/Quote'
 
 type Props = {
 	server: Server
@@ -91,7 +92,7 @@ const actionText = (notification: Entity.Notification, setAccountDetail: (accoun
 				<span
 					style={{ color: 'var(--rs-text-secondary)', cursor: 'pointer' }}
 					dangerouslySetInnerHTML={{
-						__html: emojify(formatMessage({ id: 'timeline.notification.poll_expired.body' }, { user: useName }), notification.account.emojis)
+						__html: emojify(formatMessage({ id: 'timeline.notification.pollExpired.body' }, { user: useName }), notification.account.emojis)
 					}}
 					onClick={() => setAccountDetail(notification.account)}
 				/>
@@ -101,7 +102,7 @@ const actionText = (notification: Entity.Notification, setAccountDetail: (accoun
 				<span
 					style={{ color: 'var(--rs-text-secondary)', cursor: 'pointer' }}
 					dangerouslySetInnerHTML={{
-						__html: emojify(formatMessage({ id: 'timeline.notification.poll_vote.body' }, { user: useName }), notification.account.emojis)
+						__html: emojify(formatMessage({ id: 'timeline.notification.pollVote.body' }, { user: useName }), notification.account.emojis)
 					}}
 					onClick={() => setAccountDetail(notification.account)}
 				/>
@@ -142,7 +143,7 @@ const actionText = (notification: Entity.Notification, setAccountDetail: (accoun
 				<span
 					style={{ color: 'var(--rs-text-secondary)', cursor: 'pointer' }}
 					dangerouslySetInnerHTML={{
-						__html: emojify(formatMessage({ id: 'timeline.notification.emoji_reaction.body' }, { user: useName }), notification.account.emojis)
+						__html: emojify(formatMessage({ id: 'timeline.notification.emojiReaction.body' }, { user: useName }), notification.account.emojis)
 					}}
 					onClick={() => setAccountDetail(notification.account)}
 				/>
@@ -154,10 +155,9 @@ const actionText = (notification: Entity.Notification, setAccountDetail: (accoun
 
 const Reaction: React.FC<Props> = (props) => {
 	const { formatMessage } = useIntl()
+	const { setReply } = useContext(TheDeskContext)
 	const status = props.notification.status
 	const [spoilered, setSpoilered] = useState<boolean>(status.spoiler_text.length > 0)
-	const [showReply, setShowReply] = useState<boolean>(false)
-	const [showEdit, setShowEdit] = useState<boolean>(false)
 
 	const refresh = async () => {
 		const res = await props.client.getStatus(status.id)
@@ -175,14 +175,13 @@ const Reaction: React.FC<Props> = (props) => {
 			if (account) {
 				props.setAccountDetail(account)
 			} else {
-				// biome-ignore lint/style/useConst: <explanation>
 				let confirmToaster: any
 				confirmToaster = toaster.push(
 					notification(
 						'info',
-						formatMessage({ id: 'dialog.account_not_found.title' }),
-						formatMessage({ id: 'dialog.account_not_found.message' }),
-						formatMessage({ id: 'dialog.account_not_found.button' }),
+						formatMessage({ id: 'dialog.accountNotFound.title' }),
+						formatMessage({ id: 'dialog.accountNotFound.message' }),
+						formatMessage({ id: 'dialog.accountNotFound.button' }),
 						() => {
 							open(parsedAccount.url)
 							toaster.remove(confirmToaster)
@@ -216,6 +215,7 @@ const Reaction: React.FC<Props> = (props) => {
 	const openStatus = () => {
 		props.setStatusDetail(status.id, props.server.id, props.account.id)
 	}
+	const ableToRevoke = props.notification.type === 'quote' && status.quote_status
 
 	return (
 		<div>
@@ -257,6 +257,7 @@ const Reaction: React.FC<Props> = (props) => {
 					{!spoilered && (
 						<>
 							{status.poll && <Poll poll={status.poll} client={props.client} pollUpdated={refresh} emojis={status.emojis} />}
+							{status.quote_status_state && <Quote status={status.quote_status} state={status.quote_status_state} isAnimeIcon={false} setStatusDetail={() => props.setStatusDetail(status.quote_status.id, props.server.id, props.account.id)} />}
 							{status.media_attachments.map((media, index) => (
 								<div key={media.id}>
 									<Button appearance="subtle" size="sm" onClick={() => props.openMedia(status.media_attachments, index)}>
@@ -274,25 +275,18 @@ const Reaction: React.FC<Props> = (props) => {
 						account={props.account}
 						status={status}
 						client={props.client}
-						setShowReply={setShowReply}
-						setShowEdit={setShowEdit}
+						setShowReply={() => setReply({ replyStatus: status, inReplyToAccountId: props.account.account_id, type: 'reply' })}
+						setShowEdit={() => setReply({ replyStatus: status, inReplyToAccountId: props.account.account_id, type: 'edit' })}
+						setShowQuote={() => setReply({ replyStatus: status, inReplyToAccountId: props.account.account_id, type: 'quote' })}
 						updateStatus={props.updateStatus}
+						revokeQuoting={() => props.client.revokeQuote(status.quote_status.id, status.id).then(() => refresh())}
+						ableToRevoke={!!ableToRevoke}
 						openReport={() => props.openReport(status, props.client)}
 						openFromOtherAccount={() => props.openFromOtherAccount(status)}
 						customEmojis={props.customEmojis}
 					/>
 				</div>
 			</div>
-			{showReply && (
-				<div style={{ padding: '8px 12px' }}>
-					<Reply client={props.client} server={props.server} account={props.account} in_reply_to={status} onClose={() => setShowReply(false)} />
-				</div>
-			)}
-			{showEdit && (
-				<div style={{ padding: '8px 12px' }}>
-					<Reply client={props.client} server={props.server} account={props.account} edit_target={status} onClose={() => setShowEdit(false)} />
-				</div>
-			)}
 		</div>
 	)
 }
@@ -316,7 +310,7 @@ async function searchAccount(account: ParsedAccount, status: Entity.Status, clie
 	try {
 		const res = await client.lookupAccount(account.acct)
 		return res.data
-	} catch (e) {
+	} catch {
 		const res = await client.searchAccount(account.url, { resolve: true, limit: 5 })
 		if (res.data.length === 0) return null
 		const user = accountMatch(res.data, account, server.domain)

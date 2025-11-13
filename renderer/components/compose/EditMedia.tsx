@@ -71,7 +71,7 @@ export default function EditMedia(props: Props) {
 	return (
 		<Modal open={props.opened} onClose={() => props.close()} size="md">
 			<Modal.Header>
-				<FormattedMessage id="compose.edit_attachment.title" />
+				<FormattedMessage id="compose.editAttachment.title" />
 			</Modal.Header>
 			<Modal.Body>
 				<FlexboxGrid>
@@ -79,7 +79,7 @@ export default function EditMedia(props: Props) {
 						<Form fluid model={model} onChange={setFormValue} formValue={formValue} ref={formRef}>
 							<Form.Group controlId="description">
 								<Form.ControlLabel>
-									<FormattedMessage id="compose.edit_attachment.label" />
+									<FormattedMessage id="compose.editAttachment.label" />
 								</Form.ControlLabel>
 								{/** @ts-ignore **/}
 								<Form.Control name="description" {...focusAttr} rows={5} accepter={Textarea} />
@@ -87,7 +87,7 @@ export default function EditMedia(props: Props) {
 							<Form.Group>
 								<ButtonToolbar style={{ justifyContent: 'flex-end' }}>
 									<Button appearance="primary" type="submit" loading={loading} onClick={handleSubmit}>
-										<FormattedMessage id="compose.edit_attachment.submit" />
+										<FormattedMessage id="compose.editAttachment.submit" />
 									</Button>
 								</ButtonToolbar>
 							</Form.Group>

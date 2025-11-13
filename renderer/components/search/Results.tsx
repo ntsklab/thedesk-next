@@ -1,7 +1,7 @@
 import type { Entity, MegalodonInterface } from '@cutls/megalodon'
 import { Icon } from '@rsuite/icons'
 import { useRouter } from 'next/router'
-import { useCallback, useContext, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { BsChatQuote, BsHash, BsPeople, BsSearch } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Avatar, Form, Input, InputGroup, List } from 'rsuite'
@@ -12,6 +12,7 @@ import type { CustomEmojiCategory } from '@/entities/emoji'
 import type { Server } from '@/entities/server'
 import { mapCustomEmojiCategory } from '@/utils/emojiData'
 import emojify from '@/utils/emojify'
+import { GraphDraw } from '../utils/Graph'
 
 type Props = {
 	account: Account
@@ -20,6 +21,10 @@ type Props = {
 	openMedia: (media: Array<Entity.Attachment>, index: number) => void
 	openReport: (status: Entity.Status, client: MegalodonInterface) => void
 	openFromOtherAccount: (status: Entity.Status) => void
+	hideTrend: () => void
+	setStatusDetail: (statusId: string, serverId: number, accountId?: number) => void
+	setAccountDetail: (userId: string, serverId: number, accountId?: number) => void
+	setTagDetail: (tag: string, serverId: number, accountId?: number) => void
 }
 
 export default function Results(props: Props) {
@@ -32,12 +37,20 @@ export default function Results(props: Props) {
 	const [statuses, setStatuses] = useState<Array<Entity.Status>>([])
 	const [customEmojis, setCustomEmojis] = useState<Array<CustomEmojiCategory>>([])
 	const { setFocused } = useContext(TheDeskContext)
+	const { setStatusDetail, setAccountDetail, setTagDetail } = props
 	const focusAttr = {
 		onFocus: () => setFocused(true),
 		onBlur: () => setFocused(false)
 	}
+	useEffect(() => {
+		setWord('')
+		setAccounts([])
+		setHashtags([])
+		setStatuses([])
+	}, [props.client])
 
 	const search = async (word: string) => {
+		props.hideTrend()
 		const res = await props.client.search(word, { limit: 5, resolve: true })
 		setAccounts(res.data.accounts)
 		setHashtags(res.data.hashtags)
@@ -62,30 +75,6 @@ export default function Results(props: Props) {
 
 	const openTag = (tag: Entity.Tag) => {
 		router.push({ query: { tag: tag.name, server_id: props.server.id, account_id: props.server.account_id } })
-	}
-
-	const setStatusDetail = (statusId: string, serverId: number, accountId?: number) => {
-		if (accountId) {
-			router.push({ query: { status_id: statusId, server_id: serverId, account_id: accountId } })
-		} else {
-			router.push({ query: { status_id: statusId, server_id: serverId } })
-		}
-	}
-
-	const setAccountDetail = (userId: string, serverId: number, accountId?: number) => {
-		if (accountId) {
-			router.push({ query: { user_id: userId, server_id: serverId, account_id: accountId } })
-		} else {
-			router.push({ query: { user_id: userId, server_id: serverId } })
-		}
-	}
-
-	const setTagDetail = (tag: string, serverId: number, accountId?: number) => {
-		if (accountId) {
-			router.push({ query: { tag: tag, server_id: serverId, account_id: accountId } })
-		} else {
-			router.push({ query: { tag: tag, server_id: serverId } })
-		}
 	}
 
 	const updateStatus = (status: Entity.Status) => {
@@ -119,25 +108,6 @@ export default function Results(props: Props) {
 					</InputGroup>
 				</Form>
 			</div>
-			{/* accounts */}
-			{accounts.length > 0 && (
-				<div style={{ width: '100%' }}>
-					<div style={{ fontSize: '1.2em', margin: '0.4em 0' }}>
-						<Icon as={BsPeople} style={{ fontSize: '1.2em', marginRight: '0.2em' }} />
-						<FormattedMessage id="search.results.accounts" />
-					</div>
-					<List>
-						{accounts.map((account, index) => (
-							<List.Item key={account.id} style={{ backgroundColor: 'var(--rs-border-primary)', padding: '4px 0' }}>
-								<User user={account} open={openUser} />
-							</List.Item>
-						))}
-						<List.Item key="more" style={{ backgroundColor: 'var(--rs-border-primary)', padding: '1em 0', textAlign: 'center', cursor: 'pointer' }} onClick={() => loadMoreAccount()}>
-							<FormattedMessage id="search.results.more" />
-						</List.Item>
-					</List>
-				</div>
-			)}
 			{/* hashtags */}
 			{hashtags.length > 0 && (
 				<div style={{ width: '100%' }}>
@@ -146,14 +116,39 @@ export default function Results(props: Props) {
 						<FormattedMessage id="search.results.hashtags" />
 					</div>
 					<List>
-						{hashtags.map((tag, index) => (
-							<List.Item key={tag.name} style={{ backgroundColor: 'var(--rs-border-primary)', padding: '4px 0' }}>
-								<div style={{ padding: '12px 8px', cursor: 'pointer' }} onClick={() => openTag(tag)}>
+						{hashtags.map((tag) => (
+							<List.Item
+								key={tag.name}
+								style={{ backgroundColor: 'var(--rs-border-primary)', padding: '4px', paddingRight: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+								title={`#${tag.name}`}
+							>
+								<div style={{ padding: '12px 8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} onClick={() => openTag(tag)}>
 									#{tag.name}
 								</div>
+
+								<GraphDraw his={tag.history} />
 							</List.Item>
 						))}
 						<List.Item key="more" style={{ backgroundColor: 'var(--rs-border-primary)', padding: '1em 0', textAlign: 'center', cursor: 'pointer' }} onClick={() => loadMoreHashtag()}>
+							<FormattedMessage id="search.results.more" />
+						</List.Item>
+					</List>
+				</div>
+			)}
+			{/* accounts */}
+			{accounts.length > 0 && (
+				<div style={{ width: '100%' }}>
+					<div style={{ fontSize: '1.2em', margin: '0.4em 0' }}>
+						<Icon as={BsPeople} style={{ fontSize: '1.2em', marginRight: '0.2em' }} />
+						<FormattedMessage id="search.results.accounts" />
+					</div>
+					<List>
+						{accounts.map((account) => (
+							<List.Item key={account.id} style={{ backgroundColor: 'var(--rs-border-primary)', padding: '4px 0' }}>
+								<User user={account} open={openUser} />
+							</List.Item>
+						))}
+						<List.Item key="more" style={{ backgroundColor: 'var(--rs-border-primary)', padding: '1em 0', textAlign: 'center', cursor: 'pointer' }} onClick={() => loadMoreAccount()}>
 							<FormattedMessage id="search.results.more" />
 						</List.Item>
 					</List>
@@ -167,7 +162,7 @@ export default function Results(props: Props) {
 						<FormattedMessage id="search.results.statuses" />
 					</div>
 					<List>
-						{statuses.map((status, index) => (
+						{statuses.map((status) => (
 							<List.Item key={status.id} style={{ backgroundColor: 'var(--rs-border-primary)', padding: '4px 0' }}>
 								<div style={{ padding: '12px 8px', cursor: 'pointer' }}>
 									<Status
@@ -200,7 +195,7 @@ type UserProps = {
 	open: (user: Entity.Account) => void
 }
 
-const User: React.FC<UserProps> = (props) => {
+export const User: React.FC<UserProps> = (props) => {
 	const { user, open } = props
 	const { timelineConfig } = useContext(TheDeskContext)
 	const isAnimeIcon = timelineConfig.animation === 'yes'

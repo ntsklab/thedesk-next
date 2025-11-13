@@ -16,7 +16,7 @@ export default ({ version }: { version: string }) => {
 		const hide = localStorage.getItem('updateHide')
 		const hideRule = !!hide
 		const isNext = hideRule && !!hide.match(/^[0-9]{1,2}\./)
-		if (hideRule && !isNext && Number.parseInt(hide, 10) > new Date().getTime()) return
+		if (hideRule && !isNext && Number.parseInt(hide, 10) > Date.now()) return
 		const fn = async () => {
 			const isStoreStr = localStorage.getItem('isStore')
 			const isStore = isStoreStr === 'true' || !isStoreStr
@@ -74,7 +74,7 @@ export default ({ version }: { version: string }) => {
 				<Modal.Footer>
 					<p style={{ textAlign: 'center', marginTop: '15px', marginBottom: '5px' }}>Or more option...</p>
 					<div>
-						<FormattedMessage id="update.do_not_show" />
+						<FormattedMessage id="update.doNotShow" />
 						<SelectPicker
 							style={{ marginLeft: '3px' }}
 							value={untilMode}
@@ -82,7 +82,7 @@ export default ({ version }: { version: string }) => {
 							searchable={false}
 							data={[
 								{ label: formatMessage({ id: 'update.date' }), value: 'date' },
-								{ label: formatMessage({ id: 'update.next_update' }), value: 'nextUpdate' }
+								{ label: formatMessage({ id: 'update.nextUpdate' }), value: 'nextUpdate' }
 							]}
 						/>
 						{untilMode === 'date' && <DatePicker value={until} onChange={(e) => setUntil(e)} />}{' '}

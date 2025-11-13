@@ -18,7 +18,7 @@ function RadioBoolean(props: Props) {
 				<FormattedMessage id="timeline.settings.do" />
 			</Radio>
 			<Radio checked={props.value === 'no'} onChange={() => props.onChange('no')}>
-				<FormattedMessage id="timeline.settings.not_do" />
+				<FormattedMessage id="timeline.settings.notDo" />
 			</Radio>
 		</>
 	)

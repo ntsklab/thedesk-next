@@ -1,18 +1,15 @@
 import type { Entity, MegalodonInterface } from '@cutls/megalodon'
 import { Icon } from '@rsuite/icons'
-import { type HTMLAttributes, type MouseEventHandler, useContext, useEffect, useState } from 'react'
+import { type HTMLAttributes, type MouseEventHandler, useContext, useState } from 'react'
 import { BsArrowRepeat, BsPin } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Avatar, Button, FlexboxGrid, Notification, useToaster } from 'rsuite'
-import Reply from '@/components/compose/Status'
 import Time from '@/components/utils/Time'
 import { TheDeskContext } from '@/context'
 import { TIMELINE_STATUSES_COUNT } from '@/defaults'
 import type { Account } from '@/entities/account'
 import type { CustomEmojiCategory } from '@/entities/emoji'
 import type { Server } from '@/entities/server'
-import type { Settings } from '@/entities/settings'
-import type { ColumnWidth } from '@/entities/timeline'
 import emojify from '@/utils/emojify'
 import { open } from '@/utils/openBrowser'
 import { accountMatch, findAccount, findLink, findTag, type ParsedAccount, privacyColor, privacyIcon } from '@/utils/statusParser'
@@ -20,6 +17,7 @@ import Actions from './Actions'
 import Attachments from './Attachments'
 import Body from './Body'
 import Poll from './Poll'
+import Quote from './Quote'
 
 type Props = {
 	status: Entity.Status
@@ -28,6 +26,7 @@ type Props = {
 	account: Account | null
 	pinned?: boolean
 	columnWidth: number
+	showCount?: boolean
 	updateStatus: (status: Entity.Status) => void
 	openMedia: (media: Array<Entity.Attachment>, index: number) => void
 	setStatusDetail?: (statusId: string, serverId: number, accountId?: number) => void
@@ -65,6 +64,7 @@ const Status: React.FC<Props> = (props) => {
 	const toaster = useToaster()
 
 	const statusClicked: MouseEventHandler<HTMLDivElement> = async (e) => {
+		console.log(status)
 		// Check username
 		const parsedAccount = findAccount(e.target as HTMLElement, 'status-body')
 		if (parsedAccount) {
@@ -75,14 +75,13 @@ const Status: React.FC<Props> = (props) => {
 			if (account) {
 				props.setAccountDetail(account.id, props.server.id, props.account?.id)
 			} else {
-				// biome-ignore lint/style/useConst: <explanation>
 				let confirmToaster: any
 				confirmToaster = toaster.push(
 					notification(
 						'info',
-						formatMessage({ id: 'dialog.account_not_found.title' }),
-						formatMessage({ id: 'dialog.account_not_found.message' }),
-						formatMessage({ id: 'dialog.account_not_found.button' }),
+						formatMessage({ id: 'dialog.accountNotFound.title' }),
+						formatMessage({ id: 'dialog.accountNotFound.message' }),
+						formatMessage({ id: 'dialog.accountNotFound.button' }),
 						() => {
 							open(parsedAccount.url)
 							toaster.remove(confirmToaster)
@@ -131,7 +130,7 @@ const Status: React.FC<Props> = (props) => {
 			<div className="status" style={{ textAlign: 'center', paddingTop: '0.5em', paddingBottom: '0.5em' }}>
 				<FormattedMessage id="timeline.status.filtered" />
 				<Button appearance="subtle" size="sm" onClick={() => setIgnoreFilter(true)} style={{ marginLeft: '0.2em' }}>
-					<FormattedMessage id="timeline.status.show_anyway" />
+					<FormattedMessage id="timeline.status.showAnyway" />
 				</Button>
 			</div>
 		)
@@ -172,10 +171,11 @@ const Status: React.FC<Props> = (props) => {
 					{!spoilered && (
 						<>
 							{status.poll && <Poll poll={status.poll} client={props.client} pollUpdated={refresh} emojis={status.emojis} />}
+							{status.quote_status_state && <Quote status={status.quote_status} state={status.quote_status_state} isAnimeIcon={isAnimeIcon} setStatusDetail={() => props.setStatusDetail(status.quote_status.id, props.server.id, props.account.id)} />}
 							{status.media_attachments.length > 0 && <Attachments attachments={status.media_attachments} sensitive={status.sensitive} openMedia={props.openMedia} columnWidth={props.columnWidth} />}
 							{status.emoji_reactions &&
 								status.emoji_reactions.map((e, i) => (
-									<Button appearance="subtle" size="sm" style={{ marginLeft: i === 0 ? 0 : 2 }} key={e.name} onClick={() => emojiClicked(e)} active={e.me} disabled={e.name.includes('@') && props.server.sns === 'firefish'} title={e.name}>
+									<Button appearance="subtle" size="sm" style={{ marginLeft: i === 0 ? 0 : 2 }} key={e.name} onClick={() => emojiClicked(e)} active={e.me} disabled={e.name.includes('@') && props.server.sns === 'misskey'} title={e.name}>
 										{e.url ? (
 											<>
 												<img src={e.url} style={{ height: '20px' }} alt={e.name} /> <span style={{ marginLeft: '0.2em' }}>{e.count}</span>
@@ -195,8 +195,10 @@ const Status: React.FC<Props> = (props) => {
 						account={props.account}
 						status={status}
 						client={client}
+						showCount={props.showCount}
 						setShowReply={() => setReply({ replyStatus: status, inReplyToAccountId: props.account.account_id, type: 'reply' })}
 						setShowEdit={() => setReply({ replyStatus: status, inReplyToAccountId: props.account.account_id, type: 'edit' })}
+						setShowQuote={() => setReply({ replyStatus: status, inReplyToAccountId: props.account.account_id, type: 'quote' })}
 						updateStatus={props.updateStatus}
 						openReport={() => props.openReport(status, props.client)}
 						openFromOtherAccount={() => props.openFromOtherAccount(status)}
@@ -229,7 +231,7 @@ const pinnedHeader = (pinned?: boolean) => {
 							width: 'calc(100% - 32px)'
 						}}
 					>
-						<FormattedMessage id="timeline.status.pinned_post" />
+						<FormattedMessage id="timeline.status.pinnedPost" />
 					</div>
 				</div>
 			</div>
@@ -282,7 +284,7 @@ async function searchAccount(account: ParsedAccount, status: Entity.Status, clie
 	try {
 		const res = await client.lookupAccount(account.acct)
 		return res.data
-	} catch (e) {
+	} catch {
 		const res = await client.searchAccount(account.url, { resolve: true, limit: 5 })
 		if (res.data.length === 0) return null
 		const user = accountMatch(res.data, account, server.domain)

@@ -22,21 +22,20 @@ import {
 	BsSearch
 } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
-import { Avatar, Badge, Button, Dropdown, FlexboxGrid, IconButton, Popover, Sidebar, Sidenav, Stack, Text, useToaster, Whisper } from 'rsuite'
-import { addTimeline, getServer, listAccounts, listTimelines, readSettings, removeServer, updateAccountColor } from 'utils/storage'
+import { Avatar, Badge, Button, Dropdown, FlexboxGrid, IconButton, Popover, Stack, useToaster, Whisper } from 'rsuite'
+import { addTimeline, listTimelines, readSettings, removeServer, updateAccountColor } from 'utils/storage'
 import alert from '@/components/utils/alert'
 import { TheDeskContext, TimelineRefreshContext } from '@/context'
 import type { Account } from '@/entities/account'
-import { Instruction } from '@/entities/instruction'
 import type { Marker } from '@/entities/marker'
 import type { Server, ServerSet } from '@/entities/server'
 import { defaultSetting, type Settings } from '@/entities/settings'
 import { colorList, type Timeline } from '@/entities/timeline'
 import type { Unread } from '@/entities/unread'
-import type { ReceiveNotificationPayload } from '@/payload'
 import FailoverImg from '@/utils/failoverImg'
 import Notifications from './timelines/Notifications'
 import { openInApp } from '@/utils/openBrowser'
+import { Context } from '@/theme'
 
 type ImitateFormattedMessage = ({ id }: { id: string }) => string
 
@@ -64,6 +63,8 @@ const diceCt = (dice: number) => {
 const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 	const { formatMessage } = useIntl()
 	const { timelineConfig } = useContext(TheDeskContext)
+	const { theme } = useContext(Context)
+	const isDark = theme === 'dark'
 	const { timelineRefresh } = useContext(TimelineRefreshContext)
 	const { servers, openAuthorize, openAnnouncements, openThirdparty, openSettings } = props
 	const [awake, setAwake] = useState(0)
@@ -146,7 +147,7 @@ const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 			timelineRefresh(false)
 			target = timelines.find((t) => t[1].id === set.server.id && t[0].kind === 'notifications')
 			if (target === undefined || target === null) {
-				toaster.push(alert('error', formatMessage({ id: 'alert.notifications_not_found' })), { placement: 'topStart' })
+				toaster.push(alert('error', formatMessage({ id: 'alert.notificationsNotFound' })), { placement: 'topStart' })
 			}
 		}
 
@@ -168,14 +169,14 @@ const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 			<div style={{ display: 'flex', alignItems: 'center' }}>
 				<div style={{ display: 'flex', alignItems: 'center' }}>
 					{config.btnPosition === 'left' && (
-						<Button appearance="primary" color="green" size="lg" onClick={props.toggleCompose} startIcon={<Icon as={BsPencilSquare} />} style={{ marginLeft: '15px' }}>
+						<Button appearance="primary" color="green" size="lg" onClick={props.toggleCompose} startIcon={<Icon as={BsPencilSquare} />} style={{ marginLeft: '15px', borderRadius: 16 }}>
 							<FormattedMessage id="compose.post" />
 						</Button>
 					)}
 					<Button appearance="link" size="lg" onClick={props.toggleSearch} style={{ marginRight: '15px' }}>
 						<Icon as={BsSearch} style={{ fontSize: '1.4em' }} />
 					</Button>
-					{servers.map((server, i) => (
+					{servers.map((server) => (
 						<div key={server.server.id} style={{ marginTop: '5px' }}>
 							<Whisper
 								placement="top"
@@ -215,13 +216,13 @@ const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 							</Whisper>
 						</div>
 					))}
-					<Button appearance="link" size="lg" style={{ padding: 0 }} onClick={props.addNewServer} title={formatMessage({ id: 'navigator.add_server.title' })}>
+					<Button appearance="link" size="lg" style={{ padding: 0 }} onClick={props.addNewServer} title={formatMessage({ id: 'navigator.addServer.title' })}>
 						<Icon as={BsPlus} style={{ fontSize: '1.4em' }} />
 					</Button>
 				</div>
 			</div>
 			<div style={{ display: 'flex', alignItems: 'center', paddingRight: '10px' }}>
-				<div style={{ display: 'flex', alignItems: 'center', border: '1px solid', borderRadius: '5px', marginRight: '10px' }}>
+				<div style={{ display: 'flex', alignItems: 'center', border: '1px solid', borderColor: isDark ? 'white' : 'var(--rs-text-active)', borderRadius: '16px', marginRight: '10px' }}>
 					<Whisper
 						placement="top"
 						controlId="control-id-setting-menu"
@@ -250,7 +251,7 @@ const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 					</Button>
 				</div>
 				{(!config.btnPosition || config.btnPosition === 'right') && (
-					<Button appearance="primary" color="green" size="lg" onClick={props.toggleCompose} startIcon={<Icon as={BsPencilSquare} />}>
+					<Button appearance="primary" color="green" size="lg" style={{ borderRadius: 16 }} onClick={props.toggleCompose} startIcon={<Icon as={BsPencilSquare} />}>
 						<FormattedMessage id="compose.post" />
 					</Button>
 				)}
@@ -328,7 +329,7 @@ const serverMenu = (
 							<IconButton onClick={() => handleSelect('notifications')} title={formatMessage({ id: 'navigator.servers.notifications' })} icon={<Icon as={BsBell} />} />
 							<IconButton onClick={() => handleSelect('announcements')} title={formatMessage({ id: 'navigator.servers.announcements' })} icon={<Icon as={BsMegaphone} />} />
 							<IconButton onClick={() => handleSelect('lists')} title={formatMessage({ id: 'navigator.servers.lists' })} icon={<Icon as={BsList} />} />
-							<IconButton onClick={() => handleSelect('followed_hashtags')} title={formatMessage({ id: 'navigator.servers.followed_hashtags' })} icon={<Icon as={BsHash} />} />
+							<IconButton onClick={() => handleSelect('followed_hashtags')} title={formatMessage({ id: 'navigator.servers.followedHashtags' })} icon={<Icon as={BsHash} />} />
 						</>
 					)}
 					<IconButton onClick={() => handleSelect('remove')} title={formatMessage({ id: 'navigator.servers.remove' })} color="red" appearance="primary" icon={<Icon as={BsBoxArrowRight} />} />
@@ -353,10 +354,14 @@ const serverMenu = (
 				{server.server.account_id ? (
 					<Notifications server={server.server} unreads={unreads} setUnreads={setUnreads} openMedia={() => {}} openReport={() => {}} openFromOtherAccount={() => {}} wrapIndex={-1} />
 				) : (
-					<FormattedMessage id="navigator.servers.requires_login" />
+					<FormattedMessage id="navigator.servers.requiresLogin" />
 				)}
 			</div>
-			{server.server.account_id !== null && isMAS && (<Button onClick={() => handleSelect('delete_account')} appearance="link" color="red"><FormattedMessage id="navigator.servers.account_delete_option" /></Button>)}
+			{server.server.account_id !== null && isMAS && (
+				<Button onClick={() => handleSelect('delete_account')} appearance="link" color="red">
+					<FormattedMessage id="navigator.servers.accountDeleteOption" />
+				</Button>
+			)}
 		</Popover>
 	)
 }
@@ -403,7 +408,7 @@ const unreadCount = (marker: Marker, notifications: Array<Entity.Notification>):
 	if (marker.unread_count !== undefined) {
 		return marker.unread_count
 	}
-	return notifications.filter((n) => Number.parseInt(n.id) > Number.parseInt(marker.last_read_id)).length
+	return notifications.filter((n) => Number.parseInt(n.id, 10) > Number.parseInt(marker.last_read_id, 10)).length
 }
 
 export default Navigator

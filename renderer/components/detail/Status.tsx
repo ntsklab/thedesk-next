@@ -37,7 +37,7 @@ const StatusDetail: React.FC<Props> = (props) => {
 			let server: Server
 			if (router.query.account_id && router.query.server_id) {
 				const [account, s] = await getAccount({
-					id: Number.parseInt(router.query.account_id.toLocaleString())
+					id: Number.parseInt(router.query.account_id.toLocaleString(), 10)
 				})
 				server = s
 				setServer(s)
@@ -45,7 +45,7 @@ const StatusDetail: React.FC<Props> = (props) => {
 				cli = generator(server.sns, server.base_url, account.access_token, 'Fedistar')
 				setClient(cli)
 			} else if (router.query.server_id) {
-				const s = await getServer({ id: Number.parseInt(router.query.server_id.toString()) })
+				const s = await getServer({ id: Number.parseInt(router.query.server_id.toString(), 10) })
 				server = s
 				setServer(s)
 				setAccount(null)
@@ -163,6 +163,7 @@ const StatusDetail: React.FC<Props> = (props) => {
 									server={server}
 									account={account}
 									columnWidth={340}
+									showCount={true}
 									updateStatus={updateStatus}
 									openMedia={props.openMedia}
 									setAccountDetail={setAccountDetail}

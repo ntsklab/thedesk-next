@@ -1,6 +1,5 @@
 import type { Entity } from '@cutls/megalodon'
 import { BsEnvelope, BsGlobe, BsLock, BsPeople, BsUnlock } from 'react-icons/bs'
-import { Color } from '@/entities/timeline'
 
 export type ParsedAccount = {
 	username: string
@@ -139,6 +138,18 @@ export const privacyIcon = (visibility: 'public' | 'unlisted' | 'private' | 'dir
 			return BsEnvelope
 		case 'local':
 			return BsPeople
+		default:
+			return BsGlobe
+	}
+}
+export const quoteIcon = (approvedQuote: 'public' | 'followers' | 'nobody') => {
+	switch (approvedQuote) {
+		case 'public':
+			return BsGlobe
+		case 'followers':
+			return BsPeople
+		case 'nobody':
+			return BsLock
 		default:
 			return BsGlobe
 	}

@@ -6,7 +6,7 @@ import { BsChevronLeft, BsPin, BsX } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Virtuoso } from 'react-virtuoso'
 import { Button, Content, FlexboxGrid, Header, List, Loader } from 'rsuite'
-import { TheDeskContext, TimelineRefreshContext } from '@/context'
+import { TimelineRefreshContext } from '@/context'
 import type { Account } from '@/entities/account'
 import type { CustomEmojiCategory } from '@/entities/emoji'
 import type { Server } from '@/entities/server'
@@ -37,7 +37,7 @@ export default function ListDetail(props: Props) {
 		const f = async () => {
 			if (router.query.account_id && router.query.list_id) {
 				const [account, server] = await getAccount({
-					id: Number.parseInt(router.query.account_id.toLocaleString())
+					id: Number.parseInt(router.query.account_id.toLocaleString(), 10)
 				})
 				setServer(server)
 				setAccount(account)

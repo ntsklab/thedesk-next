@@ -7,7 +7,7 @@ import Draggable from 'react-draggable'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { ResizableBox } from 'react-resizable'
 import { Animation, Container, Content, DOMHelper, useToaster } from 'rsuite'
-import { listAccounts, listServers, listTimelines, migrateTimelineV1toV2, readSettings, updateColumnWidth } from 'utils/storage'
+import { listAccounts, listServers, listTimelines, migrateTimelineV1toV2, readSettings, updateColumnWidth, updateServers } from 'utils/storage'
 import AddListMember from '@/components/addListMember/AddListMember'
 import Announcements from '@/components/announcements/Announcements'
 import Compose from '@/components/compose/Compose'
@@ -33,7 +33,7 @@ import { Context as i18nContext } from '@/i18n'
 import type { ReceiveNotificationPayload } from '@/payload'
 import { ContextLoadTheme } from '@/theme'
 import { useWindowSize } from '@/utils/useWindowSize'
-import { allClose, allUnsubscribe, listenUser, start } from '@/utils/socket'
+import { allUnsubscribe, listenUser, start } from '@/utils/socket'
 import { updateAvatar } from '@/utils/oauth'
 import type { InitialInfo } from '@/entities/initialInfo'
 
@@ -51,6 +51,7 @@ function App() {
 	const [unreads, setUnreads] = useState<Unread[]>([])
 	const [composeOpened, setComposeOpened] = useState<boolean>(false)
 	const [searchOpened, setSearchOpened] = useState<boolean>(false)
+	const [isFloatingCompose, setIsFloatingCompose] = useState<boolean>(true)
 	const [style, setStyle] = useState<CSSProperties>({})
 	const [highlighted, setHighlighted] = useState<Timeline | null>(null)
 	const [composePosition, setComposePosition] = useState<[number, number]>([0, 0])
@@ -72,20 +73,24 @@ function App() {
 			case 'reblog':
 				return formatMessage({ id: 'timeline.notification.reblog.body' }, { user: useName })
 			case 'poll_expired':
-				return formatMessage({ id: 'timeline.notification.poll_expired.body' }, { user: useName })
+				return formatMessage({ id: 'timeline.notification.pollExpired.body' }, { user: useName })
 			case 'poll_vote':
-				return formatMessage({ id: 'timeline.notification.poll_vote.body' }, { user: useName })
+				return formatMessage({ id: 'timeline.notification.pollVote.body' }, { user: useName })
 			case 'quote':
 				return formatMessage({ id: 'timeline.notification.quote.body' }, { user: useName })
 			case 'status':
 				return formatMessage({ id: 'timeline.notification.status.body' }, { user: useName })
 			case 'update':
 				return formatMessage({ id: 'timeline.notification.update.body' }, { user: useName })
+			case 'follow':
+				return formatMessage({ id: 'timeline.notification.follow.body' }, { user: useName })
+			case 'follow_request':
+				return formatMessage({ id: 'timeline.notification.followRequest.body' }, { user: useName })
 			case 'emoji_reaction':
 			case 'reaction':
-				return formatMessage({ id: 'timeline.notification.emoji_reaction.body' }, { user: useName })
+				return formatMessage({ id: 'timeline.notification.emojiReaction.body' }, { user: useName })
 			default:
-				return null
+				return formatMessage({ id: 'timeline.notifications' })
 		}
 	}
 
@@ -127,8 +132,9 @@ function App() {
 			if (res.length === 0) {
 				console.debug('There is no server')
 				dispatch({ target: 'newServer', value: true })
-				toaster.push(alert('info', formatMessage({ id: 'alert.no_server' })), { placement: 'topCenter' })
+				toaster.push(alert('info', formatMessage({ id: 'alert.noServer' })), { placement: 'topCenter' })
 			} else {
+				updateServers(res.map((s) => s[0]))
 				setServers(
 					res.map((r) => ({
 						server: r[0],
@@ -141,8 +147,11 @@ function App() {
 
 		// Push Notification
 		const isInit = !localStorage.getItem('servers')
-		if (window.electronAPI) window.electronAPI.requestInitialInfo(isInit)
-		if (window.electronAPI)
+		if (window.electronAPI) {
+			window.electronAPI.showAbout(() => {
+				dispatch({ target: 'thirdparty', value: true })
+			})
+			window.electronAPI.requestInitialInfo(isInit)
 			window.electronAPI.onInitialInfo((_event, data: InitialInfo) => {
 				console.log(data)
 				localStorage.setItem('os', data.os)
@@ -154,6 +163,7 @@ function App() {
 				loadAppearance()
 				if (isInit && !data.isFirstRun) setMigrate(`file://${data.currentRendererAbsolutePath}/old.html?at=${location.href}`)
 			})
+		}
 
 		return () => {
 			document.removeEventListener('keydown', handleKeyPress)
@@ -173,7 +183,7 @@ function App() {
 			if (res.length === 0) {
 				console.debug('There is no server')
 				dispatch({ target: 'newServer', value: true })
-				toaster.push(alert('info', formatMessage({ id: 'alert.no_server' })), { placement: 'topCenter' })
+				toaster.push(alert('info', formatMessage({ id: 'alert.noServer' })), { placement: 'topCenter' })
 			} else {
 				setServers(
 					res.map((r) => ({
@@ -194,7 +204,9 @@ function App() {
 		localStorage.setItem('composePosition', composePosition.join(','))
 	}, [composePosition])
 	useEffect(() => {
-		if (reply) setComposeOpened(true)
+		if (!reply) return
+		setComposeOpened(true)
+		setTimeout(() => document.getElementById('status').focus(), 100)
 	}, [reply])
 
 	useEffect(() => {
@@ -214,7 +226,7 @@ function App() {
 		}
 	}, [highlighted])
 
-	const handleKeyPress = useCallback(async (event: KeyboardEvent) => {}, [])
+	const handleKeyPress = useCallback(async () => {}, [])
 	const columnWidthSet = async (i: number, widthRaw: number) => {
 		const width = Math.round(widthRaw / 50) * 50
 		const newWidths = await updateColumnWidth({ id: timelines[i][0][0].id, columnWidth: width })
@@ -232,6 +244,7 @@ function App() {
 			dayjs.locale(res.appearance.language)
 			loadTheme()
 			saveTimelineConfig(res.timeline)
+			setIsFloatingCompose(res.compose.floating === 'yes')
 			document.documentElement.setAttribute('lang', res.appearance.language)
 		})
 	}
@@ -239,9 +252,10 @@ function App() {
 	const toggleCompose = () => {
 		if (servers.find((s) => s.account !== null)) {
 			setSearchOpened(false)
+			if (!composeOpened) setTimeout(() => document.getElementById('status').focus(), 100)
 			setComposeOpened((previous) => !previous)
 		} else {
-			toaster.push(alert('info', formatMessage({ id: 'alert.need_auth' })), { placement: 'topStart' })
+			toaster.push(alert('info', formatMessage({ id: 'alert.needAuth' })), { placement: 'topStart' })
 		}
 	}
 
@@ -250,11 +264,13 @@ function App() {
 			setComposeOpened(false)
 			setSearchOpened((previous) => !previous)
 		} else {
-			toaster.push(alert('info', formatMessage({ id: 'alert.need_auth' })), { placement: 'topStart' })
+			toaster.push(alert('info', formatMessage({ id: 'alert.needAuth' })), { placement: 'topStart' })
 		}
 	}
 	const [px, py] = composePosition
 	const draggalePosition = { x: Math.min(px >= 0 ? px : 0, width - 300), y: Math.min(py >= 0 ? py : 0, height - 300) }
+	const disableDrag = !isFloatingCompose
+	const composeClass = disableDrag ? 'compose-left-' : 'compose-drag-'
 
 	return (
 		<TimelineRefreshContext.Provider value={{ timelineRefresh }}>
@@ -300,12 +316,12 @@ function App() {
 						<FormattedMessage id="migrate" /> <a href={migrate}>Migrate</a>
 					</div>
 				)}
-				<Container style={{ height: 'calc(100% - 56px)' }}>
-					<Animation.Transition in={composeOpened} exitedClassName="compose-exited" exitingClassName="compose-exiting" enteredClassName="compose-entered" enteringClassName="compose-entering">
+				<Container style={{ height: 'calc(100% - 56px)', display: 'flex', flexDirection: 'row' }}>
+					<Animation.Transition in={composeOpened} exitedClassName={`${composeClass}exited`} exitingClassName={`${composeClass}exiting`} enteredClassName={`${composeClass}entered`} enteringClassName={`${composeClass}entering`}>
 						{(props, ref) => (
-							<Draggable handle=".draggable" position={draggalePosition} onStop={(_e, data) => setComposePosition([data.x, data.y])}>
-								<div {...props} ref={ref} style={{ position: 'fixed', zIndex: 4, width: '320px' }}>
-									<Compose setOpened={setComposeOpened} servers={servers} />
+							<Draggable handle=".draggable" disabled={disableDrag} position={disableDrag ? { x: 0, y: 0 } : draggalePosition} onStop={(_e, data) => setComposePosition([data.x, data.y])}>
+								<div {...props} ref={ref} style={disableDrag ? { width: '320px', flexGrow: 1, backgroundColor: 'var(--rs-border-secondary)' } : { position: 'fixed', zIndex: 4, width: '320px' }}>
+									<Compose setOpened={setComposeOpened} servers={servers} disableDrag={disableDrag} />
 								</div>
 							</Draggable>
 						)}

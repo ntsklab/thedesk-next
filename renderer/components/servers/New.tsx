@@ -3,7 +3,7 @@ import { Icon } from '@rsuite/icons'
 import { useContext, useEffect, useState } from 'react'
 import { BsClipboard } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
-import { Button, ButtonToolbar, Checkbox, Form, Input, Loader, Modal, Toggle, useToaster } from 'rsuite'
+import { Button, ButtonToolbar, Checkbox, Form, Input, Loader, Modal, useToaster } from 'rsuite'
 import { TheDeskContext } from '@/context'
 import type { Server } from '@/entities/server'
 import { parseDomain } from '@/utils/domainParser'
@@ -54,7 +54,7 @@ const New: React.FC<Props> = (props) => {
 			setServer(res)
 		} catch (err) {
 			console.error(err)
-			toast.push(alert('error', formatMessage({ id: 'alert.failed_add_server' }, { domain: domain })), { placement: 'topCenter' })
+			toast.push(alert('error', formatMessage({ id: 'alert.failedAddServer' }, { domain: domain })), { placement: 'topCenter' })
 		} finally {
 			setLoading(false)
 		}
@@ -80,7 +80,7 @@ const New: React.FC<Props> = (props) => {
 							finish()
 						} catch (err) {
 							console.error(err)
-							toast.push(alert('error', formatMessage({ id: 'alert.failed_authorize' })), { placement: 'topCenter' })
+							toast.push(alert('error', formatMessage({ id: 'alert.failedAuthorize' })), { placement: 'topCenter' })
 						} finally {
 							setLoading(false)
 						}
@@ -93,7 +93,7 @@ const New: React.FC<Props> = (props) => {
 			}
 		} catch (err) {
 			console.error(err)
-			toast.push(alert('error', formatMessage({ id: 'alert.failed_add_application' })), { placement: 'topCenter' })
+			toast.push(alert('error', formatMessage({ id: 'alert.failedAddApplication' })), { placement: 'topCenter' })
 		} finally {
 			setLoading(false)
 		}
@@ -106,7 +106,7 @@ const New: React.FC<Props> = (props) => {
 			finish()
 		} catch (err) {
 			console.error(err)
-			toast.push(alert('error', formatMessage({ id: 'alert.failed_authorize' })), { placement: 'topCenter' })
+			toast.push(alert('error', formatMessage({ id: 'alert.failedAuthorize' })), { placement: 'topCenter' })
 		} finally {
 			setLoading(false)
 		}
@@ -163,7 +163,7 @@ const New: React.FC<Props> = (props) => {
 					<Form fluid>
 						<Form.Group>
 							<p>
-								<FormattedMessage id="servers.new.server_description" />
+								<FormattedMessage id="servers.new.serverDescription" />
 							</p>
 						</Form.Group>
 						<Form.Group>
@@ -171,14 +171,14 @@ const New: React.FC<Props> = (props) => {
 						</Form.Group>
 						{isStandaloneElectron && (
 							<Checkbox style={{ marginBottom: '5px' }} checked={useAuto} disabled={server.sns === 'misskey'} value="useAuto" onChange={() => setUseAuto(!useAuto)}>
-								<FormattedMessage id="servers.new.auto_login" />
+								<FormattedMessage id="servers.new.autoLogin" />
 							</Checkbox>
 						)}
 
 						<Form.Group>
 							<ButtonToolbar>
 								<Button appearance="primary" onClick={() => addApplicationFn()}>
-									<FormattedMessage id="servers.new.sign_in" />
+									<FormattedMessage id="servers.new.signIn" />
 								</Button>
 								<Button appearance="link" onClick={() => finish()}>
 									<FormattedMessage id="servers.new.finish" />
@@ -190,7 +190,7 @@ const New: React.FC<Props> = (props) => {
 				{app !== undefined && (
 					<Form fluid formValue={{ code: code }} onChange={(o) => setCode(o.code)}>
 						<p>
-							<FormattedMessage id="servers.new.authorization_url" />
+							<FormattedMessage id="servers.new.authorizationUrl" />
 						</p>
 						<div
 							style={{
@@ -220,17 +220,17 @@ const New: React.FC<Props> = (props) => {
 						</div>
 						{app.session_token ? (
 							<div style={{ margin: '1em 0' }}>
-								<FormattedMessage id="servers.new.without_code_authorize" />
+								<FormattedMessage id="servers.new.withoutCodeAuthorize" />
 							</div>
 						) : (
 							!useAuto && (
 								<Form.Group>
 									<Form.ControlLabel>
-										<FormattedMessage id="servers.new.authorization_code" />
+										<FormattedMessage id="servers.new.authorizationCode" />
 									</Form.ControlLabel>
 									<Form.Control {...focusAttr} name="code" />
 									<Form.HelpText>
-										<FormattedMessage id="servers.new.authorization_help" />
+										<FormattedMessage id="servers.new.authorizationHelp" />
 									</Form.HelpText>
 								</Form.Group>
 							)

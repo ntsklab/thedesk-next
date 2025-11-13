@@ -1,30 +1,30 @@
 {
 	"alert": {
-		"no_server": "There is no server, so please add it at first.",
-		"need_auth": "You need to authorize a server.",
-		"failed_add_server": "Failed to connect to {domain}, make sure the server URL is valid or correct.",
-		"failed_add_application": "Failed to add application.",
-		"failed_authorize": "Failed to authorize.",
-		"failed_post": "Failed to post status.",
-		"failed_load": "Failed to load {timeline}.",
-		"failed_mark": "Failed to mark as read",
-		"failed_unreblog": "Failed to unboost",
-		"failed_reblog": "Failed to boost",
-		"failed_unfavourite": "Failed to unfavourite",
-		"failed_favourite": "Failed to favourite",
-		"failed_unbookmark": "Failed to unbookmark",
-		"failed_bookmark": "Failed to bookmark",
-		"failed_follow": "Failed to follow",
-		"failed_unfollow": "Failed to unfollow",
-		"validation_error": "Validation error.",
-		"validation_attachments_length": "You can't attach over {limit} files.",
-		"validation_attachments_type": "You can attach only images or videos",
-		"upload_error": "Failed to upload your file",
-		"failed_to_report": "Faild to send the report",
-		"notifications_not_found": "Failed to find notifications"
+		"noServer": "There is no server, so please add it at first.",
+		"needAuth": "You need to authorize a server.",
+		"failedAddServer": "Failed to connect to {domain}, make sure the server URL is valid or correct.",
+		"failedAddApplication": "Failed to add application.",
+		"failedAuthorize": "Failed to authorize.",
+		"failedPost": "Failed to post status.",
+		"failedLoad": "Failed to load {timeline}.",
+		"failedMark": "Failed to mark as read",
+		"failedUnreblog": "Failed to unboost",
+		"failedReblog": "Failed to boost",
+		"failedUnfavourite": "Failed to unfavourite",
+		"failedFavourite": "Failed to favourite",
+		"failedUnbookmark": "Failed to unbookmark",
+		"failedBookmark": "Failed to bookmark",
+		"failedFollow": "Failed to follow",
+		"failedUnfollow": "Failed to unfollow",
+		"validationError": "Validation error.",
+		"validationAttachmentsLength": "You can't attach over {limit} files.",
+		"validationAttachmentsType": "You can attach only images or videos",
+		"uploadError": "Failed to upload your file",
+		"failedToReport": "Faild to send the report",
+		"notificationsNotFound": "Failed to find notifications"
 	},
 	"dialog": {
-		"account_not_found": {
+		"accountNotFound": {
 			"title": "Account not found",
 			"message": "The account does not exist in the server, do you want to open the account in your browser?",
 			"button": "Open"
@@ -52,12 +52,12 @@
 		}
 	},
 	"navigator": {
-		"add_server": {
+		"addServer": {
 			"title": "Add a new server"
 		},
 		"settings": {
 			"title": "Settings",
-			"app_menu": "Toggle app menu",
+			"appMenu": "Toggle app menu",
 			"settings": "Settings",
 			"thirdparty": "About TheDesk, 3rd party licenses"
 		},
@@ -67,11 +67,11 @@
 			"remove": "Remove",
 			"announcements": "Announcements",
 			"lists": "Lists",
-			"followed_hashtags": "Followed Hashtags",
+			"followedHashtags": "Followed Hashtags",
 			"notifications": "Notifications",
 			"color": "Account color",
-			"requires_login": "Notification TL requires login",
-			"account_delete_option": "Account deletion option"
+			"requiresLogin": "Notification TL requires login",
+			"accountDeleteOption": "Account deletion option"
 		}
 	},
 	"update": {
@@ -79,10 +79,10 @@
 		"update": "Open browser to update. Check new version: {version} out!",
 		"ok": "Yes!",
 		"cancel": "Just close",
-		"or_more_option": "Or more option...",
-		"do_not_show": "Do not remind until",
+		"orMoreOption": "Or more option...",
+		"doNotShow": "Do not remind until",
 		"date": "the date:",
-		"next_update": "next update",
+		"nextUpdate": "next update",
 		"hide": "Remind me",
 		"fe": {
 			"hint": "Please refresh to get the latest data.",
@@ -96,14 +96,14 @@
 			"add": "Add",
 			"cancel": "Finish without signing in",
 			"retry": "Retry without auto login",
-			"server_description": "You can also quit without signing in. If that case, you can see only Federated and Local timelines without streaming.",
-			"sign_in": "Sign In",
-			"auto_login": "Auto login(If failed to login, switch it off)",
+			"serverDescription": "You can also quit without signing in. If that case, you can see only Federated and Local timelines without streaming.",
+			"signIn": "Sign In",
+			"autoLogin": "Auto login(If failed to login, switch it off)",
 			"finish": "Finish",
-			"authorization_code": "Authorization Code",
-			"authorization_help": "Please paste the authorization code from your browser",
-			"without_code_authorize": "Support for Misskey and Firefish is quite limited and not supported. Please approve Fedistar in your browser, and after you approve it please authorize",
-			"authorization_url": "Normally, the browser will open automatically, but if it doesn't, please open the following URL in your browser and approve it.",
+			"authorizationCode": "Authorization Code",
+			"authorizationHelp": "Please paste the authorization code from your browser",
+			"withoutCodeAuthorize": "Support for Misskey is quite limited and not supported. Please approve Fedistar in your browser, and after you approve it please authorize",
+			"authorizationUrl": "Normally, the browser will open automatically, but if it doesn't, please open the following URL in your browser and approve it.",
 			"authorize": "Authorize",
 			"loading": "Loading"
 		}
@@ -115,9 +115,9 @@
 			"reload": "Reload",
 			"appearance": {
 				"title": "Appearance",
-				"font_size": "Font size",
+				"fontSize": "Font size",
 				"language": "Language",
-				"color_theme": "Color theme",
+				"colorTheme": "Color theme",
 				"font": "Font",
 				"systemFont": "Default"
 			},
@@ -130,11 +130,11 @@
 					"12h": "Absolute(12h)"
 				},
 				"animation": "Animate icon",
-				"max_length": "Max length of post to show",
-				"max_length_hint": "Unlimit: 0 Posts longer than the set length will be automatically hidden.",
-				"max_length_unit": "Letters",
+				"maxLength": "Max length of post to show",
+				"maxLengthHint": "Unlimit: 0 Posts longer than the set length will be automatically hidden.",
+				"maxLengthUnit": "Letters",
 				"notification": "Desktop notification",
-				"notification_hint": "Notifications are only displayed when there is a notification column for that account.",
+				"notificationHint": "Notifications are only displayed when there is a notification column for that account.",
 				"ttsProvider": {
 					"title": "TTS Provider",
 					"hint": "If you want to use Bouyomi-chan, please install Bouyomi-chan and set up HTTP server.",
@@ -172,19 +172,25 @@
 					"left": "Left",
 					"right": "Right"
 				},
+				"floating": {
+					"title": "Floating compose box",
+					"hint": "You can move the compose box anywhere on the screen",
+					"yes": "Enable",
+					"no": "Disable(fixed to left)"
+				},
 				"afterPost": {
 					"title": "After posting, compose box will be...",
 					"close": "Close",
 					"stay": "Stay opened"
 				},
 				"secondaryToot": "Secondary Post Button",
-				"secondaryToot_hint": "Displays a button that allows you to post immediately in the public area you set."
+				"secondaryTootHint": "Displays a button that allows you to post immediately in the public area you set."
 			},
 			"spotify": {
 				"title": "Spotify Integration",
 				"connect": "Connect",
 				"disconnect": "Disconnect",
-				"code_help": "Please enter the code displayed on the Spotify app.",
+				"codeHelp": "Please enter the code displayed on the Spotify app.",
 				"code": "Complete",
 				"template": "Template",
 				"demo": "Demo",
@@ -193,17 +199,17 @@
 			"save": "Save",
 			"close": "Close",
 			"validation": {
-				"general_required": "Please enter a valid value",
-				"general_number": {
+				"generalRequired": "Please enter a valid value",
+				"generalNumber": {
 					"type": "Please enter a valid number",
 					"range": "Please enter a number from {from} to {to}",
 					"required": "Required."
 				}
 			},
-			"open_appData_folder": "Open AppData folder",
-			"delete_allData_confirm": "Are you sure you want to delete all data? All servers, accounts, timelines, and settings will be deleted.",
-			"delete_allData": "Delete all data",
-			"appData_hint": "config.json in this folder allows you to change system settings."
+			"openAppDataFolder": "Open AppData folder",
+			"deleteAllDataConfirm": "Are you sure you want to delete all data? All servers, accounts, timelines, and settings will be deleted.",
+			"deleteAllData": "Delete all data",
+			"appDataHint": "config.json in this folder allows you to change system settings."
 		},
 		"thirdparty": {
 			"title": "About TheDesk and 3rd party licenses",
@@ -219,6 +225,12 @@
 			"private": "Private",
 			"direct": "Direct"
 		},
+		"quote": {
+			"by": "Quoted by",
+			"public": "Anyone",
+			"followers": "Followers",
+			"nobody": "Only me"
+		},
 		"spoiler": {
 			"placeholder": "Write your warning here"
 		},
@@ -228,10 +240,10 @@
 		},
 		"nsfw": {
 			"sensitive": "Sensitive",
-			"not_sensitive": "Not sensitive"
+			"notSensitive": "Not sensitive"
 		},
 		"poll": {
-			"add_choice": "Add a choice",
+			"addChoice": "Add a choice",
 			"multiple": "multiple",
 			"simple": "simple",
 			"5min": "5 minutes",
@@ -244,7 +256,7 @@
 		},
 		"cancel": "Clear",
 		"post": "Post",
-		"edit_attachment": {
+		"editAttachment": {
 			"title": "Edit media",
 			"label": "Describe for people who are blind or have low vision",
 			"submit": "Apply"
@@ -252,14 +264,20 @@
 		"nowplaying": {
 			"again": "The integration with Spotify has been completed. Please run NowPlaying again.",
 			"error": "Error has occurred. Please run NowPlaying again.",
-			"unkwnown_aa_btn": "Get not-found artwork from network",
+			"unkwnownAaBtn": "Get not-found artwork from network",
 			"accessibilityError": "Cannot access music information. Please make sure TheDesk has permission to control the music app in System Preferences > Security & Privacy > Privacy > Accessibility."
 		},
-		"edit_my_post": "Editing my post"
+		"editMyPost": "Editing my post",
+		"language": {
+			"unsorted": "Default order",
+			"sorted": "Frequently used order"
+		}
 	},
 	"search": {
 		"title": "Search",
 		"placeholder": "Search or paste URL",
+		"trend": "Trends",
+		"noData": "No results found",
 		"results": {
 			"accounts": "People",
 			"hashtags": "Hashtags",
@@ -274,21 +292,21 @@
 			"unpin": "Remove",
 			"stack": "Stack to left",
 			"unstack": "Destack",
-			"column_width": "Column width",
+			"columnWidth": "Column width",
 			"color": "Column Color",
-			"color_default": "Default",
+			"colorDefault": "Default",
 			"do": "Yes",
-			"not_do": "No",
-			"media_only": "Media only TL",
+			"notDo": "No",
+			"mediaOnly": "Media only TL",
 			"tts": "Text-to-speech"
 		},
-		"mark_as_read": "Mark as read",
+		"markAsRead": "Mark as read",
 		"notification": {
 			"follow": {
 				"title": "Follow",
 				"body": "{user} followed you"
 			},
-			"follow_request": {
+			"followRequest": {
 				"title": "Follow Request",
 				"body": "{user} requested to follow you"
 			},
@@ -300,11 +318,11 @@
 				"title": "Boost",
 				"body": "{user} boosted your post"
 			},
-			"poll_expired": {
+			"pollExpired": {
 				"title": "Poll",
 				"body": "{user}'s poll is expired"
 			},
-			"poll_vote": {
+			"pollVote": {
 				"title": "Poll",
 				"body": "{user} voted your poll"
 			},
@@ -320,7 +338,7 @@
 				"title": "Update",
 				"body": "{user} updated the post"
 			},
-			"emoji_reaction": {
+			"emojiReaction": {
 				"title": "Reaction",
 				"body": "{user} reacted your post"
 			},
@@ -334,8 +352,10 @@
 			"reply": "Reply",
 			"reblog": "Boost",
 			"favourite": "Favourite",
-			"emoji_reaction": "Emoji reaction",
+			"emojiReaction": "Emoji reaction",
 			"bookmark": "Bookmark",
+			"quote": "Quote",
+			"revokeQuoting": "Revoke this quote",
 			"detail": {
 				"title": "Detail",
 				"browser": "Open original page",
@@ -343,17 +363,17 @@
 				"edit": "Edit",
 				"delete": "Delete",
 				"report": "Report {user}",
-				"from_other_account": "React from other accounts"
+				"fromOtherAccount": "React from other accounts"
 			}
 		},
 		"status": {
-			"show_more": "Show more",
-			"show_more_auto": "Show more(long)",
-			"show_less": "Show less",
-			"media_hidden": "Media hidden",
-			"pinned_post": "Pnned post",
+			"showMore": "Show more",
+			"showMoreAuto": "Show more(long)",
+			"showLess": "Show less",
+			"mediaHidden": "Media hidden",
+			"pinnedPost": "Pnned post",
 			"filtered": "Filtered",
-			"show_anyway": "Show anyway"
+			"showAnyway": "Show anyway"
 		},
 		"poll": {
 			"vote": "Vote",
@@ -361,6 +381,18 @@
 			"people": "{count} people",
 			"closed": "Closed",
 			"left": "left"
+		},
+		"quoteState": {
+			"pending": "The quoted post is being processed.",
+			"accepted": "Quoted successfully.",
+			"rejected": "The quoted post was rejected.",
+			"revoked": "The quoting of the post has been revoked.",
+			"deleted": "The quoted post has been deleted.",
+			"unauthorized": "The quoted post is private.",
+			"blocked_account": "The quoting account is blocked.",
+			"blocked_domain": "The quoting domain is blocked.",
+			"muted_account": "The quoting account is muted.",
+			"view": "View"
 		},
 		"new": "Add a new timeline",
 		"home": "Home",
@@ -376,25 +408,25 @@
 		"back": "Back",
 		"close": "Close",
 		"pin": "Add as a column",
-		"follow_tag": "Follow hashtag",
-		"unfollow_tag": "Unfollow hashtag",
+		"followTag": "Follow hashtag",
+		"unfollowTag": "Unfollow hashtag",
 		"profile": {
 			"follow": "Follow",
 			"unfollow": "Unfollow",
-			"not_following": "Not Following",
-			"follow_requested": "Follow Requested",
-			"follows_you": "FOLLOWS YOU",
+			"notFollowing": "Not Following",
+			"followRequested": "Follow Requested",
+			"followsYou": "FOLLOWS YOU",
 			"posts": "Posts",
 			"following": "Following",
 			"followers": "Followers",
-			"open_page": "Open original page",
+			"openPage": "Open original page",
 			"mute": "Mute {user}",
 			"unmute": "Unmute {user}",
 			"block": "Block {user}",
 			"unblock": "Unblock {user}",
-			"unblock_domain": "Unblock domain {server}",
-			"list_management": "Add or Remove from lists",
-			"block_domain": "Block domain {server}"
+			"unblockDomain": "Unblock domain {server}",
+			"listManagement": "Add or Remove from lists",
+			"blockDomain": "Block domain {server}"
 		}
 	},
 	"report": {
@@ -410,13 +442,13 @@
 		"rules": {
 			"title": "Which rules are being violated?",
 			"description": "Select all that apply",
-			"no_rules": "There is not rule in this server.",
+			"noRules": "There is not rule in this server.",
 			"next": "Next"
 		},
 		"statuses": {
 			"title": "Are there any posts that back up this report?",
 			"description": "Select all that apply",
-			"no_status": "There is not status.",
+			"noStatus": "There is not status.",
 			"next": "Next"
 		},
 		"comment": {
@@ -430,7 +462,7 @@
 		"title": "Announcement @{domain}",
 		"close": "Close"
 	},
-	"from_other_account": {
+	"fromOtherAccount": {
 		"title": "React from other accounts",
 		"accounts": {
 			"title": "Which account do you want react from?",
@@ -439,13 +471,13 @@
 		"status": {
 			"title": "React on the status from {account}",
 			"searching": "Searching",
-			"not_found": "Sorry, the status is not found in {server}",
+			"notFound": "Sorry, the status is not found in {server}",
 			"next": "Close"
 		}
 	},
-	"list_memberships": {
+	"listMemberships": {
 		"title": "List memberships",
-		"search_placeholder": "Search among people you follow"
+		"searchPlaceholder": "Search among people you follow"
 	},
 	"migrate": "If your data was lost when migrating from v25.0.18 or earlier, please click Migrate to restore your data."
 }

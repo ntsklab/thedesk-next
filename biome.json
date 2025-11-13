@@ -1,7 +1,10 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.2.7/schema.json",
 	"formatter": {
 		"enabled": true
+	},
+	"files": {
+		"includes": ["electron-src/**", "renderer/**/*.ts", "renderer/**/*.tsx", "scripts/**"]
 	},
 	"assist": {
 		"actions": {
@@ -14,7 +17,6 @@
 		"enabled": true,
 		"rules": {
 			"recommended": true,
-			"style": {},
 			"correctness": {
 				"useExhaustiveDependencies": "off",
 				"useHookAtTopLevel": "off",
@@ -28,7 +30,8 @@
 				"noExtraBooleanCast": "off"
 			},
 			"performance": {
-				"noDelete": "off"
+				"noDelete": "off",
+				"noImgElement": "off"
 			},
 			"a11y": "off",
 			"security": {
