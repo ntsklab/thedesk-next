@@ -27,8 +27,8 @@ const appDataPath = join(app.getPath('appData'), app.getName())
 const baseDir = join(appDataPath, 'thedesk-next')
 const appServe = app.isPackaged
 	? serve({
-			directory: baseDir
-		})
+			directory: baseDir,
+	  })
 	: null
 // Prepare the renderer once the app is ready
 let mainWindow: BrowserWindow | null = null
@@ -63,12 +63,12 @@ const template: MenuItemConstructorOptions[] = [
 		role: 'fileMenu',
 		submenu: [
 			{ role: isMac ? 'close' : 'quit' },
-			{ label: isJa ? '設定' : 'Prefrences', click: () => mainWindow?.loadURL('app://-/setting.html'), icon: '', accelerator: isMac ? undefined : 'Control+,' }
-		]
+			{ label: isJa ? '設定' : 'Prefrences', click: () => mainWindow?.loadURL('app://-/setting.html'), icon: '', accelerator: isMac ? undefined : 'Control+,' },
+		],
 	},
 	{ role: 'editMenu' },
 	{ role: 'viewMenu' },
-	{ role: 'windowMenu' }
+	{ role: 'windowMenu' },
 ]
 const appMenu: MenuItemConstructorOptions = {
 	role: 'appMenu',
@@ -83,8 +83,8 @@ const appMenu: MenuItemConstructorOptions = {
 		{ role: 'hideOthers' },
 		{ role: 'unhide' },
 		{ type: 'separator' },
-		{ role: 'quit' }
-	]
+		{ role: 'quit' },
+	],
 }
 if (isMac) template.unshift(appMenu)
 app.on('ready', async () => {
@@ -100,8 +100,8 @@ app.on('ready', async () => {
 			nodeIntegration: false,
 			contextIsolation: true,
 			preload: join(__dirname, 'preload.js'),
-			webSecurity: isDev ? false : undefined
-		}
+			webSecurity: isDev ? false : undefined,
+		},
 	})
 	if (windowState.isMaximized) mainWindow.maximize()
 	if (windowState.isFullScreen) mainWindow.setFullScreen(true)
@@ -155,7 +155,7 @@ app.on('ready', async () => {
 			isStore: process.mas || !!app.getPath('exe').match(/53491Cutls/),
 			isMas: !!process.mas,
 			isAppx: !!app.getPath('exe').match(/53491Cutls/),
-			getPath: app.getPath('exe')
+			getPath: app.getPath('exe'),
 		}
 		mainWindow?.webContents.send('initialInfo', info)
 	})
@@ -165,7 +165,7 @@ app.on('ready', async () => {
 			const { stdout } = await promisifyExecFile(join(__dirname, '..', 'native', 'nowplaying-info.js').replace('app.asar', 'app.asar.unpacked'))
 			if (!stdout) throw new Error('no stdout')
 			song = JSON.parse(stdout)
-			if ((!song || !song.name)) throw new Error('no song data')
+			if (!song || !song.name) throw new Error('no song data')
 			if (!song.databaseID) return mainWindow?.webContents.send('appleMusic', song)
 		} catch {
 			return mainWindow?.webContents.send('appleMusic', { error: true, message: 'unknown error' })
@@ -173,7 +173,7 @@ app.on('ready', async () => {
 		try {
 			const { stdout: artwork } = await promisifyExecFile(join(__dirname, '..', 'native', 'get-artwork'), [song.databaseID.toString()], {
 				maxBuffer: 64 * 1024 * 1024,
-				encoding: 'buffer'
+				encoding: 'buffer',
 			})
 			song.artwork = artwork.toString('base64')
 			mainWindow?.webContents.send('appleMusic', song)
@@ -206,25 +206,29 @@ app.on('ready', async () => {
 				{ role: 'copy' },
 				{ role: 'paste' },
 				{ type: 'separator' },
-				{ role: 'selectAll' }
+				{ role: 'selectAll' },
 			])
-			inputMenu.popup()
+			inputMenu.popup({
+				frame: props.frame || undefined,
+			})
 		} else if (selectionText && selectionText.trim() !== '') {
 			const isJa = app.getPreferredSystemLanguages().findIndex((e) => !!e.match('ja')) >= 0
 			const selectionMenu = Menu.buildFromTemplate([
 				{ role: 'copy' },
 				{ type: 'separator' },
 				{ role: 'selectAll' },
-				{ label: isJa ? `Googleで「${selectionText}」を検索` : `Search "${selectionText}" with Google`, click: () => shell.openExternal(`https://www.google.com/search?q=${selectionText}`) }
+				{ label: isJa ? `Googleで「${selectionText}」を検索` : `Search "${selectionText}" with Google`, click: () => shell.openExternal(`https://www.google.com/search?q=${selectionText}`) },
 			])
-			selectionMenu.popup()
+			selectionMenu.popup({
+				frame: props.frame || undefined,
+			})
 		}
 	})
 	if (isDev) {
 		mainWindow.webContents.session.webRequest.onBeforeSendHeaders(
 			{
 				urls: ['<all_urls>'],
-				types: ['xhr', 'image']
+				types: ['xhr', 'image'],
 			},
 			(detail, cb) => cb({ requestHeaders: Object.assign(detail.requestHeaders, { Referer: undefined }) })
 		)
@@ -269,7 +273,7 @@ const fetchNewVersion = async (): Promise<number> => {
 	logger(`Unzipping frontend from ${join(appDataPath, 'thedesk-next.tar.gz')}`)
 	await tar.x({
 		file: join(appDataPath, 'thedesk-next.tar.gz'),
-		cwd: baseDir
+		cwd: baseDir,
 	})
 	fs.writeFileSync(join(appDataPath, 'ver.json'), JSON.stringify({ ver: app.getVersion(), unix: Math.floor(Date.now() / 1000) }))
 	logger(`Completed fetching frontend`)

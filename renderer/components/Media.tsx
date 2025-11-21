@@ -124,7 +124,7 @@ const mediaComponent = (media: Entity.Attachment): ReactElement => {
 		case 'audio':
 			return (
 				<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-					<video src={media.url} autoPlay loop controls style={{ maxWidth: '100%', objectFit: 'contain' }} />
+					<video src={media.url} autoPlay loop controls={true} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
 				</div>
 			)
 		default:

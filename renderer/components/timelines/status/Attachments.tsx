@@ -71,15 +71,20 @@ const Attachment: React.FC<AttachmentProps> = (props) => {
 	}
 	const border = cropImage === 'contain' ? { backgroundColor: '#000' } : {}
 
+	if (media.type === 'audio') {
+		return (
+			<div style={{ position: 'relative', display: 'flex' }}>
+				<audio src={media.url} controls={true} style={{ width: width || 128, height: 32, ...border }} />
+			</div>
+		)
+	}
+
 	return (
 		<div style={{ position: 'relative' }}>
 			<IconButton icon={<Icon as={BsEyeSlash} />} size="sm" appearance="subtle" onClick={changeSensitive} style={{ position: 'absolute', bottom: '4px', right: '4px', zIndex: 2 }} />
 			<IconButton icon={<Icon as={BsBoxArrowUpRight} />} size="sm" appearance="subtle" onClick={() => externalWindow(media.url)} style={{ position: 'absolute', top: '4px', right: '4px' }} />
 			{(media.type === 'gifv' || media.type === 'video') && (
 				<IconButton icon={<Icon as={BsCaretRightFill} />} circle onClick={() => props.openMedia(media)} style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
-			)}
-			{media.type === 'audio' && (
-				<IconButton icon={<Icon as={BsVolumeUp} />} circle onClick={() => props.openMedia(media)} style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
 			)}
 
 			{sensitive ? (
@@ -119,7 +124,7 @@ const previewImage = (media: Entity.Attachment) => {
 			case 'gifv':
 			case 'video':
 			case 'audio':
-				return failoverImg(null)
+				return failoverImg(media.preview_url || null)
 			default:
 				return media.preview_url
 		}
