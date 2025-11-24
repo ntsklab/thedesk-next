@@ -22,7 +22,7 @@ const stripForQuote = (html: string) => {
 const Quote: React.FC<Props> = (props) => {
 	const status = props.status
 	const state = props.state
-	const str = `timeline.quote_state.${state}`
+	const str = `timeline.quoteState.${state}`
 	const onClick = () => props.setStatusDetail()
 
 	return state === 'accepted' ? (
