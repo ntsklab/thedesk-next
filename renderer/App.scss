@@ -42,9 +42,9 @@
   animation-name: fadeOutCompose;
 }
 .compose-left-exiting {
+  flex-grow: 0 !important;
   animation-name: slideOutCompose;
 }
-
 
 .compose-drag-entering {
   animation-name: fadeInCompose;
