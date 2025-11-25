@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 import { forwardRef, type MouseEventHandler, type ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import { BsChevronLeft, BsThreeDotsVertical, BsX } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
-import { Button, Content, Dropdown, FlexboxGrid, Header, IconButton, Nav, Popover, useToaster, Whisper } from 'rsuite'
+import { Button, Content, Dropdown, FlexboxGrid, Header, IconButton, Loader, Nav, Popover, useToaster, Whisper } from 'rsuite'
 import type { Account } from '@/entities/account'
 import type { Server } from '@/entities/server'
 import { domainFromAcct } from '@/utils/domain'
@@ -204,7 +204,7 @@ const Profile: React.FC<Props> = (props) => {
 				</FlexboxGrid>
 			</Header>
 
-			{user && (
+			{user ? (
 				<Content
 					style={{ height: '100%', backgroundColor: 'var(--rs-bg-card)', overflowY: 'auto', overflowX: 'hidden', position: 'relative' }}
 					className="timeline-scrollable"
@@ -311,6 +311,10 @@ const Profile: React.FC<Props> = (props) => {
 					</Nav>
 					{timeline()}
 				</Content>
+			) : (
+				<div style={{ display: 'flex', width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: 'var(--rs-bg-card)' }}>
+					<Loader />
+				</div>
 			)}
 		</>
 	)
