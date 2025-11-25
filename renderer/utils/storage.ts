@@ -250,15 +250,12 @@ export async function updateColumnOrder({ id, direction }: { id: number; directi
 	const timelinesStr = localStorage.getItem('timelinesV2')
 	const timelines: Timeline[][] = JSON.parse(timelinesStr || '[]')
 	const timelineIndex = timelines.findIndex((timeline) => timeline.findIndex((t) => t.id === id) >= 0)
-	console.log(timelineIndex)
 	const nextIndex = direction === 'left' ? timelineIndex - 1 : timelineIndex + 1
 	if (nextIndex < 0 || nextIndex >= timelines.length) return
 	const tmp = structuredClone(timelines[nextIndex])
 	timelines[nextIndex] = timelines[timelineIndex]
 	timelines[timelineIndex] = tmp
-	console.log(timelines)
 	const newTimelines = await reorderTimelineCore(timelines)
-	console.log(newTimelines)
 	localStorage.setItem('timelinesV2', JSON.stringify(newTimelines))
 	return
 }
@@ -297,7 +294,6 @@ export async function updateAccountColor({ id, color }: { id: number; color: str
 	} else {
 		account.color = color
 	}
-	console.log(accounts)
 	localStorage.setItem('accounts', JSON.stringify(accounts))
 	return
 }

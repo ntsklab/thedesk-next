@@ -15,4 +15,3 @@ export const sortedLanguages = structuredClone(languagesDefault).sort((a, b) => 
 	if ((a.speakerRanking || 999) > (b.speakerRanking || 999)) return 1
 	return 0
 })
-console.log(sortedLanguages)

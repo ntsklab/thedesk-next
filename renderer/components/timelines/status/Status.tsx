@@ -64,7 +64,6 @@ const Status: React.FC<Props> = (props) => {
 	const toaster = useToaster()
 
 	const statusClicked: MouseEventHandler<HTMLDivElement> = async (e) => {
-		console.log(status)
 		// Check username
 		const parsedAccount = findAccount(e.target as HTMLElement, 'status-body')
 		if (parsedAccount) {

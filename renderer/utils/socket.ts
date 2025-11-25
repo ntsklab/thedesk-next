@@ -227,6 +227,7 @@ export const allUnsubscribe = async () => {
 	}
 	if (streamingState.length === 0) return
 	for (const streaming of streamingState) streaming[1]?.removeAllListeners()
+	window.streamings = []
 }
 export const allClose = async () => {
 	const streamingState = window.streamings
