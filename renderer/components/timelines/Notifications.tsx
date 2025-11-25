@@ -456,7 +456,7 @@ const OptionPopover = forwardRef<HTMLDivElement, { timeline: Timeline; close: ()
 
 	return (
 		<Popover ref={ref} style={{ opacity: 1 }}>
-			<div style={{ display: 'flex', flexDirection: 'column', width: '220px' }}>
+			<div style={{ display: 'flex', flexDirection: 'column', width: '220px', padding: '5px'  }}>
 				<label>
 					<FormattedMessage id="timeline.settings.columnWidth" />
 				</label>
