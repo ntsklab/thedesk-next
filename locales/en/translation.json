@@ -59,7 +59,8 @@
 			"title": "Settings",
 			"appMenu": "Toggle app menu",
 			"settings": "Settings",
-			"thirdparty": "About TheDesk, 3rd party licenses"
+			"thirdparty": "About TheDesk, 3rd party licenses",
+			"kbd": "Keyboard Shortcuts"
 		},
 		"servers": {
 			"authorize": "Authorize",
@@ -214,6 +215,13 @@
 		"thirdparty": {
 			"title": "About TheDesk and 3rd party licenses",
 			"privacy": "Privacy Policy"
+		},
+		"kbd": {
+			"title": "Keyboard Shortcuts",
+			"n": "Open new post composer",
+			"esc": "Close modals or dialogs",
+			"ctrlEnter": "Post status",
+			"m": "Close post composer(on not focused input)"
 		}
 	},
 	"compose": {

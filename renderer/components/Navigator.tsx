@@ -48,6 +48,7 @@ type NavigatorProps = {
 	toggleCompose: () => void
 	toggleSearch: () => void
 	openThirdparty: () => void
+	openKbd: () => void
 	openSettings: () => void
 	setHighlighted: Dispatch<SetStateAction<Timeline>>
 	setUnreads: Dispatch<SetStateAction<Array<Unread>>>
@@ -66,7 +67,7 @@ const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 	const { theme } = useContext(Context)
 	const isDark = theme === 'dark'
 	const { timelineRefresh } = useContext(TimelineRefreshContext)
-	const { servers, openAuthorize, openAnnouncements, openThirdparty, openSettings } = props
+	const { servers, openAuthorize, openAnnouncements, openThirdparty, openSettings, openKbd } = props
 	const [awake, setAwake] = useState(0)
 	const [isMAS, setIsMAS] = useState(false)
 	const [config, setConfig] = useState<Settings['compose']>(defaultSetting.compose)
@@ -236,6 +237,7 @@ const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 									top,
 									onClose,
 									openThirdparty,
+									openKbd,
 									openSettings
 								},
 								ref
@@ -372,10 +374,11 @@ type SettingsMenuProps = {
 	top?: number
 	onClose: (delay?: number) => NodeJS.Timeout | void
 	openThirdparty: () => void
+	openKbd: () => void
 	openSettings: () => void
 }
 
-const settingsMenu = ({ className, left, top, onClose, openThirdparty, openSettings }: SettingsMenuProps, ref: React.RefCallback<HTMLElement>): ReactElement => {
+const settingsMenu = ({ className, left, top, onClose, openThirdparty, openSettings, openKbd }: SettingsMenuProps, ref: React.RefCallback<HTMLElement>): ReactElement => {
 	const handleSelect = async (eventKey: string) => {
 		onClose()
 		switch (eventKey) {
@@ -385,6 +388,10 @@ const settingsMenu = ({ className, left, top, onClose, openThirdparty, openSetti
 			}
 			case 'thirdparty': {
 				openThirdparty()
+				break
+			}
+			case 'kbd': {
+				openKbd()
 				break
 			}
 		}
@@ -398,6 +405,9 @@ const settingsMenu = ({ className, left, top, onClose, openThirdparty, openSetti
 				</Dropdown.Item>
 				<Dropdown.Item eventKey="thirdparty">
 					<FormattedMessage id="navigator.settings.thirdparty" />
+				</Dropdown.Item>
+				<Dropdown.Item eventKey="kbd">
+					<FormattedMessage id="navigator.settings.kbd" />
 				</Dropdown.Item>
 			</Dropdown.Menu>
 		</Popover>

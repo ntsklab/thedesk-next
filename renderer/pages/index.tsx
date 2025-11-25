@@ -20,6 +20,7 @@ import Report from '@/components/report/Report'
 import Search from '@/components/search/Search'
 import NewServer from '@/components/servers/New'
 import Thirdparty from '@/components/settings/Thirdparty'
+import KbdShortcut from '@/components/settings/Kbd'
 import NewTimeline from '@/components/timelines/New'
 import ShowTimeline from '@/components/timelines/Show'
 import Update from '@/components/Update'
@@ -283,6 +284,7 @@ function App() {
 				<NewServer open={modalState.newServer.opened} onClose={() => dispatch({ target: 'newServer', value: false, object: null })} initialServer={modalState.newServer.object} />
 				<Media index={modalState.media.index} media={modalState.media.object} opened={modalState.media.opened} close={() => dispatch({ target: 'media', value: false, object: [], index: -1 })} />
 				<Thirdparty open={modalState.thirdparty.opened} onClose={() => dispatch({ target: 'thirdparty', value: false })} />
+				<KbdShortcut open={modalState.kbd.opened} onClose={() => dispatch({ target: 'kbd', value: false })} />
 				<Report
 					opened={modalState.report.opened}
 					status={modalState.report.object}
@@ -392,6 +394,7 @@ function App() {
 					openAuthorize={(server: Server) => dispatch({ target: 'newServer', value: true, object: server })}
 					openAnnouncements={(server: Server, account: Account) => dispatch({ target: 'announcements', value: true, object: { server, account } })}
 					openThirdparty={() => dispatch({ target: 'thirdparty', value: true })}
+					openKbd={() => dispatch({ target: 'kbd', value: true })}
 					openSettings={() => router.push('./setting', currentPath ? `${currentPath}setting.html` : undefined)}
 					toggleCompose={toggleCompose}
 					toggleSearch={toggleSearch}
@@ -414,6 +417,9 @@ type ModalState = {
 		index: number
 	}
 	thirdparty: {
+		opened: boolean
+	}
+	kbd: {
 		opened: boolean
 	}
 	settings: {
@@ -460,6 +466,9 @@ const initialModalState: ModalState = {
 	thirdparty: {
 		opened: false
 	},
+	kbd: {
+		opened: false
+	},
 	settings: {
 		opened: false
 	},
@@ -496,6 +505,8 @@ const modalReducer = (current: ModalState, action: { target: string; value: bool
 			return { ...current, media: { opened: action.value, object: action.object, index: action.index } }
 		case 'thirdparty':
 			return { ...current, thirdparty: { opened: action.value } }
+		case 'kbd':
+			return { ...current, kbd: { opened: action.value } }
 		case 'settings':
 			return { ...current, settings: { opened: action.value } }
 		case 'report':
