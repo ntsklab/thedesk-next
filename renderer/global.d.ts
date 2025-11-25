@@ -27,5 +27,6 @@ declare global {
 		streamings: StreamingArray[]
 		userStreamings: StreamingArray[]
 		settingAudio: HTMLAudioElement
+		onAutoCompleteTextarea: boolean
 	}
 }

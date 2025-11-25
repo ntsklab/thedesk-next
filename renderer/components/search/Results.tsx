@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { useCallback, useContext, useEffect, useState } from 'react'
 import { BsChatQuote, BsHash, BsPeople, BsSearch } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
-import { Avatar, Form, Input, InputGroup, List } from 'rsuite'
+import { Avatar, Form, Input, InputGroup, List, Loader } from 'rsuite'
 import Status from '@/components/timelines/status/Status'
 import { TheDeskContext } from '@/context'
 import type { Account } from '@/entities/account'
@@ -36,6 +36,7 @@ export default function Results(props: Props) {
 	const [hashtags, setHashtags] = useState<Array<Entity.Tag>>([])
 	const [statuses, setStatuses] = useState<Array<Entity.Status>>([])
 	const [customEmojis, setCustomEmojis] = useState<Array<CustomEmojiCategory>>([])
+	const [isLoading, setIsLoading] = useState<boolean>(false)
 	const { setFocused } = useContext(TheDeskContext)
 	const { setStatusDetail, setAccountDetail, setTagDetail } = props
 	const focusAttr = {
@@ -51,12 +52,17 @@ export default function Results(props: Props) {
 
 	const search = async (word: string) => {
 		props.hideTrend()
-		const res = await props.client.search(word, { limit: 5, resolve: true })
-		setAccounts(res.data.accounts)
-		setHashtags(res.data.hashtags)
-		setStatuses(res.data.statuses)
-		const emojis = await props.client.getInstanceCustomEmojis()
-		setCustomEmojis(mapCustomEmojiCategory(props.server.domain, emojis.data))
+		setIsLoading(true)
+		try {
+			const res = await props.client.search(word, { limit: 5, resolve: true })
+			setAccounts(res.data.accounts)
+			setHashtags(res.data.hashtags)
+			setStatuses(res.data.statuses)
+			const emojis = await props.client.getInstanceCustomEmojis()
+			setCustomEmojis(mapCustomEmojiCategory(props.server.domain, emojis.data))
+		} finally {
+			setIsLoading(false)
+		}
 	}
 
 	const loadMoreAccount = useCallback(async () => {
@@ -95,15 +101,14 @@ export default function Results(props: Props) {
 		})
 		setStatuses(renew)
 	}
-
 	return (
 		<>
 			<div style={{ margin: '12px 0' }}>
 				<Form onCheck={() => search(word)}>
 					<InputGroup inside>
-						<Input placeholder={formatMessage({ id: 'search.placeholder' })} {...setFocused} value={word} onChange={(value) => setWord(value)} />
-						<InputGroup.Button onClick={() => search(word)}>
-							<Icon as={BsSearch} />
+						<Input id="search-input" placeholder={formatMessage({ id: 'search.placeholder' })} {...setFocused} value={word} onChange={(value) => setWord(value)} />
+						<InputGroup.Button disabled={isLoading} onClick={() => search(word)}>
+							{isLoading ? <Loader /> : <Icon as={BsSearch} />}
 						</InputGroup.Button>
 					</InputGroup>
 				</Form>

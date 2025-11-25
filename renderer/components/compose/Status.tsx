@@ -324,6 +324,9 @@ const Status: React.FC<Props> = (props) => {
 				}
 				f()
 			}
+			if (!window.onAutoCompleteTextarea && event.key === 'Escape') {
+				props.setOpened(false)
+			}
 			if (ctrl === true && event.key === 'Enter') {
 				if (document.activeElement === statusRef.current?.firstElementChild || document.activeElement === cwRef.current?.firstElementChild) {
 					handleSubmit()

@@ -1,6 +1,6 @@
 import generator, { type Entity, type MegalodonInterface } from '@cutls/megalodon'
 import { Icon } from '@rsuite/icons'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { BsChatQuote, BsFire, BsHash, BsPeople, BsX } from 'react-icons/bs'
 import { FormattedMessage } from 'react-intl'
 import { Avatar, Button, Container, Content, Dropdown, FlexboxGrid, Header, List, Loader, Panel } from 'rsuite'
@@ -119,6 +119,31 @@ export default function Search(props: Props) {
 		await setUsualAccount({ id: account[0].id })
 	}
 	const hideTrend = () => setIsShowTrend(false)
+
+	const handleKeyPress = useCallback(
+			(event: KeyboardEvent) => {
+				const globalFocused = Array.from(document.activeElement.classList).includes('rs-input')
+				if (!globalFocused && event.key === 's') {
+					props.setOpened(true)
+					const f = async () => {
+						await new Promise((resolve) => setTimeout(resolve, 500))
+						const input = document.querySelector<HTMLInputElement>('#search-input')
+						input?.focus()
+					}
+					f()
+				}
+				if (event.key === 'Escape') props.setOpened(false)
+			},
+			[]
+		)
+	
+		useEffect(() => {
+			document.addEventListener('keydown', handleKeyPress)
+	
+			return () => {
+				document.removeEventListener('keydown', handleKeyPress)
+			}
+		}, [handleKeyPress])
 
 	return (
 		<Container style={{ backgroundColor: 'var(--rs-border-secondary)', height: '100%' }}>

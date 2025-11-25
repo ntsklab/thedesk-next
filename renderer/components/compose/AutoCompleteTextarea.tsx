@@ -29,6 +29,9 @@ const AutoCompleteTextarea: React.ForwardRefRenderFunction<HTMLTextAreaElement, 
 	const triggerRef = useRef<any>()
 	const shouldOpen = useRef<boolean>(false)
 	const valueRef = useRef<string>('')
+	useEffect(() => {
+		window.onAutoCompleteTextarea = opened
+	}, [opened])
 
 	useEffect(() => {
 		init(data)
