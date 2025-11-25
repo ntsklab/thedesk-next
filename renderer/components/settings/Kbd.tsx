@@ -60,6 +60,12 @@ const KbdShortcut: React.FC<Props> = (props) => {
 					:<FormattedMessage id="settings.kbd.esc" />
 				</div>
 				<div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+					<div style={{ width: 40, display: 'flex', justifyContent: 'flex-end' }}>
+						<Kbd>S</Kbd>
+					</div>
+					:<FormattedMessage id="settings.kbd.s" />
+				</div>
+				<div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
 					<div style={{ width: 100, display: 'flex', justifyContent: 'flex-end' }}>
 						<Kbd>Ctrl</Kbd>+<Kbd>Enter</Kbd>
 					</div>

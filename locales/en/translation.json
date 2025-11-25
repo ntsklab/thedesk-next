@@ -219,6 +219,7 @@
 		"kbd": {
 			"title": "Keyboard Shortcuts",
 			"n": "Open new post composer",
+			"s": "Open search",
 			"esc": "Close modals or dialogs",
 			"ctrlEnter": "Post status",
 			"m": "Close post composer(on not focused input)"
