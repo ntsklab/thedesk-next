@@ -31,7 +31,7 @@ import type { Server } from '@/entities/server'
 import { defaultSetting, type Settings } from '@/entities/settings'
 import { Context } from '@/theme'
 import { data, mapCustomEmojiCategory } from '@/utils/emojiData'
-import { languagesDefault, sortedLanguages} from '@/utils/languages'
+import { languagesDefault, sortedLanguages } from '@/utils/languages'
 import { getUnknownAA, nowplaying } from '@/utils/nowplaying'
 import { privacyColor, privacyIcon, quoteIcon } from '@/utils/statusParser'
 import { readSettings } from '@/utils/storage'
@@ -103,7 +103,6 @@ const Status: React.FC<Props> = (props) => {
 	const uploaderRef = useRef<HTMLInputElement>()
 	const toast = useToaster()
 	const isStandaloneDarwin = localStorage.getItem('os') === 'darwin' && localStorage.getItem('isStore') === 'false'
-
 	useEffect(() => {
 		if (isSortedLanguage) {
 			const lastUsed = JSON.parse(localStorage.getItem('lastUseedLanguage')) || []
@@ -133,9 +132,7 @@ const Status: React.FC<Props> = (props) => {
 	// Set replyTo or edit target
 	useEffect(() => {
 		if (props.inReplyTo) {
-			const mentionAccounts = [props.inReplyTo.account.acct, ...props.inReplyTo.mentions.map((a) => a.acct)]
-				.filter((a, i, self) => self.indexOf(a) === i)
-				.filter((a) => a !== props.account.username)
+			const mentionAccounts = [props.inReplyTo.account.acct, ...props.inReplyTo.mentions.map((a) => a.acct)].filter((a, i, self) => self.indexOf(a) === i).filter((a) => a !== props.account.username)
 			setFormValue({ spoiler: '', status: `${mentionAccounts.map((m) => `@${m}`).join(' ')} ` })
 			setVisibility(props.inReplyTo.visibility)
 			if (props.inReplyTo.language) {
@@ -190,7 +187,6 @@ const Status: React.FC<Props> = (props) => {
 		}
 	}, [props.defaultVisibility])
 
-
 	// Set quote approval policy
 	useEffect(() => {
 		if (props.defaultQuotePolicy) {
@@ -240,7 +236,7 @@ const Status: React.FC<Props> = (props) => {
 		// to unique
 		const newLangUnique = Array.from(new Set(newLangs))
 		localStorage.setItem('lastUseedLanguage', JSON.stringify(newLangUnique))
-		
+
 		try {
 			let options = { visibility: useVis || visibility }
 			if (props.inReplyTo) {
@@ -454,15 +450,14 @@ const Status: React.FC<Props> = (props) => {
 		if (formValue.scheduledAt) {
 			setFormValue((current) =>
 				Object.assign({}, current, {
-					scheduled_at: undefined
+					scheduledAt: undefined
 				})
 			)
 		} else {
-			setFormValue((current) =>
-				Object.assign({}, current, {
-					scheduled_at: new Date()
-				})
-			)
+			const newValue = Object.assign({}, formValue, {
+				scheduledAt: new Date()
+			})
+			setFormValue(newValue)
 		}
 	}
 
@@ -513,11 +508,19 @@ const Status: React.FC<Props> = (props) => {
 					<Dropdown.Item eventKey={'direct'} icon={<Icon as={BsEnvelope} />}>
 						<FormattedMessage id="compose.visibility.direct" />
 					</Dropdown.Item>
-					{props.server.quote_support && <Dropdown.Menu title={formatMessage({ id: 'compose.quote.by' })}>
-						<Dropdown.Item eventKey={'quote:public'}><FormattedMessage id="compose.quote.public" /></Dropdown.Item>
-						<Dropdown.Item eventKey={'quote:followers'}><FormattedMessage id="compose.quote.followers" /></Dropdown.Item>
-						<Dropdown.Item eventKey={'quote:nobody'}><FormattedMessage id="compose.quote.nobody" /></Dropdown.Item>
-					</Dropdown.Menu>}
+					{props.server.quote_support && (
+						<Dropdown.Menu title={formatMessage({ id: 'compose.quote.by' })}>
+							<Dropdown.Item eventKey={'quote:public'}>
+								<FormattedMessage id="compose.quote.public" />
+							</Dropdown.Item>
+							<Dropdown.Item eventKey={'quote:followers'}>
+								<FormattedMessage id="compose.quote.followers" />
+							</Dropdown.Item>
+							<Dropdown.Item eventKey={'quote:nobody'}>
+								<FormattedMessage id="compose.quote.nobody" />
+							</Dropdown.Item>
+						</Dropdown.Menu>
+					)}
 				</Dropdown.Menu>
 			</Popover>
 		)
@@ -642,14 +645,18 @@ const Status: React.FC<Props> = (props) => {
 							onClose={() => setFocused(false)}
 							cleanable={false}
 							style={{ width: '43px' }}
-							renderExtraFooter={() => 
+							renderExtraFooter={() => (
 								<Button appearance="link" onClick={() => setIsSortedLanguage(!isSortedLanguage)}>
 									{isSortedLanguage ? <FormattedMessage id="compose.language.unsorted" /> : <FormattedMessage id="compose.language.sorted" />}
 								</Button>
-							}
-							renderMenuItem={(_label, item) => (<>
-								<p style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '240px' }}>{item.native} ({item.english})</p>
-							</>)}
+							)}
+							renderMenuItem={(_label, item) => (
+								<>
+									<p style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '240px' }}>
+										{item.native} ({item.english})
+									</p>
+								</>
+							)}
 							renderValue={() => (
 								<>
 									<span style={{ position: 'absolute', fontSize: '0.9em' }}>{language.toUpperCase()}</span>
