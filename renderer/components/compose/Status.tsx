@@ -229,6 +229,8 @@ const Status: React.FC<Props> = (props) => {
 			return
 		}
 		if (formRef === undefined || formRef.current === undefined) return
+		console.log(formValue)
+		if (formValue || !formValue) return
 		setLoading(true)
 		// language set
 		const pre = JSON.parse(localStorage.getItem('lastUseedLanguage')) || []
@@ -614,7 +616,7 @@ const Status: React.FC<Props> = (props) => {
 					)}
 				</Form.Group>
 				{formValue.poll && <Form.Control name="poll" {...focusAttr} accepter={PollInputControl} fieldError={formError.poll} />}
-				{formValue.scheduledAt && <Form.Control name="scheduled_at" {...focusAttr} accepter={DatePicker} format="yyyy-MM-dd HH:mm" />}
+				{formValue.scheduledAt && <Form.Control name="scheduledAt" {...focusAttr} accepter={DatePicker} format="yyyy-MM-dd HH:mm" />}
 
 				<Form.Group controlId="actions" style={{ marginBottom: '4px' }}>
 					<ButtonToolbar style={{ gap: 0 }}>
