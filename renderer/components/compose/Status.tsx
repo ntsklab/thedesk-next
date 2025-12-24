@@ -229,8 +229,6 @@ const Status: React.FC<Props> = (props) => {
 			return
 		}
 		if (formRef === undefined || formRef.current === undefined) return
-		console.log(formValue)
-		if (formValue || !formValue) return
 		setLoading(true)
 		// language set
 		const pre = JSON.parse(localStorage.getItem('lastUseedLanguage')) || []
