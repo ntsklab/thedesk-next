@@ -9,6 +9,7 @@
 	},
 	"version": "25.2.2",
 	"codename": "Aiko",
+	"homepage": "https://github.com/cutls/thedesk-next",
 	"packageManager": "pnpm@10.5.2",
 	"scripts": {
 		"clean": "rimraf dist main renderer/out renderer/.next",
