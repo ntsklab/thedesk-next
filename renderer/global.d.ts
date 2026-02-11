@@ -20,7 +20,7 @@ export interface IElectronAPI {
 	receiveCode: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => void
 }
 
-type StreamingArray = [number, WebSocketInterface, string]
+type StreamingArray = [number, WebSocketInterface, string, string?]
 declare global {
 	interface Window {
 		electronAPI: IElectronAPI

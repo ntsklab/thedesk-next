@@ -285,7 +285,6 @@ const Status: React.FC<Props> = (props) => {
 				})
 			}
 			if (props.editTarget) {
-				console.log(options)
 				await props.client.editStatus(
 					props.editTarget.id,
 					Object.assign({}, options, {

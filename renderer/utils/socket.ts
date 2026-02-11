@@ -14,7 +14,7 @@ const stripForVoice = (html: string) => {
 	return b
 }
 // 'home' | 'notifications' | 'local' | 'public' | 'favourites' | 'list' | 'bookmarks' | 'direct' | 'tag'
-type StreamingArray = [number, WebSocketInterface, string]
+type StreamingArray = [number, WebSocketInterface, string, string?]
 export const speech = (text: string, timelineConfig: Settings['timeline']) => {
 	const synthApi = window.speechSynthesis
 	const utter = new SpeechSynthesisUtterance(text)
@@ -61,15 +61,15 @@ export const start = async (timelines: Array<[Timeline, Server, Account]>, gener
 				const targetSocket = userStreamings.find(([id]) => id === server.id)[1]
 				let newStreaming: WebSocketInterface
 				if (timeline.kind === 'public') newStreaming = isSubscribable ? await client.publicStreamingSubscription(targetSocket) : await client.publicStreaming()
-				if (timeline.kind === 'local') newStreaming = isSubscribable ? await client.localStreamingSubscription(targetSocket): await client.localStreaming()
-				if (timeline.kind === 'direct') newStreaming = isSubscribable ? await client.directStreamingSubscription(targetSocket): await client.directStreaming()
-				if (timeline.kind === 'list') newStreaming = isSubscribable ? await client.listStreamingSubscription(targetSocket, timeline.list_id): await client.listStreaming(timeline.list_id)
-				if (timeline.kind === 'tag') newStreaming = isSubscribable ? await client.tagStreamingSubscription(targetSocket, timeline.name): await client.tagStreaming(timeline.name)
+				if (timeline.kind === 'local') newStreaming = isSubscribable ? await client.localStreamingSubscription(targetSocket) : await client.localStreaming()
+				if (timeline.kind === 'direct') newStreaming = isSubscribable ? await client.directStreamingSubscription(targetSocket) : await client.directStreaming()
+				if (timeline.kind === 'list') newStreaming = isSubscribable ? await client.listStreamingSubscription(targetSocket, timeline.list_id) : await client.listStreaming(timeline.list_id)
+				if (timeline.kind === 'tag') newStreaming = isSubscribable ? await client.tagStreamingSubscription(targetSocket, timeline.name) : await client.tagStreaming(timeline.name)
 				if (timeline.kind === 'public') streaming = [timeline.id, newStreaming, 'public']
 				if (timeline.kind === 'local') streaming = [timeline.id, newStreaming, 'public:local']
 				if (timeline.kind === 'direct') streaming = [timeline.id, newStreaming, 'direct']
-				if (timeline.kind === 'list') streaming = [timeline.id, newStreaming, 'list']
-				if (timeline.kind === 'tag') streaming = [timeline.id, newStreaming, 'tag']
+				if (timeline.kind === 'list') streaming = [timeline.id, newStreaming, 'list', timeline.list_id]
+				if (timeline.kind === 'tag') streaming = [timeline.id, newStreaming, 'hashtag', timeline.name]
 			} catch {
 				console.error('skipped')
 			}
@@ -101,6 +101,7 @@ export const listenTimeline = async <T>(channel: string, callback: (a: { payload
 		for (let i = 0; i < useStreaming.length; i++) {
 			const streaming = useStreaming[i][1]
 			const timelineKind = useStreaming[i][2]
+			const timelineAdd = useStreaming[i][3]
 			if (!streaming) continue
 			streaming.on('update', (status, ch) => {
 				const isBouyomi = timelineConfig.ttsProvider === 'bouyomi'
@@ -117,7 +118,8 @@ export const listenTimeline = async <T>(channel: string, callback: (a: { payload
 						speech(b, timelineConfig)
 					}
 				}
-				if (!ch || ch.includes(timelineKind)) callback({ payload: { status: status, timeline_id: useStreaming[i][0] } as T, kind: ch })
+				const isCh = !ch || (ch.includes(timelineKind) && (timelineAdd ? ch.includes(timelineAdd) : true))
+				if (isCh) callback({ payload: { status: status, timeline_id: useStreaming[i][0] } as T, kind: ch })
 			})
 		}
 	}
@@ -135,9 +137,11 @@ export const listenTimeline = async <T>(channel: string, callback: (a: { payload
 		for (let i = 0; i < useStreaming.length; i++) {
 			const streaming = useStreaming[i][1]
 			const timelineKind = useStreaming[i][2]
+			const timelineAdd = useStreaming[i][3]
 			if (!streaming) continue
 			streaming.on('status.update', (status, ch) => {
-				if (!ch || ch.includes(timelineKind)) callback({ payload: { status: status, timeline_id: useStreaming[i][0] } as T, kind: ch })
+				const isCh = !ch || (ch.includes(timelineKind) && (timelineAdd ? ch.includes(timelineAdd) : true))
+				if (isCh) callback({ payload: { status: status, timeline_id: useStreaming[i][0] } as T, kind: ch })
 			})
 		}
 	}

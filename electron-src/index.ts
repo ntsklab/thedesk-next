@@ -142,7 +142,7 @@ app.on('ready', async () => {
 	})
 	ipcMain.on('hardRefresh', async () => {
 		mainWindow?.webContents.session.clearCache()
-		mainWindow?.reload()
+		mainWindow?.webContents.reloadIgnoringCache()
 	})
 	ipcMain.on('requestInitialInfo', async (_event) => {
 		const info = {
