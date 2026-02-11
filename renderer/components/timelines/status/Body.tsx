@@ -1,5 +1,5 @@
 import type { Entity } from '@cutls/megalodon'
-import { type Dispatch, type HTMLAttributes, type SetStateAction, useState } from 'react'
+import { type Dispatch, type HTMLAttributes, type SetStateAction, useEffect, useState } from 'react'
 import { FormattedMessage } from 'react-intl'
 import { Button } from 'rsuite'
 import emojify from '@/utils/emojify'
@@ -14,8 +14,7 @@ type Props = {
 } & HTMLAttributes<HTMLElement>
 
 const Body: React.FC<Props> = (props) => {
-	const { spoilered: startSpoilered, spoilerText } = props
-	const [spoilered, setSpoilered] = useState(startSpoilered)
+	const { spoilered, setSpoilered, spoilerText } = props
 
 	const spoiler = () => {
 		const isAuto = !props.status.spoiler_text || props.status.spoiler_text.length <= 0
