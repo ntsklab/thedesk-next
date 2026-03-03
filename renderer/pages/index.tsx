@@ -275,7 +275,7 @@ function App() {
 
 	return (
 		<TimelineRefreshContext.Provider value={{ timelineRefresh }}>
-			<div className="container index" style={Object.assign({ backgroundColor: 'var(--rs-bg-well)', width: '100%', overflow: 'hidden' }, style)}>
+			<div className="container index" onDragEnter={() => setComposeOpened(true)} style={Object.assign({ backgroundColor: 'var(--rs-bg-well)', width: '100%', overflow: 'hidden' }, style)}>
 				<Head>
 					<title>TheDesk</title>
 				</Head>
@@ -319,7 +319,13 @@ function App() {
 					</div>
 				)}
 				<Container style={{ height: 'calc(100% - 56px)', display: 'flex', flexDirection: 'row' }}>
-					<Animation.Transition in={composeOpened} exitedClassName={`${composeClass}exited`} exitingClassName={`${composeClass}exiting`} enteredClassName={`${composeClass}entered`} enteringClassName={`${composeClass}entering`}>
+					<Animation.Transition
+						in={composeOpened}
+						exitedClassName={`${composeClass}exited`}
+						exitingClassName={`${composeClass}exiting`}
+						enteredClassName={`${composeClass}entered`}
+						enteringClassName={`${composeClass}entering`}
+					>
 						{(props, ref) => (
 							<Draggable handle=".draggable" disabled={disableDrag} position={disableDrag ? { x: 0, y: 0 } : draggalePosition} onStop={(_e, data) => setComposePosition([data.x, data.y])}>
 								<div {...props} ref={ref} style={disableDrag ? { width: '320px', flexGrow: 1, backgroundColor: 'var(--rs-border-secondary)' } : { position: 'fixed', zIndex: 4, width: '320px' }}>
