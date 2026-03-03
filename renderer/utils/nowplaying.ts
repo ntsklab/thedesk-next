@@ -3,7 +3,7 @@ import { open } from '@/utils/openBrowser'
 const apiGateway = 'https://ep9jquu2w4.execute-api.ap-northeast-1.amazonaws.com/thedesk/spotify'
 async function spotifyApi(url: string, showToaster: (message: string) => void) {
 	const token = localStorage.getItem('spotifyV2Token')
-	if (!token) nowplayingInit(false, showToaster)
+	if (!token) nowplayingInit(true, showToaster)
 	const expires = localStorage.getItem('spotifyV2Expires') || `${Date.now()}`
 	const isExpired = Date.now()/ 1000 > Number.parseInt(expires, 10)
 	const at = isExpired ? await refreshSpotifyToken() : localStorage.getItem('spotifyV2Token')
