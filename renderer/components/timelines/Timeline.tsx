@@ -3,7 +3,24 @@ import { Icon } from '@rsuite/icons'
 import { useRouter } from 'next/router'
 import parse from 'parse-link-header'
 import { type CSSProperties, forwardRef, useCallback, useContext, useEffect, useRef, useState } from 'react'
-import { BsArrowClockwise, BsBookmark, BsBroadcast, BsChevronLeft, BsChevronRight, BsGlobe2, BsHash, BsHouseDoor, BsListUl, BsPeople, BsSliders, BsSquare, BsStar, BsViewStacked, BsX } from 'react-icons/bs'
+import {
+	BsArrowClockwise,
+	BsBookmark,
+	BsBroadcast,
+	BsChevronLeft,
+	BsChevronRight,
+	BsGlobe2,
+	BsHash,
+	BsHouseDoor,
+	BsLayers,
+	BsListUl,
+	BsPeople,
+	BsSliders,
+	BsSquare,
+	BsStar,
+	BsViewStacked,
+	BsX
+} from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Virtuoso } from 'react-virtuoso'
 import { Avatar, Button, Container, Content, Divider, FlexboxGrid, Header, List, Loader, Popover, Radio, RadioGroup, Stack, useToaster, Whisper } from 'rsuite'
@@ -26,9 +43,9 @@ import type {
 import { mapCustomEmojiCategory } from '@/utils/emojiData'
 import FailoverImg from '@/utils/failoverImg'
 import timelineName from '@/utils/timelineName'
-import Status from './status/Status'
 import { listenTimeline, listenUser, listenTimelineWaiter, listenUserWaiter } from '@/utils/socket'
 import { Context } from '@/theme'
+import Status from './status/Status'
 
 type Props = {
 	timeline: Timeline
@@ -153,16 +170,14 @@ export default function TimelineColumn(props: Props) {
 				listenTimeline<ReceiveTimelineStatusPayload>(
 					'receive-timeline-status',
 					(ev) => {
-						if (ev.payload.timeline_id !== props.timeline.id) {
-							return
-						}
-
+						if (ev.payload.timeline_id !== props.timeline.id) return
+						const status: Entity.Status = ev.payload.status
+						if (props.timeline.kind === 'integrated' && ev.kind === 'public:local') status._integrated_isLocal = true
 						if (replyOpened.current || (scrollerRef.current && scrollerRef.current.scrollTop > 10)) {
-							setUnreadStatuses((last) => prependStatus(last, ev.payload.status))
+							setUnreadStatuses((last) => prependStatus(last, status))
 							return
 						}
-
-						setStatuses((last) => appendStatus(last, ev.payload.status))
+						setStatuses((last) => appendStatus(last, status))
 					},
 					timelineConfig,
 					props.timeline.tts
@@ -171,12 +186,11 @@ export default function TimelineColumn(props: Props) {
 				listenTimeline<ReceiveTimelineStatusUpdatePayload>(
 					'receive-timeline-status-update',
 					(ev) => {
-						if (ev.payload.timeline_id !== props.timeline.id) {
-							return
-						}
-
-						setUnreadStatuses((last) => updateStatus(last, ev.payload.status))
-						setStatuses((last) => updateStatus(last, ev.payload.status))
+						if (ev.payload.timeline_id !== props.timeline.id) return
+						const status: Entity.Status = ev.payload.status
+						if (props.timeline.kind === 'integrated' && ev.kind === 'public:local') status._integrated_isLocal = true
+						setUnreadStatuses((last) => updateStatus(last, status))
+						setStatuses((last) => updateStatus(last, status))
 					},
 					timelineConfig,
 					false
@@ -220,6 +234,9 @@ export default function TimelineColumn(props: Props) {
 				default:
 					context = 'home'
 					break
+			}
+			if (tl.kind === 'integrated') {
+				return res.data.filter((f) => f.context.includes('home') || f.context.includes('public'))
 			}
 			return res.data.filter((f) => f.context.includes(context))
 		} catch (err) {
@@ -272,6 +289,10 @@ export default function TimelineColumn(props: Props) {
 				const res = await client.getTagTimeline(tl.name, options)
 				return res.data
 			}
+			case 'integrated': {
+				const res = await client.getIntegratedTimeline(options)
+				return res.data
+			}
 			default:
 		}
 	}
@@ -309,6 +330,8 @@ export default function TimelineColumn(props: Props) {
 				return <Icon as={BsBookmark} />
 			case 'tag':
 				return <Icon as={BsHash} />
+			case 'integrated':
+				return <Icon as={BsLayers} />
 		}
 	}
 
@@ -411,7 +434,7 @@ export default function TimelineColumn(props: Props) {
 		borderBottomStyle: 'solid',
 		borderBottomColor: account && account.color ? `var(--rs-color-${account.color})` : 'transparent',
 		borderTopLeftRadius: 8,
-		borderTopRightRadius: 8,
+		borderTopRightRadius: 8
 	}
 	if (!props.server) return null
 

@@ -17,6 +17,8 @@ const timelineName = (timelineKind: TimelineKind, name: string, formatMessage: (
 			return formatMessage({ id: 'timeline.local' })
 		case 'public':
 			return formatMessage({ id: 'timeline.public' })
+		case 'integrated':
+			return formatMessage({ id: 'timeline.integrated' })
 		default:
 			return name
 	}

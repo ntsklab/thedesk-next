@@ -411,6 +411,7 @@
 		"direct": "ダイレクトメッセージ",
 		"local": "ローカル",
 		"public": "連合",
+		"integrated": "統合",
 		"back": "戻る"
 	},
 	"detail": {

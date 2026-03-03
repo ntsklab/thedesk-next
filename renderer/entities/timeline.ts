@@ -1,3 +1,5 @@
+import { Entity } from "@cutls/megalodon"
+
 export type Timeline = {
 	id: number
 	kind: TimelineKind
@@ -22,7 +24,7 @@ export type AddTimeline = {
 }
 export const colorList = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet'] as const
 export type Color = (typeof colorList)[number]
-export type TimelineKind = 'home' | 'notifications' | 'local' | 'public' | 'favourites' | 'list' | 'bookmarks' | 'direct' | 'tag'
+export type TimelineKind = 'home' | 'notifications' | 'local' | 'public' | 'favourites' | 'list' | 'bookmarks' | 'direct' | 'tag' | 'integrated'
 export const columnWidthSet = ['xs', 'sm', 'md', 'lg'] as const
 export type ColumnWidth = (typeof columnWidthSet)[number]
 
@@ -40,4 +42,7 @@ export function columnWidth(width: ColumnWidth | number) {
 		default:
 			return 340
 	}
+}
+export interface ExtendedStatus extends Entity.Status {
+	isFromHome?: boolean
 }

@@ -31,7 +31,7 @@ const actionText = (notification: Entity.Notification) => {
 				<span
 					style={{ color: 'var(--rs-text-secondary)' }}
 					dangerouslySetInnerHTML={{
-						__html: emojify(formatMessage({ id: 'timeline.notification.followRequestBody' }, { user: notification.account.display_name }), notification.account.emojis)
+						__html: emojify(formatMessage({ id: 'timeline.notification.followRequest.body' }, { user: notification.account.display_name }), notification.account.emojis)
 					}}
 				/>
 			)

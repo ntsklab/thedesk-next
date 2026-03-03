@@ -1,7 +1,7 @@
 import type { Entity, MegalodonInterface } from '@cutls/megalodon'
 import { Icon } from '@rsuite/icons'
 import { type HTMLAttributes, type MouseEventHandler, useContext, useState } from 'react'
-import { BsArrowRepeat, BsPin } from 'react-icons/bs'
+import { BsArrowRepeat, BsHouseDoor, BsPerson, BsPin } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Avatar, Button, FlexboxGrid, Notification, useToaster } from 'rsuite'
 import Time from '@/components/utils/Time'
@@ -149,7 +149,10 @@ const Status: React.FC<Props> = (props) => {
 						title={status.account.acct}
 						alt={status.account.acct}
 					/>
-					<Icon as={privacyIcon(status.visibility)} style={{ fontSize: '0.8em', marginBottom: '5px', color: privacyColor(status.visibility) }} />
+					<div>
+						{status._integrated_isLocal && <Icon as={BsPerson} style={{ fontSize: '0.8em', marginBottom: '5px', marginRight: '5px', color: 'var(--rs-text-tertiary)' }} />}
+						<Icon as={privacyIcon(status.visibility)} style={{ fontSize: '0.8em', marginBottom: '5px', color: privacyColor(status.visibility) }} />
+					</div>
 				</div>
 				{/** status **/}
 				<div style={{ paddingRight: '8px', width: 'calc(100% - 56px)', boxSizing: 'border-box' }}>
@@ -170,11 +173,27 @@ const Status: React.FC<Props> = (props) => {
 					{!spoilered && (
 						<>
 							{status.poll && <Poll poll={status.poll} client={props.client} pollUpdated={refresh} emojis={status.emojis} />}
-							{status.quote_status_state && <Quote status={status.quote_status} state={status.quote_status_state} isAnimeIcon={isAnimeIcon} setStatusDetail={() => props.setStatusDetail(status.quote_status.id, props.server.id, props.account.id)} />}
+							{status.quote_status_state && (
+								<Quote
+									status={status.quote_status}
+									state={status.quote_status_state}
+									isAnimeIcon={isAnimeIcon}
+									setStatusDetail={() => props.setStatusDetail(status.quote_status.id, props.server.id, props.account.id)}
+								/>
+							)}
 							{status.media_attachments.length > 0 && <Attachments attachments={status.media_attachments} sensitive={status.sensitive} openMedia={props.openMedia} columnWidth={props.columnWidth} />}
 							{status.emoji_reactions &&
 								status.emoji_reactions.map((e, i) => (
-									<Button appearance="subtle" size="sm" style={{ marginLeft: i === 0 ? 0 : 2 }} key={e.name} onClick={() => emojiClicked(e)} active={e.me} disabled={e.name.includes('@') && props.server.sns === 'misskey'} title={e.name}>
+									<Button
+										appearance="subtle"
+										size="sm"
+										style={{ marginLeft: i === 0 ? 0 : 2 }}
+										key={e.name}
+										onClick={() => emojiClicked(e)}
+										active={e.me}
+										disabled={e.name.includes('@') && props.server.sns === 'misskey'}
+										title={e.name}
+									>
 										{e.url ? (
 											<>
 												<img src={e.url} style={{ height: '20px' }} alt={e.name} /> <span style={{ marginLeft: '0.2em' }}>{e.count}</span>
@@ -209,7 +228,7 @@ const Status: React.FC<Props> = (props) => {
 	)
 }
 
-const originalStatus = (status: Entity.Status) => {
+const originalStatus = (status: Entity.Status): Entity.Status => {
 	if (status.reblog && !status.quote) return status.reblog
 	return status
 }

@@ -1,7 +1,7 @@
 import generator, { type Entity } from '@cutls/megalodon'
 import { Icon } from '@rsuite/icons'
 import { useContext, useEffect, useState } from 'react'
-import { BsBell, BsBookmark, BsBroadcast, BsChevronLeft, BsEnvelope, BsGlobe2, BsHouseDoor, BsListUl, BsPeople, BsPlus, BsStar } from 'react-icons/bs'
+import { BsBell, BsBookmark, BsBroadcast, BsChevronLeft, BsEnvelope, BsGlobe2, BsHouseDoor, BsLayers, BsListUl, BsPeople, BsPlus, BsStar } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Button, ButtonToolbar, Container, Content, Dropdown, FlexboxGrid, Header, IconButton, List, Loader, Popover, Whisper } from 'rsuite'
 import { addTimeline, getAccount, listTimelines } from 'utils/storage'
@@ -16,6 +16,7 @@ type AuthorizedProps = {
 
 const AuthorizedTimelines: React.FC<AuthorizedProps> = (props) => {
 	const [loading, setLoading] = useState<boolean>(false)
+	const [isIntegratedSupported, setIsIntegratedSupported] = useState<boolean>(false)
 	const [lists, setLists] = useState<Array<Entity.List>>([])
 	const { server, select } = props
 
@@ -24,6 +25,7 @@ const AuthorizedTimelines: React.FC<AuthorizedProps> = (props) => {
 			setLoading(true)
 			try {
 				const [account, _] = await getAccount({ id: server.account_id })
+				setIsIntegratedSupported(!server.cannot_subscribe)
 				const client = generator(server.sns, server.base_url, account.access_token, 'Fedistar')
 				const res = await client.getLists(true)
 				setLists(res.data)
@@ -98,6 +100,18 @@ const AuthorizedTimelines: React.FC<AuthorizedProps> = (props) => {
 					</FlexboxGrid.Item>
 				</FlexboxGrid>
 			</List.Item>
+			{isIntegratedSupported &&<List.Item index={8} onClick={() => select('integrated', 'Integrated', null)} style={{ cursor: 'pointer' }}>
+				<FlexboxGrid align="middle">
+					<FlexboxGrid.Item colspan={4} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+						<Icon as={BsLayers} />
+					</FlexboxGrid.Item>
+					<FlexboxGrid.Item colspan={20}>
+						<div>
+							<FormattedMessage id="timeline.integrated" />
+						</div>
+					</FlexboxGrid.Item>
+				</FlexboxGrid>
+			</List.Item>}
 			{loading && (
 				<List.Item index={8}>
 					<Loader />

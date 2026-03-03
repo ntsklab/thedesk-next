@@ -411,6 +411,7 @@
 		"direct": "Direct messages",
 		"local": "Local",
 		"public": "Federated",
+		"integrated": "Integrated",
 		"back": "Back"
 	},
 	"detail": {
