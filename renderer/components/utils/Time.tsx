@@ -12,29 +12,6 @@ type Props = {
 	onClick?: (e: any) => void
 } & HTMLAttributes<HTMLElement>
 
-const parseDatetime = (timestamp: string) => {
-	dayjs.extend(updateLocale)
-	dayjs.updateLocale('en', {
-		relativeTime: {
-			future: 'in %s',
-			past: '%s ago',
-			s: 'now',
-			m: '%ds',
-			mm: '%dm',
-			h: '%dm',
-			hh: '%dh',
-			d: '%dh',
-			dd: '%dd',
-			M: 'a month',
-			MM: '%d months',
-			y: 'a year',
-			yy: '%d years'
-		}
-	})
-	dayjs.extend(relativeTime)
-	return dayjs(timestamp).fromNow(true)
-}
-
 export const calcFromNow = (time: Date, isJa: boolean) => {
 	const sec = (Date.now() - time.getTime()) / 1000
 	if (sec < 60) return isJa ? '1分未満' : '< 1 min'

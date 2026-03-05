@@ -1,14 +1,10 @@
 import dayjs from 'dayjs'
 // https://github.com/iamkun/dayjs/tree/dev/src/locale
 import 'dayjs/locale/ja'
-import relativeTime from 'dayjs/plugin/relativeTime'
-import updateLocale from 'dayjs/plugin/updateLocale'
-import { type HTMLAttributes, useContext, useEffect, useState } from 'react'
-import { TheDeskContext } from '@/context'
-import { Badge, Button, Divider, Input, Popover, useToaster, Whisper } from 'rsuite'
-import alert from '@/components/utils/alert'
+import { useContext, useEffect, useState } from 'react'
+import { Button, Divider, Input, Popover, useToaster, Whisper } from 'rsuite'
 import { Icon } from '@rsuite/icons'
-import { BsClock, BsGear, BsSun, BsX } from 'react-icons/bs'
+import { BsGear, BsSun, BsX } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { Context } from '@/theme'
 import utc from 'dayjs/plugin/utc'
@@ -17,7 +13,7 @@ import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.extend(LocalizedFormat)
-import timezones from '@/utils/timezones.json'
+import { timezones } from '@/utils/timezones'
 
 interface Props {
 	isShow: boolean
