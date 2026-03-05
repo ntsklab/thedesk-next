@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { useToaster, Image, Progress } from 'rsuite'
 import { Icon } from '@rsuite/icons'
 import { BsCpu, BsMemory } from 'react-icons/bs'
@@ -49,6 +49,11 @@ const Spotify: React.FC<Props> = (props) => {
 		const config = JSON.parse(localStorage.getItem('spotify') || '{}')
 		setIsShow(config.isShow || false)
 	}, [])
+	const file = info && info.file ? info.file : null
+	const MemorizedImage = useMemo(() => {
+		const image = file ? URL.createObjectURL(file) : null
+		return <Image src={image} alt="cover" width={30} height={30} style={{ borderRadius: 10, marginRight: 8, cursor: 'pointer' }} />
+	}, [file])
 	const percent = info && (info.duration ? ((position || 0) / info.duration) * 100 : 0)
 	return (
 		<>
@@ -56,8 +61,8 @@ const Spotify: React.FC<Props> = (props) => {
 				<div style={{ color: isDark ? 'white' : 'var(--rs-text-active)', display: 'flex', alignItems: 'center', marginLeft: 4, marginRight: 4 }}>
 					{info && info.song && (
 						<div style={{ display: 'flex', alignItems: 'center' }}>
-							<div>
-								<Image title={formatMessage({ id: 'widget.spotify.hint' })} onClick={() => get()} src={URL.createObjectURL(info.file)} alt="cover" width={30} height={30} style={{ borderRadius: 10, marginRight: 8, cursor: 'pointer' }} />
+							<div title={formatMessage({ id: 'widget.spotify.hint' })} onClick={() => get()}>
+								{MemorizedImage}
 							</div>
 							<div>
 								<div style={{ maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{info.song}</div>

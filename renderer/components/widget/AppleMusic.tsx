@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { useToaster, Image, Progress } from 'rsuite'
 import { Icon } from '@rsuite/icons'
 import { BsCpu, BsMemory } from 'react-icons/bs'
@@ -44,6 +44,11 @@ const AppleMusic: React.FC<Props> = (props) => {
 		const config = JSON.parse(localStorage.getItem('appleMusic') || '{}')
 		setIsShow(config.isShow || false)
 	}, [])
+	const file = info && info.file ? info.file : null
+	const MemorizedImage = useMemo(() => {
+			const image = file ? URL.createObjectURL(file) : null
+			return <Image src={image} alt="cover" width={30} height={30} style={{ borderRadius: 10, marginRight: 8, cursor: 'pointer' }} />
+		}, [file])
 	return (
 		<>
 			{isShow ? (
@@ -51,7 +56,7 @@ const AppleMusic: React.FC<Props> = (props) => {
 					{info && info.song && (
 						<div style={{ display: 'flex', alignItems: 'center' }}>
 							{info.file ? <div>
-								<Image src={URL.createObjectURL(info.file)} alt="cover" width={30} height={30} style={{ borderRadius: 10, marginRight: 8 }} />
+								{MemorizedImage}
 							</div> : <div style={{ width: 30, height: 30, borderRadius: 10, marginRight: 8, backgroundColor: isDark ? 'var(--rs-gray-700)' : 'var(--rs-gray-300)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} onClick={artwork}>
 								?
 							</div>}
