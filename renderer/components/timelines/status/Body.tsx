@@ -11,17 +11,18 @@ type Props = {
 	spoilerText: string
 	setSpoilered: Dispatch<SetStateAction<boolean>>
 	onClick?: (e: any) => void
+	spoilerReason?: 'spoiler' | 'tooLong'
 } & HTMLAttributes<HTMLElement>
 
 const Body: React.FC<Props> = (props) => {
-	const { spoilered, setSpoilered, spoilerText } = props
+	const { spoilered, setSpoilered, spoilerText, spoilerReason } = props
 
 	const spoiler = () => {
-		const isAuto = !props.status.spoiler_text || props.status.spoiler_text.length <= 0
+		const isAuto = spoilerReason === 'tooLong'
 		if (spoilerText.length > 0) {
 			return (
 				<div>
-					{(spoilered || !isAuto) && (
+					{(spoilerReason) && (
 						<div
 							className="spoiler-text"
 							style={Object.assign({ overflowWrap: 'break-word', wordBreak: 'break-word' }, props.style)}
@@ -30,7 +31,7 @@ const Body: React.FC<Props> = (props) => {
 						/>
 					)}
 					<Button size="xs" onClick={() => setSpoilered((current) => !current)}>
-						{spoilered ? isAuto ? <FormattedMessage id="timeline.status.showMoreAuto" /> : <FormattedMessage id="timeline.status.showMore" /> : <FormattedMessage id="timeline.status.showLess" />}
+						{spoilerReason ? isAuto ? <FormattedMessage id="timeline.status.showMoreAuto" /> : <FormattedMessage id="timeline.status.showMore" /> : <FormattedMessage id="timeline.status.showLess" />}
 					</Button>
 				</div>
 			)

@@ -51,8 +51,9 @@ const Status: React.FC<Props> = (props) => {
 	const b = stripForSpoil(status.content)
 	const maxLength = timelineConfig.max_length
 	const tooLong = maxLength && b && b.length > maxLength
-	const tooLongText = tooLong ? `${b.slice(0, 50)}...` : ''
+	const tooLongText = tooLong ? `${b.slice(0, Math.min(maxLength, 50))}...` : ''
 	const spoilerText = status.spoiler_text || tooLongText
+	const spoilerReason = status.spoiler_text ? 'spoiler' : tooLong ? 'tooLong' : undefined
 
 	const isAnimeIcon = timelineConfig.animation === 'yes'
 
@@ -169,7 +170,7 @@ const Status: React.FC<Props> = (props) => {
 							</FlexboxGrid.Item>
 						</FlexboxGrid>
 					</div>
-					<Body status={status} onClick={statusClicked} spoilered={spoilered || tooLong} spoilerText={spoilerText} setSpoilered={setSpoilered} />
+					<Body status={status} onClick={statusClicked} spoilered={spoilered} spoilerText={spoilerText} setSpoilered={setSpoilered} spoilerReason={spoilerReason} />
 					{!spoilered && (
 						<>
 							{status.poll && <Poll poll={status.poll} client={props.client} pollUpdated={refresh} emojis={status.emojis} />}
