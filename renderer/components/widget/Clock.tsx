@@ -78,7 +78,7 @@ const Clock: React.FC<Props> = (props) => {
 	const now = dayjs(clock + diff).tz(timezone)
 	const tzOffsets = now.utcOffset() / 60
 	const tzSign = tzOffsets >= 0 ? `+${tzOffsets}` : `-${tzOffsets}`
-	const currentTz = timezones.find((tz) => tz.timezone === timezone)
+	const currentTz = timezones.find((tz) => tz.timezone === timezone) || { offset: 0 }
 	const isSummerTime = tzOffsets !== currentTz.offset
 	return (
 		<>
