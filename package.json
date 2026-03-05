@@ -28,7 +28,7 @@
 		"thirdparty": "license-checker --production --json > thirdparty.json && node scripts/thirdparty.js"
 	},
 	"dependencies": {
-		"@cutls/megalodon": "7.2.3",
+		"@cutls/megalodon": "7.2.4",
 		"@emoji-mart/react": "^1.1.1",
 		"@rsuite/icons": "^1.4.0",
 		"cheerio": "1.1.2",
