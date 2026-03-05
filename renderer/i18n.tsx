@@ -13,6 +13,7 @@ type Props = {
 
 interface Lang {
 	switchLang(lang: string): void
+	currentLang: string
 }
 
 export const Context = createContext<Lang>({} as Lang)
@@ -33,7 +34,7 @@ export const IntlProviderWrapper: React.FC<Props> = (props) => {
 	}
 
 	return (
-		<Context.Provider value={{ switchLang }}>
+		<Context.Provider value={{ switchLang, currentLang: lang.locale }}>
 			<IntlProvider {...lang} defaultLocale="en" fallbackOnEmptyString={true}>
 				{props.children}
 			</IntlProvider>
