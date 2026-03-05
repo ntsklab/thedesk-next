@@ -100,7 +100,13 @@ export async function listServers(): Promise<[Server, Account][]> {
 	const accounts: Account[] = JSON.parse(accountsStr || '[]')
 	return servers.map((server) => [server, accounts.find((account) => server.account_id === account.id)])
 }
-
+const saferFavicon = async (domain: string) => {
+	try {
+		return await getFavicon(domain)
+	} catch {
+		return null
+	}
+}
 export async function addServer({ domain }: { domain: string }): Promise<Server> {
 	const serversStr = localStorage.getItem('servers')
 	const servers: Server[] = JSON.parse(serversStr || '[]')
@@ -112,7 +118,7 @@ export async function addServer({ domain }: { domain: string }): Promise<Server>
 		domain: domain,
 		base_url: `https://${domain}`,
 		sns,
-		favicon: await getFavicon(domain),
+		favicon: await saferFavicon(domain),
 		account_id: null,
 		no_streaming: false,
 		cannot_subscribe: noSubscribe,

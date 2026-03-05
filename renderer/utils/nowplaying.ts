@@ -5,7 +5,7 @@ async function spotifyApi(url: string, showToaster: (message: string) => void) {
 	const token = localStorage.getItem('spotifyV2Token')
 	if (!token) nowplayingInit(true, showToaster)
 	const expires = localStorage.getItem('spotifyV2Expires') || `${Date.now()}`
-	const isExpired = Date.now()/ 1000 > Number.parseInt(expires, 10)
+	const isExpired = Date.now() / 1000 > Number.parseInt(expires, 10)
 	const at = isExpired ? await refreshSpotifyToken() : localStorage.getItem('spotifyV2Token')
 	if (!at) return showToaster('compose.nowplaying.error')
 	if (at) {
@@ -46,6 +46,7 @@ export function spotifyTemplateReplace(item: any, template: string) {
 	content = content.replace(regExpS, 'Spotify')
 	return content
 }
+type IFile = { text: string; file: File; title: string; song: string; album: string; artist: string; isPlaying?: boolean; position?: number; duration?: number }
 export async function nowplaying(key: 'spotify' | 'appleMusic', showToaster: (message: string, duration?: number) => void) {
 	if (key === 'spotify') {
 		const start = 'https://api.spotify.com/v1/me/player/currently-playing'
@@ -56,7 +57,7 @@ export async function nowplaying(key: 'spotify' | 'appleMusic', showToaster: (me
 			const file = new File([await (await fetch(img)).blob()], 'cover.jpg', { type: 'image/jpeg' })
 			const contentRaw = localStorage.getItem('spotifyTemplate')
 			const content = spotifyTemplateReplace(item, contentRaw)
-			return { text: content, file, title: `${item.name} ${item.album.name} ${item.artists[0].name}` }
+			return { text: content, file, title: `${item.name} ${item.album.name} ${item.artists[0].name}`, song: item.name, album: item.album.name, artist: item.artists[0].name, isPlaying: json.is_playing, position: json.progress_ms, duration: item.duration_ms }
 		} catch {
 			await refreshSpotifyToken()
 			showToaster('compose.nowplaying.error')
@@ -65,8 +66,7 @@ export async function nowplaying(key: 'spotify' | 'appleMusic', showToaster: (me
 	} else if (key === 'appleMusic') {
 		console.log('request')
 		window.electronAPI.requestAppleMusic(true)
-		type IFile = { text: string; file: File; title: string }
-		const data: IFile = await new Promise((resolve) =>
+		const data: IFile = await new Promise((resolve) => {
 			window.electronAPI.appleMusic(async (_, itemRaw) => {
 				console.log(itemRaw)
 				if (itemRaw.data && itemRaw.data.error) {
@@ -100,9 +100,9 @@ export async function nowplaying(key: 'spotify' | 'appleMusic', showToaster: (me
 				content = content.replace(regExp0, '')
 				const regExpS = /{Source}/g
 				content = content.replace(regExpS, 'AppleMusic')
-				resolve({ text: content, file: artwork, title: `${item.name} ${item.album} ${item.artist}` })
+				resolve({ text: content, file: artwork, title: `${item.name} ${item.album} ${item.artist}`, song: item.name, album: item.album, artist: item.artist})
 			})
-		)
+	})
 		return data
 	}
 }
@@ -120,7 +120,7 @@ async function refreshSpotifyToken() {
 		const { accessToken, refreshToken: _newRT } = json
 		if (!accessToken) throw new Error('No access token')
 		localStorage.setItem('spotifyV2Token', accessToken)
-		localStorage.setItem('spotifyV2Expires', `${Date.now()/ 1000 + 3600}`)
+		localStorage.setItem('spotifyV2Expires', `${Date.now() / 1000 + 3600}`)
 		return accessToken
 	} catch {}
 }
@@ -199,7 +199,7 @@ export async function nowplayingCode(code: string, showToaster: (m: string) => v
 	const { accessToken, refreshToken } = json
 	localStorage.setItem('spotifyV2Token', accessToken)
 	localStorage.setItem('spotifyV2Refresh', refreshToken)
-	localStorage.setItem('spotifyV2Expires', `${Date.now()/ 1000 + 3600}`)
+	localStorage.setItem('spotifyV2Expires', `${Date.now() / 1000 + 3600}`)
 	showToaster('compose.nowplaying.again')
 }
 
@@ -639,7 +639,7 @@ export async function getSpotifyPlaylist(lang: 'ja' | 'en', showToaster: (m: str
 	const token = localStorage.getItem('spotifyV2Token')
 	if (!token) return mockTrackItem
 	const expires = localStorage.getItem('spotifyV2Expires') || `${Date.now()}`
-	const isExpired = Date.now()/ 1000 > Number.parseInt(expires, 10)
+	const isExpired = Date.now() / 1000 > Number.parseInt(expires, 10)
 	const at = isExpired ? await refreshSpotifyToken() : localStorage.getItem('spotifyV2Token')
 	if (!at) return mockTrackItem
 	const playlist = lang === 'ja' ? jaPlaylist : enPlaylist

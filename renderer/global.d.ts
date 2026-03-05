@@ -18,6 +18,10 @@ export interface IElectronAPI {
 	hardRefresh: () => void
 	sendCode: (code: string) => void
 	receiveCode: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => void
+	getNtpTime: (server: string) => void
+	currentNtpTime: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => void
+	getSystemInfo: () => void
+	currentSystemInfo: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => void
 }
 
 type StreamingArray = [number, WebSocketInterface, string, string?]

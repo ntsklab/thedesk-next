@@ -22,7 +22,7 @@ import {
 	BsSearch
 } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
-import { Avatar, Badge, Button, Dropdown, FlexboxGrid, IconButton, Popover, Stack, useToaster, Whisper } from 'rsuite'
+import { Avatar, Badge, Button, Checkbox, Divider, Dropdown, FlexboxGrid, IconButton, Popover, Stack, useToaster, Whisper } from 'rsuite'
 import { addTimeline, listTimelines, readSettings, removeServer, updateAccountColor } from 'utils/storage'
 import alert from '@/components/utils/alert'
 import { TheDeskContext, TimelineRefreshContext } from '@/context'
@@ -36,6 +36,11 @@ import FailoverImg from '@/utils/failoverImg'
 import Notifications from './timelines/Notifications'
 import { openInApp } from '@/utils/openBrowser'
 import { Context } from '@/theme'
+import dayjs from 'dayjs'
+import Clock from './widget/Clock'
+import System from './widget/System'
+import Spotify from './widget/Spotify'
+import AppleMusic from './widget/AppleMusic'
 
 type ImitateFormattedMessage = ({ id }: { id: string }) => string
 
@@ -71,6 +76,7 @@ const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 	const [awake, setAwake] = useState(0)
 	const [isMAS, setIsMAS] = useState(false)
 	const [config, setConfig] = useState<Settings['compose']>(defaultSetting.compose)
+	const [widgets, setWidgets] = useState([])
 	const toaster = useToaster()
 	useEffect(() => {
 		props.servers.map(async (set) => {
@@ -164,6 +170,13 @@ const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 
 		return
 	}
+	const widgetConfig = (key: string, value: boolean) => {
+		const config = JSON.parse(localStorage.getItem(key) || '{}')
+		config.isShow = value
+		localStorage.setItem(key, JSON.stringify(config))
+		if (value) setWidgets((current) => [...current, key])
+		if (!value) setWidgets((current) => current.filter((c) => c !== key))
+	}
 
 	return (
 		<div style={{ display: 'flex', justifyContent: 'space-between', backgroundColor: 'var(--rs-sidenav-default-bg)', height: '56px' }}>
@@ -224,6 +237,10 @@ const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 			</div>
 			<div style={{ display: 'flex', alignItems: 'center', paddingRight: '10px' }}>
 				<div style={{ display: 'flex', alignItems: 'center', border: '1px solid', borderColor: isDark ? 'white' : 'var(--rs-text-active)', borderRadius: '16px', marginRight: '10px' }}>
+					<Clock isShow={widgets.includes('clock')} setIsShow={(v: boolean) => widgetConfig('clock', v)} isOnlyOne={widgets.length === 1} />
+					<System isShow={widgets.includes('system')} setIsShow={(v: boolean) => widgetConfig('system', v)} isOnlyOne={widgets.length === 1} />
+					<Spotify isShow={widgets.includes('spotify')} setIsShow={(v: boolean) => widgetConfig('spotify', v)} isOnlyOne={widgets.length === 1} />
+					<AppleMusic isShow={widgets.includes('appleMusic')} setIsShow={(v: boolean) => widgetConfig('appleMusic', v)} isOnlyOne={widgets.length === 1} />
 					<Whisper
 						placement="top"
 						controlId="control-id-setting-menu"
@@ -238,7 +255,9 @@ const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 									onClose,
 									openThirdparty,
 									openKbd,
-									openSettings
+									openSettings,
+									widgets,
+									widgetConfig
 								},
 								ref
 							)
@@ -376,9 +395,11 @@ type SettingsMenuProps = {
 	openThirdparty: () => void
 	openKbd: () => void
 	openSettings: () => void
+	widgets: string[]
+	widgetConfig: (key: string, value: boolean) => void
 }
 
-const settingsMenu = ({ className, left, top, onClose, openThirdparty, openSettings, openKbd }: SettingsMenuProps, ref: React.RefCallback<HTMLElement>): ReactElement => {
+const settingsMenu = ({ className, left, top, onClose, openThirdparty, openSettings, openKbd, widgetConfig, widgets }: SettingsMenuProps, ref: React.RefCallback<HTMLElement>): ReactElement => {
 	const handleSelect = async (eventKey: string) => {
 		onClose()
 		switch (eventKey) {
@@ -410,6 +431,26 @@ const settingsMenu = ({ className, left, top, onClose, openThirdparty, openSetti
 					<FormattedMessage id="navigator.settings.kbd" />
 				</Dropdown.Item>
 			</Dropdown.Menu>
+			<Divider style={{ margin: '8px 0' }} />
+			<p>
+				<FormattedMessage id="widget.title" />
+			</p>
+			<div>
+			<Checkbox value="yes" checked={widgets.includes('clock')} onChange={(_v, isChecked) => widgetConfig('clock', isChecked)}>
+				<FormattedMessage id="widget.clock.title" />
+			</Checkbox>
+			<Checkbox value="yes" checked={widgets.includes('system')} onChange={(_v, isChecked) => widgetConfig('system', isChecked)}>
+				<FormattedMessage id="widget.system.title" />
+			</Checkbox>
+			</div>
+			<div>
+			<Checkbox value="yes" checked={widgets.includes('spotify')} onChange={(_v, isChecked) => widgetConfig('spotify', isChecked)}>
+				<FormattedMessage id="widget.spotify.title" />
+			</Checkbox>
+			<Checkbox value="yes" checked={widgets.includes('appleMusic')} onChange={(_v, isChecked) => widgetConfig('appleMusic', isChecked)}>
+				<FormattedMessage id="widget.appleMusic.title" />
+			</Checkbox>
+			</div>
 		</Popover>
 	)
 }

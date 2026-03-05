@@ -1,0 +1,146 @@
+import { getFonts } from 'font-list'
+import * as tar from 'tar'
+import ntpClient from 'ntp-client'
+import { execFile } from 'node:child_process'
+import { promisify } from 'node:util'
+import { app, clipboard, IpcMainEvent, nativeImage } from 'electron'
+import isDev from 'electron-is-dev'
+
+import os from 'node:os'
+import { join } from 'node:path'
+
+import { auth } from './auth'
+
+import defaultConfig from '../defaultConfig.json'
+import fs from 'node:fs'
+type SystemConfig = {
+	hardwareAcceleration: boolean
+	allowDoH: boolean
+}
+const promisifyExecFile = promisify(execFile)
+const appDataPath = join(app.getPath('appData'), app.getName())
+const configPath = join(appDataPath, 'config.json')
+const baseDir = join(appDataPath, 'thedesk-next')
+const logger = (msg: string) => {
+	console.log(`[TheDesk Main Process] ${msg}`)
+	fs.appendFileSync(join(appDataPath, 'main.log'), `[${new Date().toISOString()}] ${msg}\n`)
+}
+const fetchNewVersion = async (): Promise<number> => {
+	const latestRaw = await fetch('https://thedesk.top/fe.next.json')
+	const latest = await latestRaw.json()
+	const compatibleList = latest[app.getVersion()]
+	if (!compatibleList) return 0
+	const compatible = compatibleList[0]
+	const current = JSON.parse(fs.readFileSync(join(appDataPath, 'ver.json')).toString())
+	if (compatible.createdAtUnix / 1000 <= current.unix) return 0
+	const url = compatible.url
+	logger(`Fetching frontend from ${url}`)
+	const blobRaw = await fetch(url)
+	const blob = await blobRaw.blob()
+	const arrayBuffer = await blob.arrayBuffer()
+	fs.writeFileSync(join(appDataPath, 'thedesk-next.tar.gz'), Buffer.from(arrayBuffer))
+	logger(`Unzipping frontend from ${join(appDataPath, 'thedesk-next.tar.gz')}`)
+	await tar.x({
+		file: join(appDataPath, 'thedesk-next.tar.gz'),
+		cwd: baseDir
+	})
+	fs.writeFileSync(join(appDataPath, 'ver.json'), JSON.stringify({ ver: app.getVersion(), unix: Math.floor(Date.now() / 1000) }))
+	logger(`Completed fetching frontend`)
+	return blob.size
+}
+export const ipcMainWindow = (mainWindow: Electron.BrowserWindow | null, ipcMain: Electron.IpcMain) => {
+	let firstRun = false
+	let config: SystemConfig = defaultConfig
+	try {
+		if (!fs.existsSync(appDataPath) || !fs.existsSync(configPath)) {
+			fs.writeFileSync(configPath, JSON.stringify(defaultConfig))
+			firstRun = true
+		} else {
+			try {
+				const data = fs.readFileSync(configPath)
+				config = JSON.parse(data.toString())
+				if (!config.hardwareAcceleration) app.disableHardwareAcceleration()
+			} catch {
+				console.error('config.json is corrupted')
+			}
+		}
+	} catch {
+		console.error('Failed to read config.json')
+	}
+	ipcMain.on('fetch', async () => {
+		const size = await fetchNewVersion()
+		if (size > 0) mainWindow?.webContents.send('fetchFinish', { size })
+	})
+	ipcMain.on('hardRefresh', async () => {
+		mainWindow?.webContents.session.clearCache()
+		mainWindow?.webContents.reloadIgnoringCache()
+	})
+	ipcMain.on('requestInitialInfo', async (_event) => {
+		const info = {
+			os: process.platform,
+			lang: app.getPreferredSystemLanguages(),
+			version: app.getVersion(),
+			fonts: await getFonts({ disableQuoting: true }),
+			isFirstRun: firstRun,
+			currentRendererAbsolutePath: join(__dirname, '../renderer/out'),
+			isStore: process.mas || !!app.getPath('exe').match(/53491Cutls/),
+			isMas: !!process.mas,
+			isAppx: !!app.getPath('exe').match(/53491Cutls/),
+			getPath: app.getPath('exe')
+		}
+		mainWindow?.webContents.send('initialInfo', info)
+	})
+	ipcMain.on('requestAppleMusic', async (_event: IpcMainEvent) => {
+		let song: Record<string, any> = {}
+		try {
+			const prodFile = join(__dirname, '..', 'native', 'nowplaying-info.js').replace('app.asar', 'app.asar.unpacked')
+			const devFile = join(__dirname, '..', '..', 'native', 'nowplaying-info.js')
+			const { stdout } = await promisifyExecFile(isDev ? devFile : prodFile)
+			if (!stdout) throw new Error('no stdout')
+			song = JSON.parse(stdout)
+			if (!song || !song.name) throw new Error('no song data')
+			if (!song.databaseID) return mainWindow?.webContents.send('appleMusic', song)
+		} catch {
+			return mainWindow?.webContents.send('appleMusic', { error: true, message: 'unknown error' })
+		}
+		try {
+
+			const prodFile =join(__dirname, '..', 'native', 'get-artwork')
+			const devFile = join(__dirname, '..', '..', 'native', 'get-artwork')
+
+			const { stdout: artwork } = await promisifyExecFile(isDev ? devFile : prodFile, [song.databaseID.toString()], {
+				maxBuffer: 64 * 1024 * 1024,
+				encoding: 'buffer'
+			})
+			song.artwork = artwork.toString('base64')
+			mainWindow?.webContents.send('appleMusic', song)
+		} catch {
+			mainWindow?.webContents.send('appleMusic', song)
+		}
+	})
+
+	ipcMain.on('imageOperation', async (_event: IpcMainEvent, { image, operation }: { image: string; operation: 'copy' | 'download' }) => {
+		if (operation === 'download') return mainWindow?.webContents.downloadURL(image)
+		const blob = await fetch(image).then((r) => r.blob())
+		if (operation === 'copy') clipboard.writeImage(nativeImage.createFromBuffer(Buffer.from(await blob.arrayBuffer())))
+	})
+	ipcMain.on('openInAppBrowser', async (_event: IpcMainEvent, message: any) => {
+		if (!mainWindow) return
+		const link = await auth(message, 'thedesk', mainWindow)
+		const m = link?.match(/code=([^&]+)/)
+		if (m && m[1]) mainWindow?.webContents.send('receiveCode', m[1])
+	})
+	ipcMain.on('sendCode', (_event: IpcMainEvent, message: any) => mainWindow?.webContents.send('receiveCode', message))
+	ipcMain.on('getNtpTime', (_event: IpcMainEvent, server: string) =>
+		ntpClient.getNetworkTime(server.split(':')[0], parseInt(server.split(':')[1] || '123', 10), (_err, date) => mainWindow?.webContents.send('currentNtpTime', date?.getTime() || null))
+	)
+    ipcMain.on('getSystemInfo', (_event: IpcMainEvent) => {
+        const info = {
+            cpu: os.cpus()[0],
+            memory: os.totalmem(),
+            freeMemory: os.freemem(),
+            uptime: os.uptime()
+        }
+        mainWindow?.webContents.send('currentSystemInfo', info)
+    })
+}

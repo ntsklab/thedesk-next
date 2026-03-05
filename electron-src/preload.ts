@@ -35,7 +35,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 		ipcRenderer.on('showAbout', callback)
 	},
 	appleMusic: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => {
-		ipcRenderer.on('appleMusic', callback)
+		ipcRenderer.once('appleMusic', callback)
 	},
 	customUrl: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => {
 		ipcRenderer.on('customUrl', callback)
@@ -48,6 +48,18 @@ contextBridge.exposeInMainWorld('electronAPI', {
 	},
 	receiveCode: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => {
 		ipcRenderer.on('receiveCode', callback)
+	},
+	getNtpTime: (server: string) => {
+		ipcRenderer.send('getNtpTime', server)
+	},
+	currentNtpTime: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => {
+		ipcRenderer.on('currentNtpTime', callback)
+	},
+	getSystemInfo: () => {
+		ipcRenderer.send('getSystemInfo')
+	},
+	currentSystemInfo: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => {
+		ipcRenderer.on('currentSystemInfo', callback)
 	}
 })
 export type {}

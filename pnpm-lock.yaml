@@ -13,8 +13,8 @@ importers:
   .:
     dependencies:
       '@cutls/megalodon':
-        specifier: 7.2.2
-        version: 7.2.2
+        specifier: 7.2.3
+        version: 7.2.3
       '@emoji-mart/react':
         specifier: ^1.1.1
         version: 1.1.1(emoji-mart@5.6.0)(react@18.2.0)
@@ -51,6 +51,9 @@ importers:
       next:
         specifier: ^14.2.3
         version: 14.2.33(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sass@1.93.2)
+      ntp-client:
+        specifier: ^0.5.3
+        version: 0.5.3
       parse-link-header:
         specifier: ^2.0.0
         version: 2.0.0
@@ -112,6 +115,9 @@ importers:
       '@types/node':
         specifier: ^14.18.63
         version: 14.18.63
+      '@types/ntp-client':
+        specifier: ^0.5.0
+        version: 0.5.0
       '@types/react':
         specifier: ^16.14.52
         version: 16.14.67
@@ -215,8 +221,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@cutls/megalodon@7.2.2':
-    resolution: {integrity: sha512-LnoRnt/VvMPgtwkITRGAwBV0K3cprkPL/yNlQDKBQl+1bCDrJPUMhqE6s2l71l4uAXVP7uJq79FOFbw9/VBv7w==}
+  '@cutls/megalodon@7.2.3':
+    resolution: {integrity: sha512-YnOB9t9sL+E1bV2+zKiXW9yHD3hotbQ1LkgyR+i4E3ezoNNbjTLBlXoQHd7i/EJbNr2QK/xD8FD1zI3I0IHc2g==}
     engines: {node: '>=22.16.0'}
 
   '@develar/schema-utils@2.6.5':
@@ -553,6 +559,9 @@ packages:
 
   '@types/node@22.18.12':
     resolution: {integrity: sha512-BICHQ67iqxQGFSzfCFTT7MRQ5XcBjG5aeKh5Ok38UBbPe5fxTyE+aHFxwVrGyr8GNlqFMLKD1D3P2K/1ks8tog==}
+
+  '@types/ntp-client@0.5.0':
+    resolution: {integrity: sha512-MDKMQwt294nE496gJH7eOZL1jgWchp/QGwI+QvUvEKW5Trj0iGjmmgyKx9u6J4eN6gfGQM7znwUBvp1tvejE5g==}
 
   '@types/plist@3.0.5':
     resolution: {integrity: sha512-E6OCaRmAe4WDmWNsL/9RMqdkkzDCY1etutkflWk4c+AcjDU07Pcz1fQwTX0TQz+Pxqn9i4L1TU3UFpjnrcDgxA==}
@@ -1775,6 +1784,11 @@ packages:
   nth-check@2.1.1:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
 
+  ntp-client@0.5.3:
+    resolution: {integrity: sha512-/Ja8ljm8V0yb+zZnjEaJlFY3abA9gIpQcnkX8RJ59NzHVcnJJpGoKtU3UcrnAwRfduYAktI+2gJLpn1NepxgnA==}
+    engines: {node: '>= 0.10.0'}
+    hasBin: true
+
   object-assign-deep@0.4.0:
     resolution: {integrity: sha512-54Uvn3s+4A/cMWx9tlRez1qtc7pN7pbQ+Yi7mjLjcBpWLlP+XbSHiHbQW6CElDiV4OvuzqnMrBdkgxI1mT8V/Q==}
     engines: {node: '>=6'}
@@ -2498,7 +2512,7 @@ snapshots:
   '@biomejs/cli-win32-x64@2.2.7':
     optional: true
 
-  '@cutls/megalodon@7.2.2':
+  '@cutls/megalodon@7.2.3':
     dependencies:
       '@badgateway/oauth2-client': 2.4.2
       '@types/ws': 8.18.1
@@ -2886,6 +2900,8 @@ snapshots:
   '@types/node@22.18.12':
     dependencies:
       undici-types: 6.21.0
+
+  '@types/ntp-client@0.5.0': {}
 
   '@types/plist@3.0.5':
     dependencies:
@@ -4357,6 +4373,8 @@ snapshots:
   nth-check@2.1.1:
     dependencies:
       boolbase: 1.0.0
+
+  ntp-client@0.5.3: {}
 
   object-assign-deep@0.4.0: {}
 

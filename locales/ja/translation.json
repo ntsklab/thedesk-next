@@ -489,5 +489,28 @@
 		"title": "リストメンバー管理",
 		"searchPlaceholder": "フォローしている人の中から検索"
 	},
+
+	"widget": {
+		"title": "ウィジェット",
+		"clock": {
+			"title": "時計",
+			"ntpServer": "NTPサーバー",
+			"timezone": "タイムゾーン",
+			"ntpHintBehind": "{sec}秒遅れています ({server}に接続)",
+			"ntpHintAhead": "{sec}秒進んでいます ({server}に接続)"
+		},
+		"system": {
+			"title": "システム情報"
+		},
+		"spotify": {
+			"title": "Spotify",
+			"hint": "更新"
+		},
+		"appleMusic": {
+			"title": "Apple Music",
+			"hint": "画像を取得"
+		},
+		"hide": "非表示にする"
+	},
 	"migrate": "v25.0.18以前からの以降でデータが消えた場合、Migrateをクリックしてデータを復元してください。"
 }

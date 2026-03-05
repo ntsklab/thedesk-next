@@ -489,5 +489,27 @@
 		"title": "List memberships",
 		"searchPlaceholder": "Search among people you follow"
 	},
+	"widget": {
+		"title": "Widgets",
+		"clock": {
+			"title": "Clock",
+			"ntpServer": "NTP Server",
+			"timezone": "Timezone",
+			"ntpHintBehind": "{sec}s behind {server}",
+			"ntpHintAhead": "{sec}s ahead {server}"
+		},
+		"system": {
+			"title": "System Info"
+		},
+		"spotify": {
+			"title": "Spotify",
+			"hint": "Refresh"
+		},
+		"appleMusic": {
+			"title": "Apple Music",
+			"hint": "Get artwork"
+		},
+		"hide": "Hide"
+	},
 	"migrate": "If your data was lost when migrating from v25.0.18 or earlier, please click Migrate to restore your data."
 }
