@@ -417,6 +417,7 @@ const settingsMenu = ({ className, left, top, onClose, openThirdparty, openSetti
 			}
 		}
 	}
+	const isStandaloneDarwin = localStorage.getItem('os') === 'darwin' && localStorage.getItem('isStore') === 'false'
 
 	return (
 		<Popover ref={ref} className={className} style={{ left, top, padding: 0 }}>
@@ -447,9 +448,11 @@ const settingsMenu = ({ className, left, top, onClose, openThirdparty, openSetti
 			<Checkbox value="yes" checked={widgets.includes('spotify')} onChange={(_v, isChecked) => widgetConfig('spotify', isChecked)}>
 				<FormattedMessage id="widget.spotify.title" />
 			</Checkbox>
-			<Checkbox value="yes" checked={widgets.includes('appleMusic')} onChange={(_v, isChecked) => widgetConfig('appleMusic', isChecked)}>
-				<FormattedMessage id="widget.appleMusic.title" />
-			</Checkbox>
+			{isStandaloneDarwin && (
+				<Checkbox value="yes" checked={widgets.includes('appleMusic')} onChange={(_v, isChecked) => widgetConfig('appleMusic', isChecked)}>
+					<FormattedMessage id="widget.appleMusic.title" />
+				</Checkbox>
+			)}
 			</div>
 		</Popover>
 	)
