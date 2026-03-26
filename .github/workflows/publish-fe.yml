@@ -7,7 +7,8 @@ on:
   workflow_dispatch:
   release:
     types:
-      - prereleased
+      #- prereleased
+      - released
 
 jobs:
   build:
