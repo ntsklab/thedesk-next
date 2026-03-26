@@ -22,6 +22,9 @@ export interface IElectronAPI {
 	currentNtpTime: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => void
 	getSystemInfo: () => void
 	currentSystemInfo: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => void
+	download: (url: string) => void
+	downloadProgress: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => void
+	downloadCancel: () => void
 }
 
 type StreamingArray = [number, WebSocketInterface, string, string?]

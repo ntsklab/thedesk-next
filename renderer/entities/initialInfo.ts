@@ -1,5 +1,6 @@
 export interface InitialInfo {
 	os: string
+	arch: string
 	lang: string[]
 	version: string
 	fonts: string[]

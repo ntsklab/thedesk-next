@@ -3,8 +3,9 @@ import * as tar from 'tar'
 import ntpClient from 'ntp-client'
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
-import { app, clipboard, IpcMainEvent, nativeImage } from 'electron'
+import { app, clipboard, type IpcMainEvent, nativeImage, shell } from 'electron'
 import isDev from 'electron-is-dev'
+import { ElectronDownloadManager } from 'electron-dl-manager'
 
 import os from 'node:os'
 import { join } from 'node:path'
@@ -48,6 +49,7 @@ const fetchNewVersion = async (): Promise<number> => {
 	logger(`Completed fetching frontend`)
 	return blob.size
 }
+const manager = new ElectronDownloadManager()
 export const ipcMainWindow = (mainWindow: Electron.BrowserWindow | null, ipcMain: Electron.IpcMain) => {
 	let firstRun = false
 	let config: SystemConfig = defaultConfig
@@ -78,6 +80,7 @@ export const ipcMainWindow = (mainWindow: Electron.BrowserWindow | null, ipcMain
 	ipcMain.on('requestInitialInfo', async (_event) => {
 		const info = {
 			os: process.platform,
+			arch: process.arch,
 			lang: app.getPreferredSystemLanguages(),
 			version: app.getVersion(),
 			fonts: await getFonts({ disableQuoting: true }),
@@ -104,8 +107,7 @@ export const ipcMainWindow = (mainWindow: Electron.BrowserWindow | null, ipcMain
 			return mainWindow?.webContents.send('appleMusic', { error: true, message: 'unknown error' })
 		}
 		try {
-
-			const prodFile =join(__dirname, '..', 'native', 'get-artwork')
+			const prodFile = join(__dirname, '..', 'native', 'get-artwork')
 			const devFile = join(__dirname, '..', '..', 'native', 'get-artwork')
 
 			const { stdout: artwork } = await promisifyExecFile(isDev ? devFile : prodFile, [song.databaseID.toString()], {
@@ -134,13 +136,55 @@ export const ipcMainWindow = (mainWindow: Electron.BrowserWindow | null, ipcMain
 	ipcMain.on('getNtpTime', (_event: IpcMainEvent, server: string) =>
 		ntpClient.getNetworkTime(server.split(':')[0], parseInt(server.split(':')[1] || '123', 10), (_err, date) => mainWindow?.webContents.send('currentNtpTime', date?.getTime() || null))
 	)
-    ipcMain.on('getSystemInfo', (_event: IpcMainEvent) => {
-        const info = {
-            cpu: os.cpus()[0],
-            memory: os.totalmem(),
-            freeMemory: os.freemem(),
-            uptime: os.uptime()
-        }
-        mainWindow?.webContents.send('currentSystemInfo', info)
-    })
+	ipcMain.on('getSystemInfo', (_event: IpcMainEvent) => {
+		const info = {
+			cpu: os.cpus()[0],
+			memory: os.totalmem(),
+			freeMemory: os.freemem(),
+			uptime: os.uptime()
+		}
+		mainWindow?.webContents.send('currentSystemInfo', info)
+	})
+	let downloadId: null | string = null
+	ipcMain.on('download', async (_event: IpcMainEvent, url: string) => {
+		if (!mainWindow) return
+		downloadId = await manager.download({
+			window: mainWindow,
+			url,
+			saveDialogOptions: {
+				title: 'Save File'
+			},
+			callbacks: {
+				onDownloadProgress: async ({ id, item, percentCompleted }) => {
+					// Send the download progress back to the renderer
+					mainWindow?.setProgressBar(percentCompleted / 100)
+					mainWindow?.webContents.send('downloadProgress', {
+						status: 'downloading',
+						id,
+						percentCompleted,
+						bytesReceived: item.getReceivedBytes()
+					})
+				},
+				onDownloadCompleted: async ({ item }) => {
+					mainWindow?.setProgressBar(-1)
+					console.log('Download completed:', item.getSavePath())
+					shell.showItemInFolder(item.getSavePath())
+					app.quit()
+				},
+				onError: (err, data) => {
+					mainWindow?.setProgressBar(-1)
+
+					mainWindow?.webContents.send('downloadProgress', {
+						status: 'failed',
+						data,
+						error: err.message
+					})
+				}
+			}
+		})
+	})
+	ipcMain.on('downloadCancel', () => {
+		mainWindow?.setProgressBar(-1)
+		if (downloadId) manager.cancelDownload(downloadId)
+	})
 }

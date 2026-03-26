@@ -78,8 +78,10 @@
 	},
 	"update": {
 		"available": "New Update Available",
-		"update": "Open browser to update. Check new version: {version} out!",
-		"ok": "Yes!",
+		"update": "Click to update. Check new version: {version} out!",
+		"updateInProgress": "Updating... After the update is downloaded, the folder containing the installer will be opened.",
+		"ok": "Download",
+		"openBrowser": "Open browser",
 		"cancel": "Just close",
 		"orMoreOption": "Or more option...",
 		"doNotShow": "Do not remind until",

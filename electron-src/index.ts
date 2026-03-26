@@ -30,10 +30,6 @@ const appServe = app.isPackaged
 let mainWindow: BrowserWindow | null = null
 let config: SystemConfig = defaultConfig
 const windowStatePath = join(appDataPath, 'window-state.json')
-const logger = (msg: string) => {
-	console.log(`[TheDesk Main Process] ${msg}`)
-	fs.appendFileSync(join(appDataPath, 'main.log'), `[${new Date().toISOString()}] ${msg}\n`)
-}
 const isJa = app.getPreferredSystemLanguages().findIndex((e) => !!e.match('ja')) >= 0
 const isMac = process.platform === 'darwin'
 
@@ -67,7 +63,6 @@ const appMenu: MenuItemConstructorOptions = {
 }
 if (isMac) template.unshift(appMenu)
 app.on('ready', async () => {
-	logger('start')
 	if (!config.allowDoH) app.configureHostResolver({ secureDnsMode: 'off' })
 	const windowState: WindowState = fs.existsSync(windowStatePath) ? JSON.parse(fs.readFileSync(windowStatePath).toString()) : {}
 	mainWindow = new BrowserWindow({
@@ -154,7 +149,6 @@ app.on('ready', async () => {
 			(detail, cb) => cb({ requestHeaders: Object.assign(detail.requestHeaders, { Referer: undefined }) })
 		)
 	}
-	logger('finished')
 })
 const gotTheLock = app.requestSingleInstanceLock()
 if (!gotTheLock) {

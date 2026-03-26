@@ -156,6 +156,7 @@ function App() {
 			window.electronAPI.onInitialInfo((_event, data: InitialInfo) => {
 				console.log(data)
 				localStorage.setItem('os', data.os)
+				localStorage.setItem('arch', data.arch)
 				localStorage.setItem('lang', data.lang[0])
 				localStorage.setItem('version', data.version)
 				localStorage.setItem('fonts', JSON.stringify(data.fonts))

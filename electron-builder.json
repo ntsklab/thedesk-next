@@ -17,7 +17,8 @@
 		"icon": "assets/desk.ico"
 	},
 	"msi": {
-		"oneClick": false
+		"oneClick": false,
+		"artifactName": "TheDesk-${arch}.${version}.${ext}"
 	},
 	"linux": {
 		"target": [
