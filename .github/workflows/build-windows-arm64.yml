@@ -30,6 +30,8 @@ jobs:
     - run: pnpm run build
     - run: pnpm run pack:winArm64
     - uses: actions/upload-release-asset@v1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: "dist/TheDesk-arm64.25.3.1.msi"
