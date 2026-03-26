@@ -170,3 +170,19 @@ export const privacyColor = (visibility: 'public' | 'unlisted' | 'private' | 'di
 			return ''
 	}
 }
+
+export const stripTagAndLink = (html: string) => {
+	const div = document.createElement('div')
+	div.innerHTML = html
+	const text = div.textContent || div.innerText || ''
+	const protomatch = /(https?|ftp)(:\/\/[\w/:%#$&?()~.=+-]+)/g
+	const b = text.replace(protomatch, '')
+	return b
+}
+
+export const stripTags = (html: string) => {
+	const div = document.createElement('div')
+	div.innerHTML = html
+	const text = div.textContent || div.innerText || ''
+	return text
+}

@@ -592,6 +592,7 @@ const OptionPopover = forwardRef<HTMLDivElement, { timeline: Timeline; close: ()
 	const removeTimelineFn = async (timeline: Timeline) => {
 		await removeTimeline(timeline)
 		timelineRefresh(true)
+		props.close()
 	}
 
 	const switchLeftTimeline = async (timeline: Timeline) => {

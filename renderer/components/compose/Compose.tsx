@@ -11,13 +11,8 @@ import failoverImg from '@/utils/failoverImg'
 import { getUsualAccount, listAccounts, setUsualAccount } from '@/utils/storage'
 import Status from './Status'
 import { TheDeskContext } from '@/context'
+import { stripTags } from '@/utils/statusParser'
 
-const stripForPreview = (html: string) => {
-	const div = document.createElement('div')
-	div.innerHTML = html
-	const text = div.textContent || div.innerText || ''
-	return text
-}
 export const renderAccountIcon = (props: any, ref: any, account: [Account, Server] | undefined) => {
 	if (account && account.length > 0) {
 		return (
@@ -143,7 +138,7 @@ const Compose: React.FC<Props> = (props) => {
 					reply.type !== 'edit' ? (
 						<Content style={{ marginTop: 10, marginBottom: 10, backgroundColor: reply.type === 'quote' ? 'var(--rs-cyan-900)' : 'var(--rs-blue-900)', padding: 5, borderRadius: 5, display: 'flex' }}>
 							<div style={{ width: 20 }}>{reply.type === 'quote' ? <BsQuote style={{ fontSize: '0.8em', marginLeft: 3 }} /> : <BsReply style={{ fontSize: '0.8em', marginLeft: 3 }} />}</div>
-							<Text style={{ flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{stripForPreview(reply.replyStatus.content)}</Text>
+							<Text style={{ flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{stripTags(reply.replyStatus.content)}</Text>
 							<div style={{ width: 20 }}>
 								<Button appearance="link" onClick={() => setReply(null)} style={{ padding: 0 }}>
 									<Icon as={BsX} style={{ fontSize: '1.2em' }} />

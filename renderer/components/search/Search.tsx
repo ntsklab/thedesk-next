@@ -15,6 +15,7 @@ import Time from '../utils/Time'
 import { useRouter } from 'next/router'
 import { User } from './Results'
 import { GraphDraw } from '../utils/Graph'
+import { stripTagAndLink } from '@/utils/statusParser'
 
 type Props = {
 	setOpened: (value: boolean) => void
@@ -22,14 +23,6 @@ type Props = {
 	openMedia: (media: Array<Entity.Attachment>, index: number) => void
 	openReport: (status: Entity.Status, client: MegalodonInterface) => void
 	openFromOtherAccount: (status: Entity.Status) => void
-}
-const stripForSearch = (html: string) => {
-	const div = document.createElement('div')
-	div.innerHTML = html
-	const text = div.textContent || div.innerText || ''
-	const protomatch = /(https?|ftp):\/\//g
-	const b = text.replace(protomatch, '').replace(/:[a-zA-Z0-9_]:/g, '')
-	return b
 }
 export default function Search(props: Props) {
 	const [accounts, setAccounts] = useState<Array<[Account, Server]>>([])
@@ -268,7 +261,7 @@ export default function Search(props: Props) {
 										<Time style={{ color: 'var(--rs-text-tertiary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} time={status.created_at} />
 									</div>
 								</div>
-								<p dangerouslySetInnerHTML={{ __html: emojify(stripForSearch(status.content), status.emojis) }} />
+								<p dangerouslySetInnerHTML={{ __html: emojify(stripTagAndLink(status.content), status.emojis) }} />
 							</Panel>
 						))}
 						{!trendPosts.length && <FormattedMessage id="search.noData" />}

@@ -1,9 +1,9 @@
 import type { Entity, MegalodonInterface } from '@cutls/megalodon'
 import { Icon } from '@rsuite/icons'
 import { type HTMLAttributes, type MouseEventHandler, useContext, useState } from 'react'
-import { BsArrowRepeat, BsHouseDoor, BsPerson, BsPin } from 'react-icons/bs'
+import { BsArrowRepeat, BsHouseDoor, BsPerson, BsPin, BsTranslate } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
-import { Avatar, Button, FlexboxGrid, Notification, useToaster } from 'rsuite'
+import { Avatar, Button, Divider, FlexboxGrid, Loader, Notification, useToaster } from 'rsuite'
 import Time from '@/components/utils/Time'
 import { TheDeskContext } from '@/context'
 import { TIMELINE_STATUSES_COUNT } from '@/defaults'
@@ -12,12 +12,14 @@ import type { CustomEmojiCategory } from '@/entities/emoji'
 import type { Server } from '@/entities/server'
 import emojify from '@/utils/emojify'
 import { open } from '@/utils/openBrowser'
-import { accountMatch, findAccount, findLink, findTag, type ParsedAccount, privacyColor, privacyIcon } from '@/utils/statusParser'
+import { accountMatch, findAccount, findLink, findTag, type ParsedAccount, privacyColor, privacyIcon, stripTagAndLink } from '@/utils/statusParser'
 import Actions from './Actions'
 import Attachments from './Attachments'
 import Body from './Body'
 import Poll from './Poll'
 import Quote from './Quote'
+import { translate } from '@/utils/translate'
+import alert from '@/components/utils/alert'
 
 type Props = {
 	status: Entity.Status
@@ -37,18 +39,11 @@ type Props = {
 	customEmojis: Array<CustomEmojiCategory>
 	filters?: Array<Entity.Filter>
 } & HTMLAttributes<HTMLElement>
-const stripForSpoil = (html: string) => {
-	const div = document.createElement('div')
-	div.innerHTML = html
-	const text = div.textContent || div.innerText || ''
-	const protomatch = /(https?|ftp):\/\//g
-	const b = text.replace(protomatch, '').replace(/:[a-zA-Z0-9_]:/g, '')
-	return b
-}
 const Status: React.FC<Props> = (props) => {
 	const status = originalStatus(props.status)
 	const { timelineConfig, setReply } = useContext(TheDeskContext)
-	const b = stripForSpoil(status.content)
+	const [translated, setTranslated] = useState<undefined | null | string>(undefined)
+	const b = stripTagAndLink(status.content)
 	const maxLength = timelineConfig.max_length
 	const tooLong = maxLength && b && b.length > maxLength
 	const tooLongText = tooLong ? `${b.slice(0, Math.min(maxLength, 50))}...` : ''
@@ -125,6 +120,18 @@ const Status: React.FC<Props> = (props) => {
 		const res = await props.client.getStatus(props.status.id)
 		props.updateStatus(res.data)
 	}
+
+	const isDeepL = timelineConfig.translateProvider === 'deepl' || timelineConfig.translateProvider === 'deeplPro'
+	const deeplStr = timelineConfig.translateProvider === 'deepl' ? 'DeepL (Free)' : 'DeepL Pro'
+	const translatePost = async () => {
+		try {
+			setTranslated(null)
+			const res = await translate(timelineConfig, stripTagAndLink(status.content))
+			setTranslated(res)
+		} catch {
+			toaster.push(alert('error', formatMessage({ id: 'alert.translateFailed' })), { placement: 'topStart' })
+		}
+	}
 	if (!ignoreFilter && props.filters?.map((f) => f.phrase).filter((keyword) => status.content.toLowerCase().includes(keyword.toLowerCase())).length > 0) {
 		return (
 			<div className="status" style={{ textAlign: 'center', paddingTop: '0.5em', paddingBottom: '0.5em' }}>
@@ -182,6 +189,12 @@ const Status: React.FC<Props> = (props) => {
 									setStatusDetail={() => props.setStatusDetail(status.quote_status.id, props.server.id, props.account.id)}
 								/>
 							)}
+							{translated !== undefined && <div style={{ marginBottom: 4}}>
+								<span style={{ padding: 4, fontSize: '0.8em', color: 'var(--rs-text-tertiary)', borderWidth: 1, borderRadius: 4, borderStyle: 'solid' }}>
+									<BsTranslate />{' '}{isDeepL ? deeplStr : timelineConfig.translateModel}
+								</span>
+								{translated ? <p style={{ userSelect: 'text' }}>{translated}</p> : <Loader style={{ margin: 4, display: 'block' }} />}
+								</div> }
 							{status.media_attachments.length > 0 && <Attachments attachments={status.media_attachments} sensitive={status.sensitive} openMedia={props.openMedia} columnWidth={props.columnWidth} />}
 							{status.emoji_reactions &&
 								status.emoji_reactions.map((e, i) => (
@@ -221,6 +234,7 @@ const Status: React.FC<Props> = (props) => {
 						updateStatus={props.updateStatus}
 						openReport={() => props.openReport(status, props.client)}
 						openFromOtherAccount={() => props.openFromOtherAccount(status)}
+						translatePost={() => translatePost()}
 						customEmojis={props.customEmojis}
 					/>
 				</div>

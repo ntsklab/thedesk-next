@@ -4,20 +4,13 @@ import { Avatar, Button, Panel } from 'rsuite'
 import emojify from '@/utils/emojify'
 import Time from '@/components/utils/Time'
 import { FormattedMessage } from 'react-intl'
+import { stripTagAndLink } from '@/utils/statusParser'
 
 type Props = {
 	status: Entity.Status
 	state: Entity.Status['quote_status_state']
 	setStatusDetail?: () => void
 	isAnimeIcon: boolean
-}
-const stripForQuote = (html: string) => {
-	const div = document.createElement('div')
-	div.innerHTML = html
-	const text = div.textContent || div.innerText || ''
-	const protomatch = /(https?|ftp):\/\//g
-	const b = text.replace(protomatch, '').replace(/:[a-zA-Z0-9_]:/g, '')
-	return b
 }
 const Quote: React.FC<Props> = (props) => {
 	const status = props.status
@@ -42,7 +35,7 @@ const Quote: React.FC<Props> = (props) => {
 					<Time style={{ color: 'var(--rs-text-tertiary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} time={status.created_at} />
 				</div>
 			</div>
-			<p dangerouslySetInnerHTML={{ __html: emojify(stripForQuote(status.content), status.emojis) }} />
+			<p dangerouslySetInnerHTML={{ __html: emojify(stripTagAndLink(status.content), status.emojis) }} />
 		</Panel>
 	) : (
 		<Panel bordered bodyFill style={{ marginTop: '0.2em', padding: 5 }}>

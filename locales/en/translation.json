@@ -21,7 +21,8 @@
 		"validationAttachmentsType": "You can attach only images or videos",
 		"uploadError": "Failed to upload your file",
 		"failedToReport": "Faild to send the report",
-		"notificationsNotFound": "Failed to find notifications"
+		"notificationsNotFound": "Failed to find notifications",
+		"translateFailed": "Failed to translate the post"
 	},
 	"dialog": {
 		"accountNotFound": {
@@ -124,6 +125,11 @@
 			},
 			"timeline": {
 				"title": "Timelines",
+				"category": {
+					"general": "General",
+					"tts": "Text-to-speech",
+					"translate": "Translation"
+				},
 				"time": {
 					"title": "Time format",
 					"relative": "Relative",
@@ -164,7 +170,18 @@
 					"default": "Default"
 				},
 				"testSpeech": "Test Speech",
-				"testSpeechManuscript": "Hello. This is a test of text to speech functionality."
+				"testSpeechManuscript": "Hello. This is a test of text to speech functionality.",
+				"translateProvider": {
+					"title": "Translation Provider",
+					"hint": "If you want to use, please get API key and set up."
+				},
+				"translateKey": "API Key",
+				"translateEndpoint": "API Endpoint",
+				"translateModel": "APIModel",
+				"translatePrompt": {
+					"title": "Translation prompt",
+					"hint": "The prompt to send to the LLM. You can use {content} as a placeholder for the text to translate, {language} as a placeholder for the target language."
+				}
 			},
 			"compose": {
 				"title": "Compose",
@@ -372,7 +389,8 @@
 				"edit": "Edit",
 				"delete": "Delete",
 				"report": "Report {user}",
-				"fromOtherAccount": "React from other accounts"
+				"fromOtherAccount": "React from other accounts",
+				"translate": "Translate"
 			}
 		},
 		"status": {

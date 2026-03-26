@@ -1,11 +1,11 @@
-import { Icon } from '@rsuite/icons'
+import { Icon, Spinner } from '@rsuite/icons'
 import dayjs from 'dayjs'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { type CSSProperties, useContext, useEffect, useState } from 'react'
 import { BsCheck2, BsChevronLeft, BsFillPauseCircleFill, BsFillPlayCircleFill } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
-import { Badge, Button, Content, Divider, Heading, Input, Loader, Progress, SelectPicker, Stack, useToaster } from 'rsuite'
+import { Badge, Button, Content, Divider, Heading, Input, Loader, Panel, PanelGroup, Progress, SelectPicker, Stack, useToaster } from 'rsuite'
 import NumberForm from '@/components/settings/form/NumberForm'
 import RadioBoolean from '@/components/settings/form/RadioBooleanForm'
 import RadioForm from '@/components/settings/form/RadioForm'
@@ -17,6 +17,7 @@ import { Context as i18nContext } from '@/i18n'
 import { ContextLoadTheme } from '@/theme'
 import { getSpotifyPlaylist, nowplayingCode, nowplayingDisconnect, nowplayingInit, spotifyTemplateReplace } from '@/utils/nowplaying'
 import { readSettings, saveSetting } from '@/utils/storage'
+import StringForm from '@/components/settings/form/StringForm'
 
 const languages = [
 	{
@@ -54,6 +55,7 @@ function App() {
 	const { loadTheme } = useContext(ContextLoadTheme)
 	const { switchLang } = useContext(i18nContext)
 	const { saveTimelineConfig } = useContext(TheDeskContext)
+	const [initiated, setInitiated] = useState(false)
 	const [style, setStyle] = useState<CSSProperties>({})
 	const [fonts, setFonts] = useState<string[]>([])
 	const [isPlaying, setIsPlaying] = useState(false)
@@ -107,6 +109,7 @@ function App() {
 			setTimelineConfig((current) => Object.assign({}, current, settings.timeline))
 			setCompose((current) => Object.assign({}, current, settings.compose))
 			setSpotifyConnected(!!localStorage.getItem('spotifyV2Token'))
+			setInitiated(true)
 		}
 		f()
 		setSpotifyDev(location.protocol !== 'file:')
@@ -197,7 +200,12 @@ function App() {
 		audio.onended = () => setIsPlaying(false)
 		audio.ontimeupdate = () => setProgressPlaying((audio.currentTime / audio.duration) * 100)
 	}
-
+	if (!initiated)
+		return (
+			<div style={{ textAlign: 'center' }}>
+				<Loader style={{ margin: '5em auto' }} />
+			</div>
+		)
 	return (
 		<div style={Object.assign({ backgroundColor: 'var(--rs-bg-well)' }, style)}>
 			<Head>
@@ -261,110 +269,163 @@ function App() {
 					<p style={{ fontSize: '1.3em', marginTop: 12, fontWeight: 'bold' }}>
 						<FormattedMessage id="settings.settings.timeline.title" />
 					</p>
-					<SelectForm
-						label={formatMessage({ id: 'settings.settings.timeline.time.title' })}
-						value={timelineConfig.time}
-						onChange={(value) => updateTimeline('time', value)}
-						data={labelValueBuilder('timeline.time', time)}
-						searchable={false}
-						style={{ width: '100%' }}
-						fontSize="1.1em"
-					/>
-					<RadioBoolean label={formatMessage({ id: 'settings.settings.timeline.animation' })} value={timelineConfig.animation} onChange={(value) => updateTimeline('animation', value)} />
-					<NumberForm
-						label={formatMessage({ id: 'settings.settings.timeline.maxLength' })}
-						hint={formatMessage({ id: 'settings.settings.timeline.maxLengthHint' })}
-						value={timelineConfig.max_length}
-						onChange={(value) => updateTimeline('max_length', value > 0 ? Math.max(value, 10) : 0)}
-						min={0}
-						max={1000}
-						step={1}
-						unit={formatMessage({ id: 'settings.settings.timeline.maxLengthUnit' })}
-						fontSize="1.1em"
-					/>
-					<RadioBoolean
-						label={formatMessage({ id: 'settings.settings.timeline.notification' })}
-						hint={formatMessage({ id: 'settings.settings.timeline.notificationHint' })}
-						value={timelineConfig.notification}
-						onChange={(value) => updateTimeline('notification', value)}
-						fontSize="1.1em"
-					/>
-					<RadioForm
-						label={formatMessage({ id: 'settings.settings.timeline.cropImage.title' })}
-						hint={formatMessage({ id: 'settings.settings.timeline.cropImage.hint' })}
-						value={timelineConfig.cropImage}
-						onChange={(value) => updateTimeline('cropImage', value)}
-						data={[
-							{ label: 'Cover', value: 'cover' },
-							{ label: 'Contain', value: 'contain' }
-						]}
-						fontSize="1.1em"
-					/>
-					<RadioForm
-						label={formatMessage({ id: 'settings.settings.timeline.ttsProvider.title' })}
-						hint={formatMessage({ id: 'settings.settings.timeline.ttsProvider.hint' })}
-						value={timelineConfig.ttsProvider}
-						onChange={(value) => updateTimeline('ttsProvider', value)}
-						data={labelValueBuilder('timeline.ttsProvider', ['system', 'bouyomi'])}
-						fontSize="1.1em"
-					/>
-					{timelineConfig.ttsProvider === 'bouyomi' ? (
-						<NumberForm
-							label={formatMessage({ id: 'settings.settings.timeline.ttsPort' })}
-							value={timelineConfig.ttsPort}
-							onChange={(value) => updateTimeline('ttsPort', value)}
-							min={5000}
-							max={65535}
-							step={1}
-							unit=""
-							fontSize="1.1em"
-						/>
-					) : (
-						<>
-							<NumberForm
-								label={formatMessage({ id: 'settings.settings.timeline.ttsPitch.title' })}
-								hint={formatMessage({ id: 'settings.settings.timeline.ttsPitch.hint' })}
-								value={timelineConfig.ttsPitch}
-								onChange={(value) => updateTimeline('ttsPitch', value)}
-								min={0.1}
-								max={2}
-								step={0.1}
-								unit=""
+
+					<PanelGroup accordion defaultActiveKey={1} bordered>
+						<Panel header={formatMessage({ id: 'settings.settings.timeline.category.general' })} eventKey={1}>
+							<SelectForm
+								label={formatMessage({ id: 'settings.settings.timeline.time.title' })}
+								value={timelineConfig.time}
+								onChange={(value) => updateTimeline('time', value)}
+								data={labelValueBuilder('timeline.time', time)}
+								searchable={false}
+								style={{ width: '100%' }}
 								fontSize="1.1em"
 							/>
+							<RadioBoolean label={formatMessage({ id: 'settings.settings.timeline.animation' })} value={timelineConfig.animation} onChange={(value) => updateTimeline('animation', value)} />
 							<NumberForm
-								label={formatMessage({ id: 'settings.settings.timeline.ttsRate.title' })}
-								hint={formatMessage({ id: 'settings.settings.timeline.ttsRate.hint' })}
-								value={timelineConfig.ttsRate}
-								onChange={(value) => updateTimeline('ttsRate', value)}
-								min={0.1}
-								max={10}
-								step={0.1}
-								unit=""
-								fontSize="1.1em"
-							/>
-							<NumberForm
-								label={formatMessage({ id: 'settings.settings.timeline.ttsVolume.title' })}
-								hint={formatMessage({ id: 'settings.settings.timeline.ttsVolume.hint' })}
-								value={timelineConfig.ttsVolume}
-								onChange={(value) => updateTimeline('ttsVolume', value)}
-								min={1}
-								max={100}
+								label={formatMessage({ id: 'settings.settings.timeline.maxLength' })}
+								hint={formatMessage({ id: 'settings.settings.timeline.maxLengthHint' })}
+								value={timelineConfig.max_length}
+								onChange={(value) => updateTimeline('max_length', value > 0 ? Math.max(value, 10) : 0)}
+								min={0}
+								max={1000}
 								step={1}
-								unit=""
+								unit={formatMessage({ id: 'settings.settings.timeline.maxLengthUnit' })}
 								fontSize="1.1em"
 							/>
-							<p style={{ marginTop: 15, marginBottom: 5, fontSize: '1.1em' }}>
-								<FormattedMessage id="settings.settings.timeline.ttsVoice.title" />
-							</p>
-							<div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
-								<SelectPicker value={timelineConfig.ttsVoice} data={voices} searchable={true} style={{ width: '100%' }} onChange={(value) => updateTimeline('ttsVoice', value)} />
-								<Button onClick={() => testSpeech()} style={{ marginLeft: 5 }}>
-									<FormattedMessage id="settings.settings.timeline.testSpeech" />
-								</Button>
-							</div>
-						</>
-					)}
+							<RadioBoolean
+								label={formatMessage({ id: 'settings.settings.timeline.notification' })}
+								hint={formatMessage({ id: 'settings.settings.timeline.notificationHint' })}
+								value={timelineConfig.notification}
+								onChange={(value) => updateTimeline('notification', value)}
+								fontSize="1.1em"
+							/>
+							<RadioForm
+								label={formatMessage({ id: 'settings.settings.timeline.cropImage.title' })}
+								hint={formatMessage({ id: 'settings.settings.timeline.cropImage.hint' })}
+								value={timelineConfig.cropImage}
+								onChange={(value) => updateTimeline('cropImage', value)}
+								data={[
+									{ label: 'Cover', value: 'cover' },
+									{ label: 'Contain', value: 'contain' }
+								]}
+								fontSize="1.1em"
+							/>
+						</Panel>
+						<Panel header={formatMessage({ id: 'settings.settings.timeline.category.tts' })} eventKey={2}>
+							<RadioForm
+								label={formatMessage({ id: 'settings.settings.timeline.ttsProvider.title' })}
+								hint={formatMessage({ id: 'settings.settings.timeline.ttsProvider.hint' })}
+								value={timelineConfig.ttsProvider}
+								onChange={(value) => updateTimeline('ttsProvider', value)}
+								data={labelValueBuilder('timeline.ttsProvider', ['system', 'bouyomi'])}
+								fontSize="1.1em"
+							/>
+							{timelineConfig.ttsProvider === 'bouyomi' ? (
+								<NumberForm
+									label={formatMessage({ id: 'settings.settings.timeline.ttsPort' })}
+									value={timelineConfig.ttsPort}
+									onChange={(value) => updateTimeline('ttsPort', value)}
+									min={5000}
+									max={65535}
+									step={1}
+									unit=""
+									fontSize="1.1em"
+								/>
+							) : (
+								<>
+									<NumberForm
+										label={formatMessage({ id: 'settings.settings.timeline.ttsPitch.title' })}
+										hint={formatMessage({ id: 'settings.settings.timeline.ttsPitch.hint' })}
+										value={timelineConfig.ttsPitch}
+										onChange={(value) => updateTimeline('ttsPitch', value)}
+										min={0.1}
+										max={2}
+										step={0.1}
+										unit=""
+										fontSize="1.1em"
+									/>
+									<NumberForm
+										label={formatMessage({ id: 'settings.settings.timeline.ttsRate.title' })}
+										hint={formatMessage({ id: 'settings.settings.timeline.ttsRate.hint' })}
+										value={timelineConfig.ttsRate}
+										onChange={(value) => updateTimeline('ttsRate', value)}
+										min={0.1}
+										max={10}
+										step={0.1}
+										unit=""
+										fontSize="1.1em"
+									/>
+									<NumberForm
+										label={formatMessage({ id: 'settings.settings.timeline.ttsVolume.title' })}
+										hint={formatMessage({ id: 'settings.settings.timeline.ttsVolume.hint' })}
+										value={timelineConfig.ttsVolume}
+										onChange={(value) => updateTimeline('ttsVolume', value)}
+										min={1}
+										max={100}
+										step={1}
+										unit=""
+										fontSize="1.1em"
+									/>
+									<p style={{ marginTop: 15, marginBottom: 5, fontSize: '1.1em' }}>
+										<FormattedMessage id="settings.settings.timeline.ttsVoice.title" />
+									</p>
+									<div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
+										<SelectPicker value={timelineConfig.ttsVoice} data={voices} searchable={true} style={{ width: '100%' }} onChange={(value) => updateTimeline('ttsVoice', value)} />
+										<Button onClick={() => testSpeech()} style={{ marginLeft: 5 }}>
+											<FormattedMessage id="settings.settings.timeline.testSpeech" />
+										</Button>
+									</div>
+								</>
+							)}
+						</Panel>
+
+						<Panel header={formatMessage({ id: 'settings.settings.timeline.category.translate' })} eventKey={3}>
+							<RadioForm
+								label={formatMessage({ id: 'settings.settings.timeline.translateProvider.title' })}
+								hint={formatMessage({ id: 'settings.settings.timeline.translateProvider.hint' })}
+								value={timelineConfig.translateProvider}
+								onChange={(value) => updateTimeline('translateProvider', value)}
+								data={[
+									{ label: 'DeepL', value: 'deepl' },
+									{ label: 'DeepL Pro', value: 'deeplPro' },
+									{ label: 'OpenAI Chat Completion API', value: 'openai' }
+								]}
+								fontSize="1.1em"
+							/>
+							<StringForm
+								label={formatMessage({ id: 'settings.settings.timeline.translateKey' })}
+								value={timelineConfig.translateKey}
+								onChange={(value) => updateTimeline('translateKey', value)}
+								fontSize="1.1em"
+							/>
+							{timelineConfig.translateProvider !== 'deepl' && (
+								<>
+									<StringForm
+										label={formatMessage({ id: 'settings.settings.timeline.translateEndpoint' })}
+										value={timelineConfig.translateEndpoint}
+										onChange={(value) => updateTimeline('translateEndpoint', value)}
+										fontSize="1.1em"
+									/>
+									<StringForm
+										label={formatMessage({ id: 'settings.settings.timeline.translateModel' })}
+										value={timelineConfig.translateModel}
+										onChange={(value) => updateTimeline('translateModel', value)}
+										fontSize="1.1em"
+									/>
+									<StringForm
+										label={formatMessage({ id: 'settings.settings.timeline.translatePrompt.title' })}
+										hint={formatMessage({ id: 'settings.settings.timeline.translatePrompt.hint' })}
+										value={timelineConfig.translatePrompt}
+										onChange={(value) => updateTimeline('translatePrompt', value)}
+										fontSize="1.1em"
+										row={3}
+									/>
+								</>
+							)}
+						</Panel>
+					</PanelGroup>
+
 					<Divider />
 					<p style={{ fontSize: '1.3em', marginTop: 12, fontWeight: 'bold' }}>
 						<FormattedMessage id="settings.settings.compose.title" />

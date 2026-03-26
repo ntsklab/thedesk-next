@@ -21,7 +21,8 @@
 		"validationAttachmentsType": "画像または動画のみ添付できます",
 		"uploadError": "ファイルのアップロードに失敗しました",
 		"failedToReport": "通報の送信に失敗しました",
-		"notificationsNotFound": "通知が見つかりませんでした"
+		"notificationsNotFound": "通知が見つかりませんでした",
+		"translateFailed": "翻訳に失敗しました"
 	},
 	"dialog": {
 		"accountNotFound": {
@@ -124,6 +125,11 @@
 			},
 			"timeline": {
 				"title": "タイムライン",
+				"category": {
+					"general": "一般",
+					"tts": "タイムラインの読み上げ",
+					"translate": "翻訳"
+				},
 				"time": {
 					"title": "時間表示",
 					"relative": "相対時間",
@@ -164,7 +170,18 @@
 					"default": "システム標準"
 				},
 				"testSpeech": "テスト再生",
-				"testSpeechManuscript": "こんにちは。これは音声読み上げのテストです。"
+				"testSpeechManuscript": "こんにちは。これは音声読み上げのテストです。",
+				"translateProvider": {
+					"title": "翻訳プロバイダ",
+					"hint": "使用する場合はAPIキーを取得して設定してください。"
+				},
+				"translateKey": "APIキー",
+				"translateEndpoint": "APIエンドポイント",
+				"translateModel": "APIモデル",
+				"translatePrompt": {
+					"title": "翻訳プロンプト",
+					"hint": "LLMのAPIに送信するプロンプト。{content}を翻訳するテキストのプレースホルダーとして、{language}を対象言語のプレースホルダーとして使用できます。"
+				}
 			},
 			"compose": {
 				"title": "投稿",
@@ -372,7 +389,8 @@
 				"edit": "編集",
 				"delete": "削除",
 				"report": "{user} を通報",
-				"fromOtherAccount": "他のアカウントからリアクション"
+				"fromOtherAccount": "他のアカウントからリアクション",
+				"translate": "翻訳"
 			}
 		},
 		"status": {

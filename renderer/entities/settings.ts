@@ -13,13 +13,18 @@ export type Settings = {
 		animation: FormBoolean
 		max_length: number
 		notification: FormBoolean
+		cropImage: 'cover' | 'contain'
 		ttsProvider: 'system' | 'bouyomi'
 		ttsPort: number
-		cropImage: 'cover' | 'contain'
 		ttsPitch: number
 		ttsRate: number
 		ttsVolume: number
 		ttsVoice: string
+		translateProvider: 'deepl' | 'deeplPro' | 'openai'
+		translateEndpoint: string
+		translateModel: string
+		translateKey: string
+		translatePrompt: string
 	}
 	compose: {
 		floating: FormBoolean
@@ -43,13 +48,18 @@ export const defaultSetting: Settings = {
 		animation: 'yes',
 		max_length: 0,
 		notification: 'yes',
+		cropImage: 'cover',
 		ttsProvider: 'system',
 		ttsPort: 50080,
-		cropImage: 'cover',
 		ttsPitch: 1,
 		ttsRate: 1,
 		ttsVolume: 100,
-		ttsVoice: ''
+		ttsVoice: '',
+		translateProvider: 'deepl',
+		translateEndpoint: '',
+		translateModel: '',
+		translateKey: '',
+		translatePrompt: 'Translate this post to "{language}", output only the translated text:\n{content}'
 	},
 	compose: {
 		floating: 'yes',

@@ -4,15 +4,8 @@ import { listServers, getAccount } from './storage'
 import type { Server } from '@/entities/server'
 import type { Settings } from '@/entities/settings'
 import type { Account } from '@/entities/account'
+import { stripTagAndLink } from './statusParser'
 
-const stripForVoice = (html: string) => {
-	const div = document.createElement('div')
-	div.innerHTML = html
-	const text = div.textContent || div.innerText || ''
-	const protomatch = /(https?|ftp)(:\/\/[\w/:%#$&?()~.=+-]+)/g
-	const b = text.replace(protomatch, '')
-	return b
-}
 // 'home' | 'notifications' | 'local' | 'public' | 'favourites' | 'list' | 'bookmarks' | 'direct' | 'tag' | 'integrated'
 type StreamingArray = [number, WebSocketInterface, string, string?]
 export const speech = (text: string, timelineConfig: Settings['timeline']) => {
@@ -112,7 +105,7 @@ export const listenTimeline = async <T>(channel: string, callback: (a: { payload
 				const isBouyomi = timelineConfig.ttsProvider === 'bouyomi'
 				if (tts) {
 					const html = status.content
-					const b = stripForVoice(html)
+					const b = stripTagAndLink(html)
 					if (isBouyomi) {
 						try {
 							fetch(`http://localhost:${timelineConfig.ttsPort}/Talk?text=${encodeURIComponent(b)}`)
@@ -181,7 +174,7 @@ export const listenUser = async <T>(channel: string, callback: (a: { payload: T 
 				const isBouyomi = timelineConfig.ttsProvider === 'bouyomi'
 				if (tts) {
 					const html = status.content
-					const b = stripForVoice(html)
+					const b = stripTagAndLink(html)
 					if (isBouyomi) {
 						try {
 							fetch(`http://localhost:${timelineConfig.ttsPort}/Talk?text=${encodeURIComponent(b)}`)

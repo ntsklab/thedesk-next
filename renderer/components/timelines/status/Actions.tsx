@@ -39,6 +39,7 @@ type Props = {
 	ableToRevoke?: boolean
 	openReport?: () => void
 	openFromOtherAccount?: () => void
+	translatePost: () => void
 	customEmojis: Array<CustomEmojiCategory>
 }
 
@@ -241,7 +242,8 @@ const Actions: React.FC<Props> = (props) => {
 									},
 									onFromOtherAccount: () => {
 										props.openFromOtherAccount()
-									}
+									},
+									translateIt: () => props.translatePost()
 								},
 								ref
 							)
@@ -295,6 +297,7 @@ type DetailMenuProps = {
 	onRevokeQuoting: () => void
 	onReport: () => void
 	onFromOtherAccount: () => void
+	translateIt: () => void
 }
 
 const detailMenu = (props: DetailMenuProps, ref: React.RefCallback<HTMLElement>) => {
@@ -323,6 +326,9 @@ const detailMenu = (props: DetailMenuProps, ref: React.RefCallback<HTMLElement>)
 				return
 			case 'from_other_account':
 				props.onFromOtherAccount()
+				return
+			case 'translate':
+				props.translateIt()
 				return
 		}
 	}
@@ -356,6 +362,9 @@ const detailMenu = (props: DetailMenuProps, ref: React.RefCallback<HTMLElement>)
 				)}
 				<Dropdown.Item eventKey="from_other_account" style={{ fontSize: '0.8rem', padding: '5px' }}>
 					<FormattedMessage id="timeline.actions.detail.fromOtherAccount" />
+				</Dropdown.Item>
+				<Dropdown.Item eventKey="translate" style={{ fontSize: '0.8rem', padding: '5px' }}>
+					<FormattedMessage id="timeline.actions.detail.translate" />
 				</Dropdown.Item>
 			</Dropdown.Menu>
 		</Popover>
