@@ -74,6 +74,10 @@
 			"color": "アカウントの色",
 			"requiresLogin": "通知の表示にはログインが必要です。",
 			"accountDeleteOption": "アカウントの削除"
+		},
+		"thedeskIos": {
+			"title": "TheDesk(iOS)",
+			"text": "TheDeskをiPhoneでも"
 		}
 	},
 	"update": {

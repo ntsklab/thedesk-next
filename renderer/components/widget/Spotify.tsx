@@ -4,21 +4,20 @@ import { Icon } from '@rsuite/icons'
 import { BsCpu, BsMemory } from 'react-icons/bs'
 import { useIntl } from 'react-intl'
 import { Context } from '@/theme'
-import { nowplaying } from '@/utils/nowplaying'
+import { INowPlaying, nowplaying } from '@/utils/nowplaying'
 
 interface Props {
 	isShow: boolean
 	setIsShow: (v: boolean) => void
 	isOnlyOne: boolean
 }
-type IFile = { text: string; file: File; title: string; song: string; album: string; artist: string; isPlaying?: boolean; position?: number; duration?: number }
 const Spotify: React.FC<Props> = (props) => {
 	const { formatMessage } = useIntl()
 	const { theme } = useContext(Context)
 	const isDark = theme === 'dark'
 	const { isShow, setIsShow, isOnlyOne } = props
 	const toaster = useToaster()
-	const [info, setInfo] = useState<IFile | null>(null)
+	const [info, setInfo] = useState<INowPlaying | null>(null)
 	const [position, setPosition] = useState(0)
 	const get = async () => {
 		const data = await nowplaying('spotify', (message, duration) => {})

@@ -41,6 +41,7 @@ import Clock from './widget/Clock'
 import System from './widget/System'
 import Spotify from './widget/Spotify'
 import AppleMusic from './widget/AppleMusic'
+import TheDeskMobile from './widget/TheDeskMobile'
 
 type ImitateFormattedMessage = ({ id }: { id: string }) => string
 
@@ -237,6 +238,7 @@ const Navigator: React.FC<NavigatorProps> = (props): ReactElement => {
 			</div>
 			<div style={{ display: 'flex', alignItems: 'center', paddingRight: '10px' }}>
 				<div style={{ display: 'flex', alignItems: 'center', border: '1px solid', borderColor: isDark ? 'white' : 'var(--rs-text-active)', borderRadius: '8px', marginRight: '10px' }}>
+					<TheDeskMobile />
 					<Clock isShow={widgets.includes('clock')} setIsShow={(v: boolean) => widgetConfig('clock', v)} isOnlyOne={widgets.length === 1} />
 					<System isShow={widgets.includes('system')} setIsShow={(v: boolean) => widgetConfig('system', v)} isOnlyOne={widgets.length === 1} />
 					<Spotify isShow={widgets.includes('spotify')} setIsShow={(v: boolean) => widgetConfig('spotify', v)} isOnlyOne={widgets.length === 1} />

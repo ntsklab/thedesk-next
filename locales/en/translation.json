@@ -74,6 +74,10 @@
 			"color": "Account color",
 			"requiresLogin": "Notification TL requires login",
 			"accountDeleteOption": "Account deletion option"
+		},
+		"thedeskIos": {
+			"title": "TheDesk(iOS)",
+			"text": "TheDesk in your pocket"
 		}
 	},
 	"update": {

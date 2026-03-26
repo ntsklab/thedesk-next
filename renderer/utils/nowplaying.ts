@@ -46,12 +46,13 @@ export function spotifyTemplateReplace(item: any, template: string) {
 	content = content.replace(regExpS, 'Spotify')
 	return content
 }
-type IFile = { text: string; file: File; title: string; song: string; album: string; artist: string; isPlaying?: boolean; position?: number; duration?: number }
-export async function nowplaying(key: 'spotify' | 'appleMusic', showToaster: (message: string, duration?: number) => void) {
+export type INowPlaying = { text?: string; file?: File; title?: string; song?: string; album?: string; artist?: string; isPlaying: boolean; position?: number; duration?: number }
+export async function nowplaying(key: 'spotify' | 'appleMusic', showToaster: (message: string, duration?: number) => void): Promise<INowPlaying | null> {
 	if (key === 'spotify') {
 		const start = 'https://api.spotify.com/v1/me/player/currently-playing'
 		try {
 			const json = await spotifyApi(start, showToaster)
+			if (!json) return { isPlaying: false }
 			const item = json.item
 			const img = item.album.images[0].url
 			const file = new File([await (await fetch(img)).blob()], 'cover.jpg', { type: 'image/jpeg' })
@@ -66,7 +67,7 @@ export async function nowplaying(key: 'spotify' | 'appleMusic', showToaster: (me
 	} else if (key === 'appleMusic') {
 		console.log('request')
 		window.electronAPI.requestAppleMusic(true)
-		const data: IFile = await new Promise((resolve) => {
+		const data: INowPlaying = await new Promise((resolve) => {
 			window.electronAPI.appleMusic(async (_, itemRaw) => {
 				console.log(itemRaw)
 				if (itemRaw.data && itemRaw.data.error) {
@@ -100,7 +101,7 @@ export async function nowplaying(key: 'spotify' | 'appleMusic', showToaster: (me
 				content = content.replace(regExp0, '')
 				const regExpS = /{Source}/g
 				content = content.replace(regExpS, 'AppleMusic')
-				resolve({ text: content, file: artwork, title: `${item.name} ${item.album} ${item.artist}`, song: item.name, album: item.album, artist: item.artist})
+				resolve({ text: content, file: artwork, title: `${item.name} ${item.album} ${item.artist}`, song: item.name, album: item.album, artist: item.artist, isPlaying: true })
 			})
 	})
 		return data
