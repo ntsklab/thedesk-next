@@ -208,7 +208,14 @@
 					"stay": "しまわない"
 				},
 				"secondaryToot": "サブ投稿ボタンを表示",
-				"secondaryTootHint": "設定した公開範囲ですぐ投稿できるボタンを表示します。"
+				"secondaryTootHint": "設定した公開範囲ですぐ投稿できるボタンを表示します。",
+				"shortcutText": {
+					"title": "定型文ショートカット",
+					"hint": "よく使う文を登録できます。1番目は {cmd}+Shift+1、... 最大 {cmd}+Shift+9 で挿入されます。",
+					"item": "{cmd}+Shift+{n}",
+					"add": "追加",
+					"remove": "削除"
+				}
 			},
 			"spotify": {
 				"title": "Spotify連携",

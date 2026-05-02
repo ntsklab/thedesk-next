@@ -208,7 +208,14 @@
 					"stay": "Stay opened"
 				},
 				"secondaryToot": "Secondary Post Button",
-				"secondaryTootHint": "Displays a button that allows you to post immediately in the public area you set."
+				"secondaryTootHint": "Displays a button that allows you to post immediately in the public area you set.",
+				"shortcutText": {
+					"title": "Shortcut texts",
+					"hint": "Set frequently-used phrases. {cmd}+Shift+1 inserts the first item, ... up to {cmd}+Shift+9.",
+					"item": "{cmd}+Shift+{n}",
+					"add": "Add shortcut",
+					"remove": "Remove"
+				}
 			},
 			"spotify": {
 				"title": "Spotify Integration",

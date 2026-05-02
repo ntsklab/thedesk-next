@@ -307,7 +307,9 @@ const Status: React.FC<Props> = (props) => {
 	const handleKeyPress = useCallback(
 		(event: KeyboardEvent) => {
 			const ctrl = event.ctrlKey || event.metaKey
+			const shift = event.shiftKey
 			const globalFocused = Array.from(document.activeElement.classList).includes('rs-input')
+			const cursor = statusRef.current?.getElementsByTagName('textarea')[0]?.selectionStart
 			if (!focused && event.key === 'm') {
 				props.setOpened(false)
 			}
@@ -325,6 +327,15 @@ const Status: React.FC<Props> = (props) => {
 			if (ctrl === true && event.key === 'Enter') {
 				if (document.activeElement === statusRef.current?.firstElementChild || document.activeElement === cwRef.current?.firstElementChild) {
 					handleSubmit()
+				}
+			}
+			if (ctrl === true && shift === true && event.key) {
+				const keyCode = parseInt(event.key, 10)
+				if (keyCode >= 1 && keyCode <= 9) {
+					const shortcutText = config.shortcutText[keyCode - 1]
+					if (shortcutText) {
+						setFormValue((current) => Object.assign({}, current, { status: `${current.status.slice(0, cursor)}${shortcutText}${current.status.slice(cursor)}` }))
+					}
 				}
 			}
 		},

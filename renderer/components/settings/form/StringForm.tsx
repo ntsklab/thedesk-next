@@ -15,7 +15,7 @@ function StringForm(props: Props) {
 	useEffect(() => console.log(props.value), [props.value])
 	return (
 		<>
-			<p style={{ marginTop: 15, marginBottom: 5, fontSize: props.fontSize || 20 }}>{props.label}</p>
+			<p style={{ marginTop: 15, marginBottom: 5, fontSize: props.fontSize || 20, fontWeight: 'bold' }}>{props.label}</p>
 			{props.hint && <p style={{ marginBottom: 10 }}>{props.hint}</p>}
 			{isMultiline ? (
 				<Input as="textarea" value={v} onChange={(value) => setV(value.toString())} onBlur={() => props.onChange(v)} rows={props.row} />

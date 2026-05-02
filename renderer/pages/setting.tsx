@@ -3,9 +3,9 @@ import dayjs from 'dayjs'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { type CSSProperties, useContext, useEffect, useState } from 'react'
-import { BsCheck2, BsChevronLeft, BsFillPauseCircleFill, BsFillPlayCircleFill } from 'react-icons/bs'
+import { BsCheck2, BsChevronLeft, BsFillPauseCircleFill, BsFillPlayCircleFill, BsPlus, BsTrash } from 'react-icons/bs'
 import { FormattedMessage, useIntl } from 'react-intl'
-import { Badge, Button, Content, Divider, Heading, Input, Loader, Panel, PanelGroup, Progress, SelectPicker, Stack, useToaster } from 'rsuite'
+import { Badge, Button, Content, Divider, Heading, IconButton, Input, Loader, Panel, PanelGroup, Progress, SelectPicker, Stack, useToaster } from 'rsuite'
 import NumberForm from '@/components/settings/form/NumberForm'
 import RadioBoolean from '@/components/settings/form/RadioBooleanForm'
 import RadioForm from '@/components/settings/form/RadioForm'
@@ -48,6 +48,7 @@ const afterPost = ['close', 'stay']
 const btnPosition = ['left', 'right']
 const floating = ['yes', 'no']
 const vis = ['public', 'unlisted', 'private', 'direct']
+const MAX_SHORTCUT_TEXT = 9
 
 function App() {
 	const router = useRouter()
@@ -59,6 +60,7 @@ function App() {
 	const [style, setStyle] = useState<CSSProperties>({})
 	const [fonts, setFonts] = useState<string[]>([])
 	const [isPlaying, setIsPlaying] = useState(false)
+	const [isMac, setIsMac] = useState(false)
 	const [progressPlaying, setProgressPlaying] = useState(0)
 	const [voices, setVoices] = useState<{ value: string; label: string }[]>([])
 	const [appearance, setAppearance] = useState<SettingsType['appearance']>(defaultSetting.appearance)
@@ -113,6 +115,8 @@ function App() {
 		}
 		f()
 		setSpotifyDev(location.protocol !== 'file:')
+		const isMac = localStorage.getItem('os') === 'darwin'
+		setIsMac(isMac)
 	}, [])
 	const handleSubmit = async () => {
 		const settings: SettingsType = {
@@ -130,6 +134,22 @@ function App() {
 	const updateTimeline = (key: keyof SettingsType['timeline'], value: any) => setTimelineConfig((current) => Object.assign({}, current, { [key]: value }))
 	const updateCompose = (key: keyof SettingsType['compose'], value: any) => setCompose((current) => Object.assign({}, current, { [key]: value }))
 	const labelValueBuilder = (prefix: string, values: string[]) => values.map((value) => ({ label: formatMessage({ id: `settings.settings.${prefix}.${value}` }), value }))
+	const shortcutRows = Array.isArray(compose.shortcutText) ? compose.shortcutText : []
+	const updateComposeShortcut = (idx: number, value: string) => {
+		const base = Array.isArray(compose.shortcutText) ? [...compose.shortcutText] : []
+		base[idx] = value
+		updateCompose('shortcutText', base)
+	}
+	const addComposeShortcut = () => {
+		if (shortcutRows.length >= MAX_SHORTCUT_TEXT) return
+		updateCompose('shortcutText', [...shortcutRows, ''])
+	}
+	const removeComposeShortcut = (idx: number) => {
+		updateCompose(
+			'shortcutText',
+			shortcutRows.filter((_, i) => i !== idx)
+		)
+	}
 	const nowplayingInitFn = () => {
 		setSpotifyInitiating(true)
 		nowplayingInit(spotifyDev, showToaster)
@@ -462,6 +482,34 @@ function App() {
 						style={{ width: '100%' }}
 						fontSize="1.1em"
 					/>
+					<p style={{ fontSize: '1.1em', marginTop: 12, fontWeight: 'bold' }}>
+						<FormattedMessage id="settings.settings.compose.shortcutText.title" />
+					</p>
+					<p style={{ fontSize: 12, opacity: 0.8 }}>
+						<FormattedMessage id="settings.settings.compose.shortcutText.hint" values={{ cmd: isMac ? 'Cmd' : 'Ctrl' }} />
+					</p>
+					{shortcutRows.map((value, i) => (
+						<Stack key={i} direction="row" alignItems="flex-end" spacing={10} style={{ marginBottom: 4 }}>
+							<p style={{ marginBottom: 8 }}><FormattedMessage id="settings.settings.compose.shortcutText.item" values={{ n: i + 1, cmd: isMac ? 'Cmd' : 'Ctrl' }} /></p>
+							<div style={{ flex: 1, minWidth: 0 }}>
+								<StringForm
+									label=""
+									value={value}
+									onChange={(v) => updateComposeShortcut(i, v)}
+									fontSize="1.1em"
+								/>
+							</div>
+							<IconButton
+								appearance="subtle"
+								icon={<Icon as={BsTrash} />}
+								onClick={() => removeComposeShortcut(i)}
+								aria-label={formatMessage({ id: 'settings.settings.compose.shortcutText.remove' })}
+							/>
+						</Stack>
+					))}
+					<Button appearance="ghost" startIcon={<Icon as={BsPlus} />} disabled={shortcutRows.length >= MAX_SHORTCUT_TEXT} onClick={addComposeShortcut} style={{ marginTop: 8 }}>
+						<FormattedMessage id="settings.settings.compose.shortcutText.add" />
+					</Button>
 					<Divider />
 					<p style={{ fontSize: '1.3em', marginTop: 12, fontWeight: 'bold', marginBottom: 10 }}>
 						<FormattedMessage id="settings.settings.spotify.title" />

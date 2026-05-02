@@ -13,7 +13,7 @@ type Props = {
 function Select(props: Props) {
 	return (
 		<>
-			<p style={{ marginTop: 15, marginBottom: 5, fontSize: props.fontSize || 20 }}>{props.label}</p>
+			<p style={{ marginTop: 15, marginBottom: 5, fontSize: props.fontSize || 20, fontWeight: 'bold' }}>{props.label}</p>
 			{props.hint && <p style={{ marginBottom: 10 }}>{props.hint}</p>}
 			<SelectPicker style={props.style} searchable={props.searchable} value={props.value} onChange={props.onChange} data={props.data} />
 		</>

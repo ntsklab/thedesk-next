@@ -31,6 +31,7 @@ export type Settings = {
 		btnPosition: 'left' | 'right'
 		afterPost: 'close' | 'stay'
 		secondaryToot: 'no' | 'public' | 'unlisted' | 'private' | 'direct'
+		shortcutText: string[]
 	}
 }
 
@@ -65,6 +66,7 @@ export const defaultSetting: Settings = {
 		floating: 'yes',
 		btnPosition: 'right',
 		afterPost: 'close',
-		secondaryToot: 'no'
+		secondaryToot: 'no',
+		shortcutText: []
 	}
 }
