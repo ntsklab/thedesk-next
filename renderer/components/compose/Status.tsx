@@ -70,7 +70,7 @@ type Poll = {
 const Status: React.FC<Props> = (props) => {
 	const { formatMessage } = useIntl()
 	const { theme } = useContext(Context)
-	const { focused, setFocused, setReply } = useContext(TheDeskContext)
+	const { focused, setFocused, setReply, liveTag, setLiveTag } = useContext(TheDeskContext)
 	const focusAttr = {
 		onFocus: () => setFocused(true),
 		onBlur: () => setFocused(false)
@@ -80,6 +80,7 @@ const Status: React.FC<Props> = (props) => {
 		spoiler: '',
 		status: ''
 	})
+	const hasLiveTag = !!formValue.status.match(`#${liveTag}`)
 	const [formError, setFormError] = useState<any>({})
 	const [customEmojis, setCustomEmojis] = useState<Array<CustomEmojiCategory>>([])
 	const [loading, setLoading] = useState<boolean>(false)
@@ -224,7 +225,7 @@ const Status: React.FC<Props> = (props) => {
 		}
 	}, [maxCharacters, formValue])
 
-	const handleSubmit = async (useVis?: 'public' | 'unlisted' | 'private' | 'direct') => {
+	const handleSubmit = async (useVis?: 'public' | 'unlisted' | 'private' | 'direct', liveTag?: string | null) => {
 		if (loading) {
 			return
 		}
@@ -284,6 +285,9 @@ const Status: React.FC<Props> = (props) => {
 					scheduled_at: formValue.scheduledAt.toISOString()
 				})
 			}
+			let statusData = formValue.status
+			if (liveTag && !hasLiveTag) statusData = `${statusData} #${liveTag}`
+			
 			if (props.editTarget) {
 				await props.client.editStatus(
 					props.editTarget.id,
@@ -293,7 +297,7 @@ const Status: React.FC<Props> = (props) => {
 				)
 				clear(true)
 			} else {
-				await props.client.postStatus(formValue.status, options)
+				await props.client.postStatus(statusData, options)
 				clear(true)
 			}
 		} catch (err) {
@@ -324,12 +328,17 @@ const Status: React.FC<Props> = (props) => {
 			if (!window.onAutoCompleteTextarea && event.key === 'Escape') {
 				props.setOpened(false)
 			}
-			if (ctrl === true && event.key === 'Enter') {
+			if (ctrl && (!shift || !liveTag) && event.key === 'Enter') {
 				if (document.activeElement === statusRef.current?.firstElementChild || document.activeElement === cwRef.current?.firstElementChild) {
-					handleSubmit()
+					handleSubmit(undefined, liveTag)
 				}
 			}
-			if (ctrl === true && shift === true && event.key) {
+			if (ctrl && shift && event.key === 'Enter' && liveTag) {
+				if (document.activeElement === statusRef.current?.firstElementChild || document.activeElement === cwRef.current?.firstElementChild) {
+					handleSubmit(undefined, null)
+				}
+			}
+			if (ctrl && shift && event.key) {
 				const keyCode = parseInt(event.key, 10)
 				if (keyCode >= 1 && keyCode <= 9) {
 					const shortcutText = config.shortcutText[keyCode - 1]
@@ -733,11 +742,16 @@ const Status: React.FC<Props> = (props) => {
 								<FormattedMessage id="compose.cancel" />
 							</Button>
 						)}
-						<Button appearance="primary" color={props.account.color || 'green'} onClick={() => handleSubmit()} loading={loading} style={{ flexGrow: 1 }}>
+						<Button appearance="primary" color={props.account.color || 'green'} onClick={() => handleSubmit(undefined, liveTag)} loading={loading} style={{ flexGrow: 1 }}>
 							<FormattedMessage id="compose.post" />
 						</Button>
+						{liveTag ? (
+							<Button appearance="primary" onClick={() => handleSubmit(undefined, null)} disabled={hasLiveTag}>
+								<FormattedMessage id="compose.liveTag.withoutLiveTag" />
+							</Button>
+						) : null}
 						{secondaryToot !== 'no' && (
-							<IconButton appearance="primary" color={privacyColor(secondaryToot) || undefined} onClick={() => handleSubmit(secondaryToot)} icon={<Icon as={privacyIcon(secondaryToot)} />} />
+							<IconButton appearance="primary" color={privacyColor(secondaryToot) || undefined} onClick={() => handleSubmit(secondaryToot, liveTag)} icon={<Icon as={privacyIcon(secondaryToot)} />} />
 						)}
 					</ButtonToolbar>
 				</Form.Group>

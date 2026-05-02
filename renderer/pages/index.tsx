@@ -59,6 +59,7 @@ function App() {
 	const [version, setVersion] = useState<string | null>(null)
 	const [currentPath, setCurrentPath] = useState<string | undefined>(undefined)
 	const [migrate, setMigrate] = useState<string | null>(null)
+	const [isMac, setIsMac] = useState(false)
 
 	const [modalState, dispatch] = useReducer(modalReducer, initialModalState)
 	const spaceRef = useRef<HTMLDivElement>()
@@ -156,6 +157,7 @@ function App() {
 			window.electronAPI.onInitialInfo((_event, data: InitialInfo) => {
 				console.log(data)
 				localStorage.setItem('os', data.os)
+				setIsMac(data.os === 'darwin')
 				localStorage.setItem('arch', data.arch)
 				localStorage.setItem('lang', data.lang[0])
 				localStorage.setItem('version', data.version)
@@ -285,7 +287,7 @@ function App() {
 				<NewServer open={modalState.newServer.opened} onClose={() => dispatch({ target: 'newServer', value: false, object: null })} initialServer={modalState.newServer.object} />
 				<Media index={modalState.media.index} media={modalState.media.object} opened={modalState.media.opened} close={() => dispatch({ target: 'media', value: false, object: [], index: -1 })} />
 				<Thirdparty open={modalState.thirdparty.opened} onClose={() => dispatch({ target: 'thirdparty', value: false })} />
-				<KbdShortcut open={modalState.kbd.opened} onClose={() => dispatch({ target: 'kbd', value: false })} />
+				<KbdShortcut open={modalState.kbd.opened} onClose={() => dispatch({ target: 'kbd', value: false })} isMac={isMac} />
 				<Report
 					opened={modalState.report.opened}
 					status={modalState.report.object}

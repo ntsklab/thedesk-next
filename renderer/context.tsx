@@ -8,7 +8,9 @@ export const TheDeskContext = createContext({
 	focused: false,
 	setFocused: (_focused: boolean) => {},
 	reply: null as (Reply | null),
-	setReply: (_d: Reply | null) => {}
+	setReply: (_d: Reply | null) => {},
+	liveTag: null as (string | null),
+	setLiveTag: (_tag: string | null) => {}
 })
 export const TimelineRefreshContext = createContext({
 	timelineRefresh: (_str: boolean) => {}
@@ -18,6 +20,7 @@ export const TheDeskProviderWrapper: React.FC = (props) => {
 	const [timelineConfig, setTimelineConfig] = useState<Settings['timeline']>(defaultSetting.timeline)
 	const saveTimelineConfig = (config: Settings['timeline']) => setTimelineConfig(config)
 	const [reply, setReply] = useState<Reply | null>(null)
+	const [liveTag, setLiveTag] = useState<string | null>(null)
 
-	return <TheDeskContext.Provider value={{ timelineConfig, saveTimelineConfig, focused, setFocused, reply, setReply }}>{props.children}</TheDeskContext.Provider>
+	return <TheDeskContext.Provider value={{ timelineConfig, saveTimelineConfig, focused, setFocused, reply, setReply, liveTag, setLiveTag }}>{props.children}</TheDeskContext.Provider>
 }

@@ -489,7 +489,7 @@ function App() {
 						<FormattedMessage id="settings.settings.compose.shortcutText.hint" values={{ cmd: isMac ? 'Cmd' : 'Ctrl' }} />
 					</p>
 					{shortcutRows.map((value, i) => (
-						<Stack key={i} direction="row" alignItems="flex-end" spacing={10} style={{ marginBottom: 4 }}>
+						<Stack key={i.toString()} direction="row" alignItems="flex-end" spacing={10} style={{ marginBottom: 4 }}>
 							<p style={{ marginBottom: 8 }}><FormattedMessage id="settings.settings.compose.shortcutText.item" values={{ n: i + 1, cmd: isMac ? 'Cmd' : 'Ctrl' }} /></p>
 							<div style={{ flex: 1, minWidth: 0 }}>
 								<StringForm

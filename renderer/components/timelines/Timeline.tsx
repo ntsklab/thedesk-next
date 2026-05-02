@@ -14,6 +14,7 @@ import {
 	BsHouseDoor,
 	BsLayers,
 	BsListUl,
+	BsMegaphone,
 	BsPeople,
 	BsSliders,
 	BsSquare,
@@ -587,6 +588,12 @@ export default function TimelineColumn(props: Props) {
 }
 const OptionPopover = forwardRef<HTMLDivElement, { timeline: Timeline; close: () => void; wrapIndex: number }>((props, ref) => {
 	const { timelineRefresh } = useContext(TimelineRefreshContext)
+	const { liveTag, setLiveTag } = useContext(TheDeskContext)
+	const isComposeLiveTag = liveTag === props.timeline.name && props.timeline.kind === 'tag'
+	const toggleLiveTagFn = () => {
+		setLiveTag(isComposeLiveTag ? null : props.timeline.name)
+		props.close()
+	}
 	const { formatMessage } = useIntl()
 	const isFirst = props.wrapIndex === 0
 	const removeTimelineFn = async (timeline: Timeline) => {
@@ -641,6 +648,11 @@ const OptionPopover = forwardRef<HTMLDivElement, { timeline: Timeline; close: ()
 	return (
 		<Popover ref={ref} style={{ opacity: 1 }}>
 			<div style={{ display: 'flex', flexDirection: 'column', width: '220px', padding: '5px' }}>
+				{props.timeline.kind === 'tag' && (
+					<Button onClick={toggleLiveTagFn} style={{ padding: '4px' }} startIcon={<Icon as={BsMegaphone} />}>
+						<FormattedMessage id={isComposeLiveTag ? 'compose.liveTag.stop' : 'compose.liveTag.start'} />
+					</Button>
+				)}
 				<label>
 					<FormattedMessage id="timeline.settings.columnWidth" />
 				</label>

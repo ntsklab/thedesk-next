@@ -1,15 +1,10 @@
-import { Icon } from '@rsuite/icons'
-import Image from 'next/image'
-import { BsGithub } from 'react-icons/bs'
 import { FormattedMessage } from 'react-intl'
-import { Button, FlexboxGrid, Heading, List, Modal } from 'rsuite'
-import { open } from '@/utils/openBrowser'
-import desk from '../../../assets/desk.png'
-import { packages, thirdparty } from '../../thirdparty'
+import { Heading, Modal } from 'rsuite'
 
 type Props = {
 	open: boolean
 	onClose: () => void
+	isMac: boolean
 }
 const Kbd: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	return (
@@ -33,6 +28,7 @@ const Kbd: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	)
 }
 const KbdShortcut: React.FC<Props> = (props) => {
+	const ctrl = props.isMac ? 'Command' : 'Ctrl'
 	return (
 		<Modal backdrop="static" keyboard={true} open={props.open} onClose={props.onClose}>
 			<Modal.Header>
@@ -66,10 +62,16 @@ const KbdShortcut: React.FC<Props> = (props) => {
 					:<FormattedMessage id="settings.kbd.s" />
 				</div>
 				<div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-					<div style={{ width: 100, display: 'flex', justifyContent: 'flex-end' }}>
-						<Kbd>Ctrl</Kbd>+<Kbd>Enter</Kbd>
+					<div style={{ width: 150, display: 'flex', justifyContent: 'flex-end' }}>
+						<Kbd>{ctrl}</Kbd>+<Kbd>Enter</Kbd>
 					</div>
 					:<FormattedMessage id="settings.kbd.ctrlEnter" />
+				</div>
+				<div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+					<div style={{ width: 200, display: 'flex', justifyContent: 'flex-end' }}>
+						<Kbd>{ctrl}</Kbd>+<Kbd>Shift</Kbd>+<Kbd>Enter</Kbd>
+					</div>
+					:<FormattedMessage id="settings.kbd.ctrlShiftEnter" />
 				</div>
 			</Modal.Body>
 		</Modal>

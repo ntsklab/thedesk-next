@@ -252,6 +252,7 @@
 			"s": "Open search",
 			"esc": "Close modals or dialogs",
 			"ctrlEnter": "Post status",
+			"ctrlShiftEnter": "(on live tag) Post without tag",
 			"m": "Close post composer(on not focused input)"
 		}
 	},
@@ -310,6 +311,13 @@
 		"language": {
 			"unsorted": "Default order",
 			"sorted": "Frequently used order"
+		},
+		"liveTag": {
+			"title": "#{tag} Live now",
+			"hint": "Append saved tags to your posts on submit.",
+			"start": "Start live",
+			"stop": "Stop live",
+			"withoutLiveTag": "Without tag"
 		}
 	},
 	"search": {

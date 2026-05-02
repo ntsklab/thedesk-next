@@ -1,7 +1,7 @@
 import generator, { type MegalodonInterface } from '@cutls/megalodon'
 import { Icon } from '@rsuite/icons'
 import { useContext, useEffect, useState } from 'react'
-import { BsPencil, BsQuote, BsReply, BsX } from 'react-icons/bs'
+import { BsMegaphone, BsPencil, BsQuote, BsReply, BsX } from 'react-icons/bs'
 import { FormattedMessage } from 'react-intl'
 import { Avatar, Button, Container, Content, Dropdown, FlexboxGrid, Header, Text } from 'rsuite'
 import { USER_AGENT } from '@/defaults'
@@ -43,7 +43,7 @@ type Props = {
 }
 
 const Compose: React.FC<Props> = (props) => {
-	const { reply, setReply } = useContext(TheDeskContext)
+	const { reply, setReply, liveTag, setLiveTag } = useContext(TheDeskContext)
 	const [accounts, setAccounts] = useState<Array<[Account, Server]>>([])
 	const [fromAccount, setFromAccount] = useState<[Account, Server]>()
 	const [defaultVisibility, setDefaultVisibility] = useState<'public' | 'unlisted' | 'private' | 'direct'>('public')
@@ -160,6 +160,26 @@ const Compose: React.FC<Props> = (props) => {
 							</div>
 						</Content>
 					)
+				) : null}
+				{liveTag ? (
+					<Content style={{ marginTop: 10, marginBottom: 10, backgroundColor: 'var(--rs-cyan-900)', padding: 5, borderRadius: 5, display: 'flex' }}>
+						<div style={{ width: 20 }}>
+							<BsMegaphone style={{ fontSize: '0.8em', marginLeft: 3 }} />
+						</div>
+						<div style={{ flexGrow: 1 }}>
+							<Text style={{ height: 'auto', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+								<FormattedMessage id="compose.liveTag.title" values={{ tag: liveTag }} />
+							</Text>
+							<Text style={{ height: 'auto', fontSize: '0.7rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+								<FormattedMessage id="compose.liveTag.hint" />
+							</Text>
+						</div>
+						<div style={{ width: 20 }}>
+							<Button appearance="link" onClick={() => setLiveTag(null)} style={{ padding: 0 }}>
+								<Icon as={BsX} style={{ fontSize: '1.2em' }} />
+							</Button>
+						</div>
+					</Content>
 				) : null}
 				{fromAccount && (
 					<Status
