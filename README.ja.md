@@ -65,3 +65,8 @@ pnpm run pack:mas # macOS App Store
 ### Notarize(macOS)
 
 デフォルトでは公証は行われませんが、あなたの証明書で公証したい場合は`.env.sample`を編集して`.env`にリネームしてください。
+
+
+## お知らせ
+
+この製品にはLLM(Cursor)で作成された成果物が含まれています。

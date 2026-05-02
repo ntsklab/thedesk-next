@@ -67,3 +67,7 @@ pnpm run pack:mas # macOS App Store
 
 It is currently set to be notarized with the developer's signature. Edit `build/noratize.js` and `.env`
 If you want to notarize it by your certification, edit `.env.sample` and rename it to `.env`
+
+## Notice
+
+This app includes some product created by LLM (Cursor).
