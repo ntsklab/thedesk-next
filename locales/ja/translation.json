@@ -207,6 +207,12 @@
 					"close": "しまう",
 					"stay": "しまわない"
 				},
+				"beforeLiveTag": {
+					"title": "実況タグの前に挿入する文字",
+					"space": "空白",
+					"break": "改行",
+					"twoLines": "空行"
+				},
 				"secondaryToot": "サブ投稿ボタンを表示",
 				"secondaryTootHint": "設定した公開範囲ですぐ投稿できるボタンを表示します。",
 				"shortcutText": {

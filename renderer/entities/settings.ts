@@ -32,6 +32,7 @@ export type Settings = {
 		afterPost: 'close' | 'stay'
 		secondaryToot: 'no' | 'public' | 'unlisted' | 'private' | 'direct'
 		shortcutText: string[]
+		beforeLiveTag: 'space' | 'break' | 'twoLines'
 	}
 }
 
@@ -67,6 +68,7 @@ export const defaultSetting: Settings = {
 		btnPosition: 'right',
 		afterPost: 'close',
 		secondaryToot: 'no',
-		shortcutText: []
+		shortcutText: [],
+		beforeLiveTag: 'space'
 	}
 }

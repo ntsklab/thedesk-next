@@ -46,6 +46,7 @@ const themes = [
 const time = ['relative', 'absolute', '12h']
 const afterPost = ['close', 'stay']
 const btnPosition = ['left', 'right']
+const beforeLiveTag = ['space', 'break', 'twoLines']
 const floating = ['yes', 'no']
 const vis = ['public', 'unlisted', 'private', 'direct']
 const MAX_SHORTCUT_TEXT = 9
@@ -470,6 +471,13 @@ function App() {
 						value={compose.afterPost}
 						onChange={(value) => updateCompose('afterPost', value)}
 						data={labelValueBuilder('compose.afterPost', afterPost)}
+						fontSize="1.1em"
+					/>
+					<RadioForm
+						label={formatMessage({ id: 'settings.settings.compose.beforeLiveTag.title' })}
+						value={compose.beforeLiveTag}
+						onChange={(value) => updateCompose('beforeLiveTag', value)}
+						data={labelValueBuilder('compose.beforeLiveTag', beforeLiveTag)}
 						fontSize="1.1em"
 					/>
 					<SelectForm

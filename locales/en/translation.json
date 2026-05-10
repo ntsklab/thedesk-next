@@ -207,6 +207,12 @@
 					"close": "Close",
 					"stay": "Stay opened"
 				},
+				"beforeLiveTag": {
+					"title": "",
+					"space": "Space",
+					"break": "Break",
+					"twoLines": "Blank line"
+				},
 				"secondaryToot": "Secondary Post Button",
 				"secondaryTootHint": "Displays a button that allows you to post immediately in the public area you set.",
 				"shortcutText": {

@@ -26,16 +26,21 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: "pnpm"
-    - run: pnpm install --shamefully-hoist --no-frozen-lockfile
-    - run: pnpm run build
-    - run: pnpm run pack:linux
+    - name: Install dependencies
+      run: pnpm install --shamefully-hoist --no-frozen-lockfile
+    - name: Building
+      run: pnpm run build
+    - name: Packaging
+      run: pnpm run pack:linux
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-    - uses: shogo82148/actions-upload-release-asset@v1
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Uploading zip file
+      uses: shogo82148/actions-upload-release-asset@v1
       with:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: "dist/*.zip"
-    - uses: shogo82148/actions-upload-release-asset@v1
+    - name: Uploading deb file
+      uses: shogo82148/actions-upload-release-asset@v1
       with:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: "dist/*.deb"
