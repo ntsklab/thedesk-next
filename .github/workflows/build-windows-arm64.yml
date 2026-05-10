@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
   release:
     types:
-      - prereleased
+      - released
 
 jobs:
   build:
@@ -29,11 +29,7 @@ jobs:
     - run: pnpm install --shamefully-hoist --no-frozen-lockfile
     - run: pnpm run build
     - run: pnpm run pack:winArm64
-    - uses: actions/upload-release-asset@v1
-      env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - uses: shogo82148/actions-upload-release-asset@v1
       with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: "dist/TheDesk-arm64.25.3.1.msi"
-          asset_name: TheDesk-arm64.25.3.1.msi
-          asset_content_type: application/x-msdownload
+          asset_path: "dist/*.msi"

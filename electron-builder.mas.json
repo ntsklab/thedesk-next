@@ -20,7 +20,7 @@
     "extendInfo": {
       "ITSAppUsesNonExemptEncryption": "false"
     },
-    "provisioningProfile": "build/thedesk_MAS.provisionprofile",
+    "provisioningProfile": "build/TheDesk_Prod.provisionprofile",
     "minimumSystemVersion": "14.0"
   },
   "mac": {
@@ -32,6 +32,8 @@
     "gatekeeperAssess": false,
     "singleArchFiles": "*",
     "notarize": false,
-    "category": "public.app-category.social-networking"
+    "category": "public.app-category.social-networking",
+    "mergeASARs": true,
+    "x64ArchFiles": "*"
   }
 }
