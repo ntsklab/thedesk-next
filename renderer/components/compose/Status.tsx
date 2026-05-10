@@ -67,10 +67,12 @@ type Poll = {
 	expires_in: number
 	multiple: boolean
 }
+const br = `
+`
 const Status: React.FC<Props> = (props) => {
 	const { formatMessage } = useIntl()
 	const { theme } = useContext(Context)
-	const { focused, setFocused, setReply, liveTag, setLiveTag } = useContext(TheDeskContext)
+	const { focused, setFocused, setReply, liveTag } = useContext(TheDeskContext)
 	const focusAttr = {
 		onFocus: () => setFocused(true),
 		onBlur: () => setFocused(false)
@@ -286,7 +288,9 @@ const Status: React.FC<Props> = (props) => {
 				})
 			}
 			let statusData = formValue.status
-			if (liveTag && !hasLiveTag) statusData = `${statusData} #${liveTag}`
+			const beforeLiveTag = config.beforeLiveTag
+			const beforeLetter = beforeLiveTag === 'space' ? ' ' : beforeLiveTag === 'break' ? br : `${br}${br}`
+			if (liveTag && !hasLiveTag) statusData = `${statusData}${beforeLetter}#${liveTag}`
 			
 			if (props.editTarget) {
 				await props.client.editStatus(
