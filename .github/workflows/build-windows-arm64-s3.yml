@@ -39,7 +39,7 @@ jobs:
         aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{secrets.AWS_DEFAULT_REGION}}
     - name: Deploy to S3
-      run: aws s3 cp dist s3://${{secrets.DEV_AWS_S3_BUCKET}} --recursive --exclude "*" --include "*.msi" --exact-timestamps --delete
+      run: aws s3 cp dist s3://${{secrets.DEV_AWS_S3_BUCKET}} --recursive --exclude "*" --include "*.msi"
     - name: Check S3 objects
       run: aws s3 ls s3://${{secrets.DEV_AWS_S3_BUCKET}} 
     
