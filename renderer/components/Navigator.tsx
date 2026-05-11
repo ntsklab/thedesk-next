@@ -420,6 +420,7 @@ const settingsMenu = ({ className, left, top, onClose, openThirdparty, openSetti
 		}
 	}
 	const isStandaloneDarwin = localStorage.getItem('os') === 'darwin' && localStorage.getItem('isStore') === 'false'
+	const isElectron = !!window.electronAPI
 
 	return (
 		<Popover ref={ref} className={className} style={{ left, top, padding: 0 }}>
@@ -439,22 +440,26 @@ const settingsMenu = ({ className, left, top, onClose, openThirdparty, openSetti
 				<FormattedMessage id="widget.title" />
 			</p>
 			<div>
-			<Checkbox value="yes" checked={widgets.includes('clock')} onChange={(_v, isChecked) => widgetConfig('clock', isChecked)}>
-				<FormattedMessage id="widget.clock.title" />
-			</Checkbox>
-			<Checkbox value="yes" checked={widgets.includes('system')} onChange={(_v, isChecked) => widgetConfig('system', isChecked)}>
-				<FormattedMessage id="widget.system.title" />
-			</Checkbox>
+				{isElectron && (
+					<Checkbox value="yes" checked={widgets.includes('clock')} onChange={(_v, isChecked) => widgetConfig('clock', isChecked)}>
+						<FormattedMessage id="widget.clock.title" />
+					</Checkbox>
+				)}
+				{isElectron && (
+					<Checkbox value="yes" checked={widgets.includes('system')} onChange={(_v, isChecked) => widgetConfig('system', isChecked)}>
+						<FormattedMessage id="widget.system.title" />
+					</Checkbox>
+				)}
 			</div>
 			<div>
-			<Checkbox value="yes" checked={widgets.includes('spotify')} onChange={(_v, isChecked) => widgetConfig('spotify', isChecked)}>
-				<FormattedMessage id="widget.spotify.title" />
-			</Checkbox>
-			{isStandaloneDarwin && (
-				<Checkbox value="yes" checked={widgets.includes('appleMusic')} onChange={(_v, isChecked) => widgetConfig('appleMusic', isChecked)}>
-					<FormattedMessage id="widget.appleMusic.title" />
+				<Checkbox value="yes" checked={widgets.includes('spotify')} onChange={(_v, isChecked) => widgetConfig('spotify', isChecked)}>
+					<FormattedMessage id="widget.spotify.title" />
 				</Checkbox>
-			)}
+				{isStandaloneDarwin && (
+					<Checkbox value="yes" checked={widgets.includes('appleMusic')} onChange={(_v, isChecked) => widgetConfig('appleMusic', isChecked)}>
+						<FormattedMessage id="widget.appleMusic.title" />
+					</Checkbox>
+				)}
 			</div>
 		</Popover>
 	)
