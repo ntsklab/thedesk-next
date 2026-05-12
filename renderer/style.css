@@ -15,6 +15,7 @@
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-text-size-adjust: 100%;
 	user-select: none;
+	--background-overlay: var(--rs-border-secondary);
 }
 /* customize
 --rs-bg-well: #212121;
@@ -72,6 +73,31 @@
 	--rs-input-focus-border: var(--rs-green-500);
 	--rs-navs-selected: var(--rs-green-500);
 	--rs-radio-checked-bg: var(--rs-green-500);
+	--background-overlay: var(--rs-border-secondary);
+}
+.rs-theme-dark.customed-theme {
+	--custom-std-level_-1: #01579B;
+	--custom-std-level_0: #0277BD;
+	--custom-std-level_1: #1976D2;
+	--custom-std-level_2: #1E88E5;
+	--custom-alt-level_-1: #01579B;
+	--custom-alt-level_0: #0277BD;
+	--custom-alt-level_1: #0288D1;
+	--rs-text-link: #abcfe1;
+	--rs-text-primary: #fff;
+	--rs-text-tertiary: #d5d5d5;
+
+	--rs-bg-well: var(--custom-std-level_0);
+	--rs-sidenav-default-bg: var(--custom-std-level_2);
+	--rs-carousel-bg: var(--custom-std-level_2);
+	--rs-bg-overlay: var(--custom-std-level_1);
+	--rs-scrollbar-bg: var(--custom-std-level_-1);
+	--rs-state-hover-bg: var(--custom-std-level_2);
+	--background-overlay: var(--custom-alt-level_0);
+	--rs-input-bg: var(--custom-alt-level_-1);
+	--rs-btn-default-bg: var(--custom-alt-level_1);
+	--rs-btn-default-hover-bg: var(--custom-alt-level_0);
+	--rs-btn-subtle-hover-bg: var(--custom-std-level_-1);
 }
 
 body, .rs-text {
