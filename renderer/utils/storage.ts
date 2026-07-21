@@ -107,12 +107,23 @@ const saferFavicon = async (domain: string) => {
 		return null
 	}
 }
+async function checkIsHollo(domain: string): Promise<boolean> {
+	try {
+		const res = await fetch(`https://${domain}/nodeinfo/2.1`)
+		if (!res.ok) return false
+		const data = await res.json()
+		return data?.software?.name === 'hollo'
+	} catch {
+		return false
+	}
+}
 export async function addServer({ domain }: { domain: string }): Promise<Server> {
 	const serversStr = localStorage.getItem('servers')
 	const servers: Server[] = JSON.parse(serversStr || '[]')
 	const serverMaxId = servers.reduce((max, server) => (server.id > max ? server.id : max), 0)
 	const { compatibleSns: sns, semanticVersionCompatibleNumber } = await getData(`https://${domain}`)
 	const noSubscribe = sns === 'pleroma'
+	const isHollo = await checkIsHollo(domain)
 	const server = {
 		id: serverMaxId + 1,
 		domain: domain,
@@ -122,8 +133,8 @@ export async function addServer({ domain }: { domain: string }): Promise<Server>
 		account_id: null,
 		no_streaming: false,
 		cannot_subscribe: noSubscribe,
-		emoji_reactions: sns === 'misskey' || domain === 'fedibird.com',
-		quote_support: sns === 'misskey' || domain === 'fedibird.com' || (sns === 'mastodon' && !semver.lt(semanticVersionCompatibleNumber, '4.5.0'))
+		emoji_reactions: sns === 'misskey' || domain === 'fedibird.com' || isHollo,
+		quote_support: sns === 'misskey' || domain === 'fedibird.com' || isHollo || (sns === 'mastodon' && !semver.lt(semanticVersionCompatibleNumber, '4.5.0'))
 	}
 	servers.push(server)
 	localStorage.setItem('servers', JSON.stringify(servers))
@@ -135,7 +146,9 @@ export async function updateServers(servers: Server[]): Promise<void> {
 	for (const server of servers) {
 		const domain = server.domain
 		const { compatibleSns: sns, semanticVersionCompatibleNumber } = await getData(`https://${domain}`)
-		server.quote_support = sns === 'misskey' || domain === 'fedibird.com' || (sns === 'mastodon' && !semver.lt(semanticVersionCompatibleNumber, '4.5.0'))
+		const isHollo = await checkIsHollo(domain)
+		server.emoji_reactions = sns === 'misskey' || domain === 'fedibird.com' || isHollo
+		server.quote_support = sns === 'misskey' || domain === 'fedibird.com' || isHollo || (sns === 'mastodon' && !semver.lt(semanticVersionCompatibleNumber, '4.5.0'))
 		server.favicon = await getFavicon(domain)
 		newServers.push(server)
 	}

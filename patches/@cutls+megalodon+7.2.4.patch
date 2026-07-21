@@ -1,0 +1,101 @@
+--- a/lib/cjs/mastodon/notification.js	2026-07-21 13:50:36.111918004 +0900
++++ b/lib/cjs/mastodon/notification.js	2026-07-21 10:28:21.700841315 +0900
+@@ -14,5 +14,7 @@
+     MastodonNotificationType.QuotedUpdate = 'quoted_update';
+     MastodonNotificationType.AdminSignup = 'admin.sign_up';
+     MastodonNotificationType.AdminReport = 'admin.report';
++    MastodonNotificationType.EmojiReaction = 'emoji_reaction';
++    MastodonNotificationType.Reaction = 'reaction';
+ })(MastodonNotificationType || (MastodonNotificationType = {}));
+ exports.default = MastodonNotificationType;
+--- a/lib/cjs/mastodon/api_client.js	2026-07-21 13:50:35.807917153 +0900
++++ b/lib/cjs/mastodon/api_client.js	2026-07-21 11:50:57.843907823 +0900
+@@ -426,6 +426,8 @@
+                     return notification_js_2.default.AdminSignup;
+                 case notification_js_1.default.AdminReport:
+                     return notification_js_2.default.AdminReport;
++                case notification_js_1.default.Reaction:
++                    return notification_js_2.default.EmojiReaction;
+                 default:
+                     return new notification_js_1.UnknownNotificationTypeError();
+             }
+@@ -456,6 +458,9 @@
+                     return notification_js_1.default.AdminSignup;
+                 case notification_js_2.default.AdminReport:
+                     return notification_js_1.default.AdminReport;
++                case notification_js_2.default.EmojiReaction:
++                case notification_js_2.default.Reaction:
++                    return notification_js_1.default.Reaction;
+                 default:
+                     return new notification_js_1.UnknownNotificationTypeError();
+             }
+@@ -568,6 +573,8 @@
+                     created_at: n.created_at,
+                     id: n.id,
+                     status: Converter.status(n.status),
++                    reaction: n.emoji_reaction || n.reaction,
++                    target: n.target ? Converter.account(n.target) : undefined,
+                     type: notificationType
+                 };
+             }
+@@ -576,6 +583,8 @@
+                     account: Converter.account(n.account),
+                     created_at: n.created_at,
+                     id: n.id,
++                    reaction: n.emoji_reaction || n.reaction,
++                    target: n.target ? Converter.account(n.target) : undefined,
+                     type: notificationType
+                 };
+             }
+--- a/lib/esm/mastodon/notification.js	2026-07-21 13:50:36.115918015 +0900
++++ b/lib/esm/mastodon/notification.js	2026-07-21 11:38:42.921161984 +0900
+@@ -12,5 +12,7 @@
+     MastodonNotificationType.QuotedUpdate = 'quoted_update';
+     MastodonNotificationType.AdminSignup = 'admin.sign_up';
+     MastodonNotificationType.AdminReport = 'admin.report';
++    MastodonNotificationType.EmojiReaction = 'emoji_reaction';
++    MastodonNotificationType.Reaction = 'reaction';
+ })(MastodonNotificationType || (MastodonNotificationType = {}));
+ export default MastodonNotificationType;
+--- a/lib/esm/mastodon/api_client.js	2026-07-21 13:50:35.827917209 +0900
++++ b/lib/esm/mastodon/api_client.js	2026-07-21 11:53:56.692588715 +0900
+@@ -306,6 +306,8 @@
+                     return MastodonNotificationType.AdminSignup;
+                 case NotificationType.AdminReport:
+                     return MastodonNotificationType.AdminReport;
++                case NotificationType.Reaction:
++                    return MastodonNotificationType.EmojiReaction;
+                 default:
+                     return new UnknownNotificationTypeError();
+             }
+@@ -336,7 +338,12 @@
+                     return NotificationType.AdminSignup;
+                 case MastodonNotificationType.AdminReport:
+                     return NotificationType.AdminReport;
++                case MastodonNotificationType.EmojiReaction:
++                case MastodonNotificationType.Reaction:
++                    console.log('[megalodon] decodeNotificationType: reaction matched', { type: t });
++                    return NotificationType.Reaction;
+                 default:
++                    console.warn('[megalodon] decodeNotificationType: Unknown type', { type: t });
+                     return new UnknownNotificationTypeError();
+             }
+         };
+@@ -448,6 +455,8 @@
+                     created_at: n.created_at,
+                     id: n.id,
+                     status: Converter.status(n.status),
++                    reaction: n.emoji_reaction || n.reaction,
++                    target: n.target ? Converter.account(n.target) : undefined,
+                     type: notificationType
+                 };
+             }
+@@ -456,6 +465,8 @@
+                     account: Converter.account(n.account),
+                     created_at: n.created_at,
+                     id: n.id,
++                    reaction: n.emoji_reaction || n.reaction,
++                    target: n.target ? Converter.account(n.target) : undefined,
+                     type: notificationType
+                 };
+             }

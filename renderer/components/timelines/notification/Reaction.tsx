@@ -53,7 +53,7 @@ const actionIcon = (notification: Entity.Notification) => {
 				if (notification.reaction.url) {
 					return <img src={notification.reaction.url} alt={notification.reaction.name} style={{ height: '16px' }} />
 				}
-				return <span dangerouslySetInnerHTML={{ __html: notification.reaction.name }} />
+				return <span style={{ fontSize: '16px' }}>{notification.reaction.name}</span>
 			}
 			return null
 
@@ -224,8 +224,8 @@ const Reaction: React.FC<Props> = (props) => {
 				<FlexboxGrid.Item colspan={20}>
 					<div style={{ display: 'flex', alignItems: 'middle' }}>
 						{/** icon **/}
-						<div style={{ paddingRight: '4px', paddingLeft: '8px', width: '32px', boxSizing: 'border-box' }}>{actionIcon(props.notification)}</div>
-						<div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: 'calc(100% - 32px)' }}>{actionText(props.notification, props.setAccountDetail)}</div>
+						<div style={{ paddingRight: '4px', paddingLeft: '8px', minWidth: '32px', flexShrink: 0, overflow: 'visible' }}>{actionIcon(props.notification)}</div>
+						<div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{actionText(props.notification, props.setAccountDetail)}</div>
 					</div>
 				</FlexboxGrid.Item>
 				<FlexboxGrid.Item colspan={4} style={{ textAlign: 'right', color: 'var(--rs-text-secondary)' }}>

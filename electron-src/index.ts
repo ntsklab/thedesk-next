@@ -4,20 +4,25 @@ import fs from 'node:fs'
 // Native
 import { join } from 'node:path'
 
-type SystemConfig = {
-	hardwareAcceleration: boolean
-	allowDoH: boolean
-}
-
-
 // Packages
 import { app, BrowserWindow, clipboard, type IpcMainEvent, ipcMain, Menu, type MenuItemConstructorOptions, shell } from 'electron'
+
+// IME: Wayland 環境では XWayland に倒す（ネイティブ Wayland の IME は不安定なため）
+if (process.platform === 'linux') {
+	app.commandLine.appendSwitch('ozone-platform', 'x11');
+}
+
 import isDev from 'electron-is-dev'
 import defaultConfig from './defaultConfig.json'
 import type { WindowState } from './types'
 import { writePos } from './utils/writePos'
 import { copyDir } from './utils/copyDir'
 import { ipcMainWindow } from './utils/ipcMainWindow'
+
+type SystemConfig = {
+	hardwareAcceleration: boolean
+	allowDoH: boolean
+}
 
 const appDataPath = join(app.getPath('appData'), app.getName())
 const baseDir = join(appDataPath, 'thedesk-next')
