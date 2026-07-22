@@ -2,6 +2,12 @@
 
 [English](./README.md)
 
+[Hollo-stream-proxy](https://github.com/ntsklab/hollo-stream-proxy)を使用したHolloに最適化したTheDesk
+
+以下はオリジナルのREADMEの内容です
+
+---
+
 [Fedistar](https://github.com/h3poteto/fedistar)ベースのPC用Mastodo(とMisskey)クライアント。
 
 ## Fedistarとの違いは？
