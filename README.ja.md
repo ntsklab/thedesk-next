@@ -1,4 +1,4 @@
-# TheDesk next(v25~)
+# TheDesk next (fork)
 
 [English](./README.md)
 
