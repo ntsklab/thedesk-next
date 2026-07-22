@@ -2,6 +2,12 @@
 
 [日本語](./README.ja.md)
 
+TheDesk optimized for Hollo servers using [Hollo-stream-proxy](https://github.com/ntsklab/hollo-stream-proxy)
+
+The following is the original README content.
+
+---
+
 Mastodon(and Misskey) client for PC, based on [Fedistar](https://github.com/h3poteto/fedistar)
 
 ## What difference from Fedistar?
