@@ -6,8 +6,14 @@ function App() {
 	const params = useSearchParams()
 	const code = params.get('code')
 	useEffect(() => {
-		if (code) window.electronAPI.sendCode(code)
-        setTimeout(() => window.close(), 3000)
+		if (code) {
+			if (window.electronAPI) {
+				window.electronAPI.sendCode(code)
+			} else {
+				localStorage.setItem('pendingOAuthCode', code)
+			}
+		}
+		setTimeout(() => window.close(), 3000)
 	}, [code])
 
 	return (
