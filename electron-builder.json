@@ -23,7 +23,8 @@
 	"linux": {
 		"target": [
 			"zip",
-			"deb"
+			"deb",
+			"AppImage"
 		]
 	},
 	"mac": {
