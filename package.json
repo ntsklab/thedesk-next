@@ -2,7 +2,10 @@
 	"private": true,
 	"main": "main-build/index.js",
 	"name": "thedesk-next-hl",
-	"author": "cutls <noreply@github.com> (https://github.com/cutls/thedesk-next)",
+	"author": {
+			"name": "ntsklab",
+			"email": "thedesk-nhl@in-deep.blue"
+		},
 	"contributors": [
 		{
 			"name": "ntsklab",
