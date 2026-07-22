@@ -1,6 +1,6 @@
 # TheDesk next(v25~)
 
-[English](https://github.com/cutls/thedesk-next)
+[English](./README.md)
 
 [Fedistar](https://github.com/h3poteto/fedistar)ベースのPC用Mastodo(とMisskey)クライアント。
 
@@ -28,7 +28,7 @@
 
 ## TheDesk を入手する
 
-[ウェブサイト](https://thedesk.top)または[GitHub Release page](https://github.com/cutls/thedesk-next/releases)
+[GitHub Release page](https://github.com/ntsklab/thedesk-next/releases) | [Upstream](https://github.com/cutls/thedesk-next)
 
 ### システム設定
 

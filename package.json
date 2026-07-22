@@ -1,15 +1,20 @@
 {
 	"private": true,
 	"main": "main-build/index.js",
-	"name": "thedesk-next",
+	"name": "thedesk-next-hl",
 	"author": {
 		"name": "cutls",
-		"email": "p@cutls.dev",
-		"url": "https://cutls.dev"
+		"url": "https://github.com/cutls/thedesk-next"
 	},
+	"contributors": [
+		{
+			"name": "ntsklab",
+			"url": "https://github.com/ntsklab/thedesk-next"
+		}
+	],
 	"version": "25.4.0-hollo1",
 	"codename": "Aiko",
-	"homepage": "https://github.com/cutls/thedesk-next",
+	"homepage": "https://github.com/ntsklab/thedesk-next",
 	"packageManager": "pnpm@10.5.2",
 	"scripts": {
 		"postinstall": "sh scripts/apply-patches.sh",

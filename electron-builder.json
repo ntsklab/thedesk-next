@@ -1,6 +1,6 @@
 {
 	"productName": "TheDesk",
-	"appId": "next.top.thedesk",
+		"appId": "next-hl.top.thedesk",
 	"afterSign": "build/notarize.js",
 	"asarUnpack": [
 		"native/**"

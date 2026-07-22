@@ -1,6 +1,6 @@
 # TheDesk next(v25~)
 
-[日本語](https://github.com/cutls/thedesk-next/blob/main/README.ja.md)
+[日本語](./README.ja.md)
 
 Mastodon(and Misskey) client for PC, based on [Fedistar](https://github.com/h3poteto/fedistar)
 
@@ -28,7 +28,7 @@ Mastodon(and Misskey) client for PC, based on [Fedistar](https://github.com/h3po
 
 ## Get TheDesk
 
-[Website](https://thedesk.top) or [GitHub Release page](https://github.com/cutls/thedesk-next/releases)
+[GitHub Release page](https://github.com/ntsklab/thedesk-next/releases) | [Upstream](https://github.com/cutls/thedesk-next)
 
 ### System Config
 
