@@ -21,12 +21,13 @@
 		"artifactName": "TheDesk-${arch}.${version}.${ext}"
 	},
 	"linux": {
-		"target": [
-			"zip",
-			"deb",
-			"AppImage"
-		]
-	},
+			"target": [
+				"zip",
+				"deb",
+				"AppImage"
+			],
+			"maintainer": "ntsklab"
+		},
 	"mac": {
 		"icon": "assets/icon.icns",
 		"target": [
