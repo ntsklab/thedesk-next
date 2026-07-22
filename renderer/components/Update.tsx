@@ -1,11 +1,8 @@
 import { useEffect, useState } from 'react'
 import { FormattedMessage, useIntl } from 'react-intl'
-import { Button, ButtonToolbar, DatePicker, Message, Modal, Progress, SelectPicker } from 'rsuite'
-import { open as openBrowser } from '@/utils/openBrowser'
-
+import { Button, DatePicker, Modal, Progress, SelectPicker } from 'rsuite'
 export default ({ version }: { version: string }) => {
 	const { formatMessage } = useIntl()
-	const [fe, setFe] = useState(false)
 	const [newV, setNewV] = useState('')
 	const [open, setOpen] = useState(false)
 	const [selected, setSelected] = useState('win')
@@ -31,27 +28,7 @@ export default ({ version }: { version: string }) => {
 			else if (os === 'darwin') setSelected('mac')
 			else if (os === 'linux') setSelected('linuxZip')
 		}
-		const fn = async () => {
-			const isStoreStr = localStorage.getItem('isStore')
-			const isStore = isStoreStr === 'true' || !isStoreStr
-			if (isStore) return
-			if (!version) return
-			try {
-				const url = 'https://thedesk.top/ver.next.json'
-				const api = await fetch(url)
-				const json = await api.json()
-				const { semanticVersion, version: newVersion, assets } = json
-				setNewV(newVersion)
-				setAssets(assets)
-				if (hideRule && isNext && newVersion === hide) return
-				if (semanticVersion !== version) handleOpen()
-			} catch {
-				console.error('Failed to check for updates')
-			}
-		}
-		fn()
-		if (window.electronAPI) window.electronAPI.fetch()
-		if (window.electronAPI) window.electronAPI.fetchFinish((_event) => setFe(true))
+		// Auto-update disabled for this fork
 	}, [version])
 	const update = () => {
 		localStorage.setItem('updateSelected', selected)
@@ -61,10 +38,6 @@ export default ({ version }: { version: string }) => {
 			if (data.status === 'downloading') setProgress(data.percentCompleted)
 			if (data.status === 'failed') setProgress(null)
 		})
-	}
-	const openBrowserHandler = () => {
-		openBrowser('https://thedesk.top')
-		handleClose()
 	}
 	const cancel = () => {
 		window.electronAPI.downloadCancel()
@@ -101,9 +74,6 @@ export default ({ version }: { version: string }) => {
 				<Modal.Footer>
 					{typeof progress !== 'number' ? (
 						<>
-							<Button onClick={openBrowserHandler} appearance="subtle">
-								<FormattedMessage id="update.openBrowser" />
-							</Button>
 							<SelectPicker
 								style={{ marginRight: '3px' }}
 								cleanable={false}
@@ -151,19 +121,6 @@ export default ({ version }: { version: string }) => {
 					</Modal.Footer>
 				)}
 			</Modal>
-			{fe && (
-				<Message showIcon type="info" className="fe-info" style={{ position: 'fixed', bottom: '20px', right: '20px', width: '350px', zIndex: 999 }}>
-					<FormattedMessage id="update.fe.hint" />
-					<ButtonToolbar style={{ marginTop: '10px' }}>
-						<Button size="sm" appearance="link" onClick={() => setFe(false)}>
-							<FormattedMessage id="update.cancel" />
-						</Button>
-						<Button size="sm" onClick={() => window.electronAPI.hardRefresh()}>
-							<FormattedMessage id="update.fe.refresh" />
-						</Button>
-					</ButtonToolbar>
-				</Message>
-			)}
 		</>
 	)
 }
