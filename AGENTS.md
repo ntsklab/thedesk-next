@@ -48,7 +48,7 @@ upstream を merge する際は以下を上書きしないよう注意。逆に�
 
 ### 6. ビルド / CI
 - `.github/workflows/build-linux.yml`: tag push（`v*`）時にビルドして draft release を `gh` で作成（zip/deb/AppImage）。upstream の release イベント方式から書き換え済み。
-- `.github/workflows/build-windows*.yml` → `*.yml.bup` にリネームして無効化。
+- `.github/workflows/build-windows*.yml` と `.github/workflows/publish-fe.yml` は削除済み（upstream の Windows ビルド／FE 配布は不要のため）。
 - `package.json` の `pnpm.onlyBuiltDependencies`: `@parcel/watcher`, `electron`, `electron-native-auth`, `electron-winstaller`（pnpm v10 のビルドスクリプト許可）。
 
 ### 7. その他 UI / 修正
