@@ -20,7 +20,7 @@ git merge FETCH_HEAD  # 取り込み（コンフリクトは下記のフォー�
 upstream を merge する際は以下を上書きしないよう注意。逆に「元に戻したい」場合はここが該当箇所。
 
 ### 1. フォーク識別情報
-- `package.json`: `name: thedesk-next-hl`, `version: 25.4.0-hollo2`, `author: ntsklab`, `homepage: github.com/ntsklab/thedesk-next`
+- `package.json`: `name: thedesk-next-hl`, `version: 25.4.0-hollo3`, `author: ntsklab`, `homepage: github.com/ntsklab/thedesk-next`
 - `electron-builder.json`: `appId: next-hl.top.thedesk`, Linux ターゲットに `AppImage` 追加、`maintainer: ntsklab`
 - `README.md` / `README.ja.md`: フォーク案内 + Hollo 説明を冒頭に追記
 

@@ -12,7 +12,7 @@
 			"url": "https://github.com/ntsklab/thedesk-next"
 		}
 	],
-	"version": "25.4.0-hollo2",
+	"version": "25.4.0-hollo3",
 	"codename": "Aiko",
 	"homepage": "https://github.com/ntsklab/thedesk-next",
 	"packageManager": "pnpm@10.5.2",
