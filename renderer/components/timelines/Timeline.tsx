@@ -548,6 +548,7 @@ export default function TimelineColumn(props: Props) {
 							atTopStateChange={prependUnreads}
 							endReached={loadMore}
 							overscan={TIMELINE_STATUSES_COUNT}
+							computeItemKey={(_, status) => status.id}
 							defaultItemHeight={44}
 							itemContent={(_, status) => {
 								const statusHasContent = status.reblog ? status.reblog : status
