@@ -6,7 +6,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
 	openInAppBrowser: (url: string) => ipcRenderer.send('openInAppBrowser', url),
 	openAppDataFolder: () => ipcRenderer.send('openAppDataFolder'),
 	requestInitialInfo: (init: boolean) => ipcRenderer.send('requestInitialInfo', init),
-	requestAppleMusic: (fallback: boolean) => ipcRenderer.send('requestAppleMusic', { fallback }),
 	imageOperation: (image: string, operation: 'copy' | 'download') => {
 		ipcRenderer.send('imageOperation', { image, operation })
 	},
@@ -17,6 +16,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
 	},
 	showAbout: (callback: (event: Electron.IpcRendererEvent) => void) => {
 		ipcRenderer.on('showAbout', callback)
+	},
+	onWindowBlur: (callback: () => void) => {
+		const listener = () => callback()
+		ipcRenderer.on('windowBlur', listener)
+		return () => ipcRenderer.removeListener('windowBlur', listener)
 	},
 	appleMusic: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => {
 		ipcRenderer.once('appleMusic', callback)

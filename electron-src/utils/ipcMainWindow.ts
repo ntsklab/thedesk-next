@@ -1,29 +1,24 @@
 import { getFonts } from 'font-list'
 import ntpClient from 'ntp-client'
-import { execFile } from 'node:child_process'
-import { promisify } from 'node:util'
 import { app, clipboard, type IpcMainEvent, nativeImage, shell } from 'electron'
-import isDev from 'electron-is-dev'
 import { ElectronDownloadManager } from 'electron-dl-manager'
 
 import os from 'node:os'
 import { join } from 'node:path'
 
-import { auth } from './auth'
+import { auth } from './auth.js'
 
-import defaultConfig from '../defaultConfig.json'
+const defaultConfig: SystemConfig = {
+	hardwareAcceleration: true,
+	allowDoH: true
+}
 import fs from 'node:fs'
 type SystemConfig = {
 	hardwareAcceleration: boolean
 	allowDoH: boolean
 }
-const promisifyExecFile = promisify(execFile)
 const appDataPath = join(app.getPath('appData'), app.getName())
 const configPath = join(appDataPath, 'config.json')
-const logger = (msg: string) => {
-	console.log(`[TheDesk Main Process] ${msg}`)
-	fs.appendFileSync(join(appDataPath, 'main.log'), `[${new Date().toISOString()}] ${msg}\n`)
-}
 const manager = new ElectronDownloadManager()
 export const ipcMainWindow = (mainWindow: Electron.BrowserWindow | null, ipcMain: Electron.IpcMain) => {
 	let firstRun = false
@@ -66,39 +61,18 @@ export const ipcMainWindow = (mainWindow: Electron.BrowserWindow | null, ipcMain
 		}
 		mainWindow?.webContents.send('initialInfo', info)
 	})
-	ipcMain.on('requestAppleMusic', async (_event: IpcMainEvent) => {
-		let song: Record<string, any> = {}
-		try {
-			const prodFile = join(__dirname, '..', '..', 'native', 'nowplaying-info.js').replace('app.asar', 'app.asar.unpacked')
-			const devFile = join(__dirname, '..', '..', 'native', 'nowplaying-info.js')
-			const { stdout } = await promisifyExecFile(isDev ? devFile : prodFile)
-			if (!stdout) throw new Error('no stdout')
-			song = JSON.parse(stdout)
-			if (!song || !song.name) throw new Error('no song data')
-			if (!song.databaseID) return mainWindow?.webContents.send('appleMusic', song)
-		} catch (e) {
-			logger(`Failed to get Apple Music info: ${(e as Error).message}`)
-			return mainWindow?.webContents.send('appleMusic', { error: true, message: 'unknown error' })
-		}
-		try {
-			const prodFile = join(__dirname, '..', '..', 'native', 'get-artwork').replace('app.asar', 'app.asar.unpacked')
-			const devFile = join(__dirname, '..', '..', 'native', 'get-artwork')
-
-			const { stdout: artwork } = await promisifyExecFile(isDev ? devFile : prodFile, [song.databaseID.toString()], {
-				maxBuffer: 64 * 1024 * 1024,
-				encoding: 'buffer'
-			})
-			song.artwork = artwork.toString('base64')
-			mainWindow?.webContents.send('appleMusic', song)
-		} catch {
-			mainWindow?.webContents.send('appleMusic', song)
-		}
-	})
 
 	ipcMain.on('imageOperation', async (_event: IpcMainEvent, { image, operation }: { image: string; operation: 'copy' | 'download' }) => {
 		if (operation === 'download') return mainWindow?.webContents.downloadURL(image)
 		const blob = await fetch(image).then((r) => r.blob())
-		if (operation === 'copy') clipboard.writeImage(nativeImage.createFromBuffer(Buffer.from(await blob.arrayBuffer())))
+		const imageNative = nativeImage.createFromBuffer(Buffer.from(await blob.arrayBuffer()))
+		const type = blob.type
+		const isPng = type === 'image/png'
+		const obj = isPng ? imageNative.toPNG() : imageNative.toJPEG(100)
+		const content = new Electron.ClipboardItem({
+			[isPng ? 'image/png' : 'image/jpeg']: new Blob([obj], { type })
+		})
+		if (operation === 'copy') clipboard.write([content])
 	})
 	ipcMain.on('openInAppBrowser', async (_event: IpcMainEvent, message: any) => {
 		if (!mainWindow) return

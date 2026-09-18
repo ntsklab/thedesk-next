@@ -1,28 +1,25 @@
-
 import serve from 'electron-serve'
 import fs from 'node:fs'
 // Native
 import { join } from 'node:path'
 
-// Packages
-import { app, BrowserWindow, clipboard, type IpcMainEvent, ipcMain, Menu, type MenuItemConstructorOptions, shell } from 'electron'
-
-// IME: Wayland 環境では XWayland に倒す（ネイティブ Wayland の IME は不安定なため）
-if (process.platform === 'linux') {
-	app.commandLine.appendSwitch('ozone-platform', 'x11');
-}
-
-import isDev from 'electron-is-dev'
-import defaultConfig from './defaultConfig.json'
-import type { WindowState } from './types'
-import { writePos } from './utils/writePos'
-import { copyDir } from './utils/copyDir'
-import { ipcMainWindow } from './utils/ipcMainWindow'
-
 type SystemConfig = {
 	hardwareAcceleration: boolean
 	allowDoH: boolean
 }
+
+// Packages
+import { app, BrowserWindow, clipboard, type IpcMainEvent, ipcMain, Menu, type MenuItemConstructorOptions, shell } from 'electron'
+import isDev from 'electron-is-dev'
+const defaultConfig: SystemConfig = {
+	hardwareAcceleration: true,
+	allowDoH: true
+}
+
+import type { WindowState } from './types.js'
+import { writePos } from './utils/writePos.js'
+import { copyDir } from './utils/copyDir.js'
+import { ipcMainWindow } from './utils/ipcMainWindow.js'
 
 const appDataPath = join(app.getPath('appData'), app.getName())
 const baseDir = join(appDataPath, 'thedesk-next')
@@ -115,6 +112,7 @@ app.on('ready', async () => {
 	mainWindow.on('resized', () => writePos(mainWindow))
 	mainWindow.on('moved', () => writePos(mainWindow))
 	mainWindow.on('minimize', () => writePos(mainWindow))
+	mainWindow.on('blur', () => mainWindow?.webContents.send('windowBlur'))
 	ipcMainWindow(mainWindow, ipcMain)
 	mainWindow.webContents.on('context-menu', (_e, props) => {
 		const { selectionText, isEditable } = props

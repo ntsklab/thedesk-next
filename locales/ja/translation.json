@@ -40,6 +40,11 @@
 			}
 		},
 		"timeline": {
+			"unread": {
+				"title": "未読タイムライン",
+				"show": "未読を見る",
+				"never": "今後表示しない"
+			},
 			"settings": {
 				"title": "タイムラインの設定",
 				"description": "タイムラインを移動および削除できます。",
@@ -311,6 +316,8 @@
 			"again": "Spotifyとの連携が完了しました。もう一度NowPlayingを実行してください。",
 			"error": "エラーが発生しました。もう一度NowPlayingを実行してください。",
 			"unkwnownAaBtn": "アートワークをネットワークから取得",
+			"np6Required": "np6が必要です。np6が起動していて、np6の設定で「Local JSON server」が有効になっていることを確認してください。",
+			"np6Download": "np6をダウンロード",
 			"accessibilityError": "音楽情報にアクセスできません。システム環境設定 > セキュリティとプライバシー > プライバシー > アクセシビリティでTheDeskが制御する許可があることを確認してください。"
 		},
 		"editMyPost": "自分の投稿を編集しています",
@@ -340,6 +347,12 @@
 	},
 	"timeline": {
 		"reload": "再読み込み",
+		"minId": {
+			"show": "最後に読んだ位置以降の投稿を表示",
+			"restore": "元のタイムラインに戻る",
+			"turnOff": "オフにする",
+			"unmarkUnread": "未読表示を解除"
+		},
 		"settings": {
 			"title": "設定",
 			"unpin": "カラム削除",
